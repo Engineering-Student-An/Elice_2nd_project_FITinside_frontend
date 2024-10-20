@@ -59,15 +59,17 @@ const OrderCreate = () => {
 
     const handleOrderSubmit = async () => {
         const deliveryData = deliveryFormRef.current.getFormData(); // DeliveryForm의 데이터 가져오기
+
+        // if (!deliveryData || Object.keys(deliveryData).length === 0) {
+        if (!deliveryData) {
+            alert('배송 정보를 입력해주세요.');
+            return;
+        }
+
         deliveryData.saveAsDefault = saveAsDefault; // 체크박스 상태 추가
 
         console.log("넘겨질 배송 데이터: ", deliveryData);
         console.log("선택한 주문 아이템: ", JSON.stringify(orderItems, null, 2));
-
-        if (!deliveryData || Object.keys(deliveryData).length === 0) {
-            alert('배송 정보를 입력해주세요.');
-            return;
-        }
 
         submitOrder(deliveryData);
     };
