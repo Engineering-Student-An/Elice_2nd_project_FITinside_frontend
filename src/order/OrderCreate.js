@@ -57,35 +57,12 @@ const OrderCreate = () => {
         deliveryFormRef.current.setFormData(address); // 선택된 주소 정보를 폼에 반영
     };
 
-    // 폼 데이터를 로컬 스토리지에 저장
-    const saveFormData = () => {
-        const formData = deliveryFormRef.current.getFormData();
-        localStorage.setItem('deliveryFormData', JSON.stringify(formData));
-    };
-
-    useEffect(() => {
-        // 페이지 새로고침 시 로컬 스토리지에 저장된 데이터 불러오기
-        const savedData = JSON.parse(localStorage.getItem('deliveryFormData'));
-        if (savedData) {
-            deliveryFormRef.current.setFormData(savedData); // 저장된 데이터로 폼 채우기
-        }
-
-        const handleBeforeUnload = () => {
-            saveFormData(); // 페이지 나가기 전에 데이터 저장
-        };
-
-        window.addEventListener('beforeunload', handleBeforeUnload);
-
-        return () => {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-        };
-    }, []);
-
     const handleOrderSubmit = async () => {
         const deliveryData = deliveryFormRef.current.getFormData(); // DeliveryForm의 데이터 가져오기
         deliveryData.saveAsDefault = saveAsDefault; // 체크박스 상태 추가
 
         console.log("넘겨질 배송 데이터: ", deliveryData);
+        console.log("선택한 주문 아이템: ", JSON.stringify(orderItems, null, 2));
 
         if (!deliveryData || Object.keys(deliveryData).length === 0) {
             alert('배송 정보를 입력해주세요.');
@@ -127,11 +104,25 @@ const OrderCreate = () => {
                 deliveryFee,
             }, { headers: { 'Authorization': `Bearer ${token}` } });
             alert('주문이 완료되었습니다.');
+
             localStorage.removeItem('orderData');
             localStorage.removeItem('shippingCost');
-            localStorage.removeItem('localCart');
-            localStorage.removeItem('dbCart');
-            localStorage.removeItem('deliveryFormData');
+
+            // localCart에서 주문된 상품 삭제
+            const storedLocalCart = JSON.parse(localStorage.getItem('localCart')) || [];
+            const updatedLocalCart = storedLocalCart.filter(item =>
+                !orderItems.some(orderItem => orderItem.productId === item.id)
+            );
+            localStorage.setItem('localCart', JSON.stringify(updatedLocalCart)); // 주문되지 않은 상품은 유지
+
+            // dbCart에서 주문된 상품 삭제
+            const storedDbCart = JSON.parse(localStorage.getItem('dbCart')) || [];
+            const updatedDbCart = storedDbCart.filter(item =>
+                !orderItems.some(orderItem => orderItem.productId === item.id)
+            );
+            localStorage.setItem('dbCart', JSON.stringify(updatedDbCart)); // 주문되지 않은 상품은 유지
+
+            // localStorage.removeItem('deliveryFormData');
             window.location.href = `/orders/${response.data.orderId}`;
         } catch (error) {
             if (error.response && error.response.status === 401 && !retry) {
