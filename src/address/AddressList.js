@@ -44,6 +44,11 @@ const AddressList = () => {
     // 수정 또는 추가 저장 시 호출되는 함수
     const handleSave = async () => {
         const formData = formRef.current.getFormData(); // 폼의 데이터 가져오기
+        console.log('저장클릭시 전송할 데이터: ', JSON.stringify(formData, null, 2));
+        console.log(formData.deliveryPhone);
+        console.log(formData.deliveryReceiver);
+        console.log(formData.defaultDelivery);
+
         const token = localStorage.getItem('token');
 
         if (isAdding) {
@@ -88,18 +93,24 @@ const AddressList = () => {
         setSelectedAddress(null); // 선택된 주소 초기화
     };
 
-    const handleDelete = async (addressId) => {
+    const handleDelete = async (address) => {
+        // 기본 배송지인 경우 삭제 불가 처리
+        if (address.defaultAddress === 'Y') {
+            alert('기본 배송지는 삭제가 불가능합니다. 해제 후 진행해주세요.');
+            return;
+        }
+
         const confirmDelete = window.confirm("배송지를 삭제하시겠습니까?");
         if (!confirmDelete) return;
 
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:8080/api/addresses/${addressId}`, {
+            await axios.delete(`http://localhost:8080/api/addresses/${address.addressId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
-            setAddresses(addresses.filter(address => address.addressId !== addressId)); // 삭제 후 목록 갱신
+            setAddresses(addresses.filter(a => a.addressId !== address.addressId)); // 삭제 후 목록 갱신
             alert('배송지가 삭제되었습니다.');
         } catch (err) {
             console.error("배송지 삭제 중 오류 발생: ", err);
@@ -111,6 +122,26 @@ const AddressList = () => {
         setSelectedAddress(null); // 추가는 빈 폼으로 진행
         setIsAdding(true); // 추가 모드 활성화
         setIsEditing(false); // 수정 모드 비활성화
+    };
+
+    // 기본 배송지로 설정하는 함수
+    const handleDefaultChange = async (addressId, isChecked) => {
+        try {
+            const token = localStorage.getItem('token');
+            await axios.patch(`http://localhost:8080/api/addresses/${addressId}/default`, null, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                params: {
+                    isDefault: isChecked? "Y" : "N"  // 기본 배송지로 설정
+                }
+            });
+            alert(`기본 배송지가 ${isChecked ? '설정' : '해제'}되었습니다.`);
+            fetchAddresses();  // 변경 후 목록 갱신
+        } catch (error) {
+            console.error('기본 배송지 설정 중 오류 발생: ', error);
+            alert('기본 배송지 설정 중 오류가 발생했습니다.');
+        }
     };
 
     if (error) {
@@ -137,6 +168,7 @@ const AddressList = () => {
                         <table className="table table-bordered">
                             <thead>
                             <tr>
+                                <th>기본 배송지</th>
                                 <th>수령인</th>
                                 <th>전화번호</th>
                                 <th>우편번호</th>
@@ -149,6 +181,13 @@ const AddressList = () => {
                             <tbody>
                             {addresses.map(address => (
                                 <tr key={address.addressId}>
+                                    <td>
+                                        <input
+                                            type="checkbox"
+                                            checked={address.defaultAddress === 'Y'} // 기본 배송지 체크 (defaultAddress가 Y일 경우 체크)
+                                            onChange={(e) => handleDefaultChange(address.addressId, e.target.checked)}
+                                        />
+                                    </td>
                                     <td>{address.deliveryReceiver}</td>
                                     <td>{address.deliveryPhone}</td>
                                     <td>{address.postalCode}</td>
@@ -164,7 +203,7 @@ const AddressList = () => {
                                         </button>
                                         <button
                                             className="btn btn-danger btn-sm"
-                                            onClick={() => handleDelete(address.addressId)}
+                                            onClick={() => handleDelete(address)}
                                         >
                                             삭제
                                         </button>

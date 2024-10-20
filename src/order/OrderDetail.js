@@ -66,8 +66,12 @@ const OrderDetail = () => {
             deliveryMemo: orderDetail.deliveryMemo,
             deliveryReceiver: orderDetail.deliveryReceiver,
             deliveryPhone: orderDetail.deliveryPhone,
+            saveAsDefault: orderDetail.defaultAddress === 'Y' ? true : false
         });
         setIsEditing(true);
+        if(formRef.current){
+            formRef.current.setIsReadOnly(false);
+        }
     };
 
     const handleSaveClick = async () => {
