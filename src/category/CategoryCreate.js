@@ -153,7 +153,7 @@ const CategoryCreate = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get('http://localhost:8080/api/categories', {
+        axios.get('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/categories', {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -191,7 +191,7 @@ const CategoryCreate = () => {
         if (parentId) formData.append('parentId', parentId);
         if (imageFile) formData.append('imageFile', imageFile);
 
-        axios.post('http://localhost:8080/api/admin/categories', formData, {
+        axios.post('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/admin/categories', formData, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 'Content-Type': 'multipart/form-data'

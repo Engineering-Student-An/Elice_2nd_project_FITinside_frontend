@@ -10,7 +10,7 @@ const CategoryList = ({ userRole }) => {
 
     useEffect(() => {
         // 서버에서 카테고리 목록 가져오기
-        axios.get('http://localhost:8080/api/categories', {
+        axios.get('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/categories', {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }

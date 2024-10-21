@@ -24,7 +24,7 @@ const ProductCreate = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch('http://localhost:8080/api/categories');
+                const response = await fetch('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/categories');
                 const data = await response.json();
                 const filteredCategories = data.filter(category => category.parentId !== null);
                 setCategories(filteredCategories);
@@ -82,7 +82,7 @@ const ProductCreate = () => {
         });
 
         try {
-            const response = await fetch('http://localhost:8080/api/admin/products', {
+            const response = await fetch('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/admin/products', {
                 method: 'POST',
                 body: data
             });

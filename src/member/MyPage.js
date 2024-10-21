@@ -75,7 +75,7 @@ const MyPage = () => {
 
             const token = localStorage.getItem('token');
             await axios.put(
-                'http://localhost:8080/api/user/username', // 이름 수정 API 엔드포인트
+                'https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/user/username', // 이름 수정 API 엔드포인트
                 { userName: newName },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -106,7 +106,7 @@ const MyPage = () => {
 
             const token = localStorage.getItem('token');
             await axios.put(
-                'http://localhost:8080/api/user/phone', // 전화번호 수정 API 엔드포인트
+                'https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/user/phone', // 전화번호 수정 API 엔드포인트
                 { phone: newPhone },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

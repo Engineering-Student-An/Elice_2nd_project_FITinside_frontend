@@ -124,7 +124,7 @@ const AdBanner = ({ userRole }) => {
 
     // 광고를 서버에서 가져오기
     useEffect(() => {
-        axios.get('http://localhost:8080/api/banners', {
+        axios.get('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/banners', {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}` // Bearer 토큰 포함
             }

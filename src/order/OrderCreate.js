@@ -34,7 +34,7 @@ const OrderCreate = () => {
             const details = {};
             for (const item of storedOrderData) {
                 try {
-                    const response = await axios.get(`http://localhost:8080/api/products/${item.productId}`, {
+                    const response = await axios.get(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/products/${item.productId}`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
@@ -102,7 +102,7 @@ const OrderCreate = () => {
             // 1. 배송지 추가
             if (saveAsDefault) { // 체크박스가 체크된 경우에만 주소 추가
                 try {
-                    const addressResponse = await axios.post('http://localhost:8080/api/addresses', deliveryData, {
+                    const addressResponse = await axios.post('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/addresses', deliveryData, {
                         headers: {
                             'Authorization': `Bearer ${token}`
                         }
@@ -121,7 +121,7 @@ const OrderCreate = () => {
             console.log('배송지 추가 로직 완료');
 
             // 2. 주문 생성
-            const response = await axios.post('http://localhost:8080/api/order', {
+            const response = await axios.post('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/order', {
                 ...deliveryData,
                 orderItems,
                 deliveryFee,

@@ -9,7 +9,7 @@ const AddressModal = ({ isOpen, onClose, onSelect }) => {
         const fetchAddresses = async () => {
             try {
                 if (isOpen) {
-                    const response = await axios.get('http://localhost:8080/api/addresses', {
+                    const response = await axios.get('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/addresses', {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
@@ -20,7 +20,7 @@ const AddressModal = ({ isOpen, onClose, onSelect }) => {
                 try {
                     // 토큰 갱신 후 다시 데이터 불러오기
                     await sendRefreshTokenAndStoreAccessToken();
-                    const retryResponse = await axios.get('http://localhost:8080/api/addresses', {
+                    const retryResponse = await axios.get('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/addresses', {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         },

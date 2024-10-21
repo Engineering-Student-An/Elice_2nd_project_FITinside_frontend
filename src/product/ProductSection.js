@@ -12,7 +12,7 @@ const ProductSection = () => {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/products/${productId}`);
+                const response = await fetch(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/products/${productId}`);
                 if (response.ok) {
                     const data = await response.json();
                     setProduct(data);

@@ -32,7 +32,7 @@ const ProductAdmin = () => {
             // 검색 타입에 따라 다른 엔드포인트 호출
             const endpoint = searchType === 'productName' ? '/api/products' : '/api/products/byCategory';
 
-            const response = await axios.get(`http://localhost:8080${endpoint}`, {
+            const response = await axios.get(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io${endpoint}`, {
                 params: {
                     page: pageNumber,
                     size: pageSize,
@@ -66,7 +66,7 @@ const ProductAdmin = () => {
         if (!confirmDelete) return;
 
         try {
-            const response = await axios.delete(`http://localhost:8080/api/admin/products/${productId}`);
+            const response = await axios.delete(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/admin/products/${productId}`);
             if (response.status === 200) {
                 // 삭제 성공 후 목록 갱신
                 fetchProducts(page);

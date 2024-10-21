@@ -19,13 +19,11 @@ import {BannerAdminMain, BannerCreate, BannerUpdate} from "./banner";
 import ProtectedRoute from "./ProtectedRoute";
 import ProtectedAdminRoute from "./ProtectedAdminRoute";
 import AccessDeniedPage from "./AccessDeniedPage";
-import {UrlConstantProvider} from "./UrlConstant";
 
 
 const App = () => {
     return (
         <Router>
-            <UrlConstantProvider>
                 <div id="root">
                     <Header/>
                     <main className="flex-grow-1">
@@ -94,7 +92,6 @@ const App = () => {
                     </main>
                     <Footer/>
                 </div>
-            </UrlConstantProvider>
         </Router>
     );
 };

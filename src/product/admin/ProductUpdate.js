@@ -34,7 +34,7 @@ const ProductUpdate = () => {
         const fetchProduct = async () => {
             try {
                 const response = await axios.get(
-                    `http://localhost:8080/api/products/${id}`
+                    `https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/products/${id}`
                 );
                 setProduct(response.data); // 기존 상품 정보 설정
                 setLoading(false);
@@ -51,7 +51,7 @@ const ProductUpdate = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axios.get("http://localhost:8080/api/categories");
+                const response = await axios.get("https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/categories");
                 const filteredCategories = response.data.filter(
                     (category) => category.parentId !== null
                 );
@@ -112,7 +112,7 @@ const ProductUpdate = () => {
         try {
             if (imageUrlsToDelete.length > 0) {
                 await axios.delete(
-                    `http://localhost:8080/api/admin/products/${id}/images`,
+                    `https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/admin/products/${id}/images`,
                     {
                         params: { imageUrlsToDelete },
                         paramsSerializer: (params) => {
@@ -124,7 +124,7 @@ const ProductUpdate = () => {
 
             if (descImageUrlsToDelete.length > 0) {
                 await axios.delete(
-                    `http://localhost:8080/api/admin/products/${id}/description-images`,
+                    `https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/admin/products/${id}/description-images`,
                     {
                         params: { descImageUrlsToDelete },
                         paramsSerializer: (params) => {
@@ -163,7 +163,7 @@ const ProductUpdate = () => {
 
         try {
             // 상품 업데이트
-            await axios.put(`http://localhost:8080/api/admin/products/${id}`, formData, {
+            await axios.put(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/admin/products/${id}`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },

@@ -32,7 +32,7 @@ const OrderDetail = () => {
         const fetchOrderDetail = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get(`http://localhost:8080/api/orders/${orderId}`, {
+                const response = await axios.get(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/orders/${orderId}`, {
                     headers: {
                         Authorization: `Bearer ${token}` // 토큰을 인증 헤더에 추가
                     }
@@ -77,7 +77,7 @@ const OrderDetail = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.patch(`http://localhost:8080/api/orders/${orderId}`, updatedData, {
+            const response = await axios.patch(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/orders/${orderId}`, updatedData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -118,14 +118,14 @@ const OrderDetail = () => {
 
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:8080/api/orders/${orderId}`, {
+            await axios.delete(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/orders/${orderId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
 
             // 주문 취소 후 다시 주문 상세 정보를 가져와서 갱신
-            const response = await axios.get(`http://localhost:8080/api/orders/${orderId}`, {
+            const response = await axios.get(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/orders/${orderId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
