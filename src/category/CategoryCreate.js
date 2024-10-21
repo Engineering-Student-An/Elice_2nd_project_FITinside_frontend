@@ -139,7 +139,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap CSS 추가
+import 'bootstrap/dist/css/bootstrap.min.css';
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken"; // Bootstrap CSS 추가
 
 const CategoryCreate = () => {
     const [name, setName] = useState('');
@@ -162,10 +163,15 @@ const CategoryCreate = () => {
                 const parentCategories = response.data.filter(category => category.parentId === null);
                 setParentCategories(parentCategories);
             })
-            .catch(error => {
-                console.error('Error fetching categories:', error);
-                if (error.response && error.response.status === 401) {
-                    alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+            .catch(async error => {
+                try {
+                    await sendRefreshTokenAndStoreAccessToken();
+                    // window.location.reload();
+                } catch (e) {
+                    console.error('Error fetching categories:', error);
+                    if (error.response && error.response.status === 401) {
+                        alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+                    }
                 }
             });
     }, []);
@@ -201,13 +207,20 @@ const CategoryCreate = () => {
                 navigate('/admin/categories');
                 window.location.reload();
             })
-            .catch(error => {
-                console.error('Error creating category:', error);
-                if (error.response && error.response.status === 401) {
-                    alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+            .catch(async error => {
+                try {
+                    await sendRefreshTokenAndStoreAccessToken();
+                    // window.location.reload();
+                } catch (e) {
+                    console.error('Error creating category:', error);
+                    if (error.response && error.response.status === 401) {
+                        alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+                    }
                 }
             });
     };
+
+
 
     return (
         <div className="container mt-5">
