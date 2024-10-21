@@ -251,7 +251,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';  // Bootstrap CSS import
-import 'bootstrap/dist/js/bootstrap.bundle.min.js'; // Bootstrap JS import
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken"; // Bootstrap JS import
 
 const CategoryAdminMain = () => {
     const [categories, setCategories] = useState([]);
@@ -284,9 +285,31 @@ const CategoryAdminMain = () => {
 
             setCategories([...sortedParentCategories, ...sortedChildCategories]);
         } catch (error) {
-            console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
-            if (error.response && error.response.status === 401) {
-                alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+            try{
+                await sendRefreshTokenAndStoreAccessToken();
+                const response = await axios.get('http://localhost:8080/api/categories', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                });
+
+                const sortedCategories = response.data;
+
+                // 부모와 자식 카테고리를 displayOrder로 정렬하고 설정
+                const sortedParentCategories = sortedCategories
+                    .filter(category => category.parentId === null)
+                    .sort((a, b) => a.displayOrder - b.displayOrder);
+
+                const sortedChildCategories = sortedCategories
+                    .filter(category => category.parentId !== null)
+                    .sort((a, b) => a.displayOrder - b.displayOrder);
+
+                setCategories([...sortedParentCategories, ...sortedChildCategories]);
+            } catch (error){
+                console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
+                if (error.response && error.response.status === 401) {
+                    alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+                }
             }
         }
     };
@@ -312,9 +335,30 @@ const CategoryAdminMain = () => {
             alert("카테고리가 삭제되었습니다.");
             window.location.reload();
         } catch (error) {
-            console.error('카테고리 삭제 중 오류가 발생했습니다.', error);
-            if (error.response && error.response.status === 401) {
-                alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+            try{
+                await sendRefreshTokenAndStoreAccessToken();
+                const hasChildCategories = categories.some(category => category.parentId === categoryId);
+
+                if (hasChildCategories) {
+                    alert("자식 카테고리가 있어 삭제가 불가능합니다.");
+                    return;
+                }
+
+                const confirmDelete = window.confirm("이 카테고리를 삭제하시겠습니까?");
+                await axios.delete(`http://localhost:8080/api/admin/categories/${categoryId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                setCategories(categories.filter(category => category.id !== categoryId));
+                alert("카테고리가 삭제되었습니다.");
+                window.location.reload();
+
+            } catch(error) {
+                console.error('카테고리 삭제 중 오류가 발생했습니다.', error);
+                if (error.response && error.response.status === 401) {
+                    alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+                }
             }
         }
     };

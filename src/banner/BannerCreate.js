@@ -87,7 +87,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap CSS 추가
+import 'bootstrap/dist/css/bootstrap.min.css';
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken"; // Bootstrap CSS 추가
 
 const BannerCreate = () => {
     const [title, setTitle] = useState('');
@@ -127,7 +128,18 @@ const BannerCreate = () => {
             });
             navigate('/admin/banners');
         } catch (error) {
-            console.error('Error creating banner:', error);
+            try{
+                await sendRefreshTokenAndStoreAccessToken();
+                await axios.post('http://localhost:8080/api/admin/banners', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                navigate('/admin/banners');
+            } catch(error) {
+                console.error('Error creating banner:', error);
+            }
         }
     };
 
