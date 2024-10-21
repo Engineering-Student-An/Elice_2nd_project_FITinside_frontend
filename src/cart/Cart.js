@@ -4,6 +4,7 @@ import {getCart, removeFromCart, clearCart, fetchProduct, useCartCount, updateCa
 import AvailableCouponModal from '../coupon/AvailableCouponModal';
 import './cart.css';
 import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
+import axios from "axios";
 
 
 const Cart = () => {
@@ -91,25 +92,27 @@ const Cart = () => {
     const fetchAvailableCoupons = async (productId) => {
 
         try {
-            const response = await fetch(`http://localhost:8080/api/coupons/${productId}`, {
-                method: 'GET',
+            const response = await axios.get(`http://localhost:8080/api/coupons/${productId}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
             });
 
-            if (!response.ok) {
-                throw new Error('적용 가능 쿠폰 목록을 가져오는 데 실패했습니다.');
-            }
-
-            const data = await response.json();
-            setCurrentProductCoupons(data.coupons);
+            setCurrentProductCoupons(response.data.coupons);
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
-                window.location.reload();
+
+                // 새로 요청
+                const newResponse = await axios.get(`http://localhost:8080/api/coupons/${productId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                });
+
+                setCurrentProductCoupons(newResponse.data.coupons);
             } catch (e) {
-                console.error(error.message);
+                console.error(e.message);
             }
         }
     };
@@ -200,6 +203,9 @@ const Cart = () => {
     };
 
     const handleOrder = () => {
+        if (cartCount === 0 || selectedItems.size === 0) {
+            return; // 조건이 만족하지 않으면 아무 동작도 하지 않음
+        }
         const orderData = cart
             .filter(item => selectedItems.has(item.id)) // 선택된 상품만 필터링
             .map(item => {
@@ -461,7 +467,7 @@ const Cart = () => {
                             쇼핑하기</a>
                         <a
                             className="btn btn-custom p-3"
-                            onClick={cartCount > 0 && selectedItems.size > 0 ? handleOrder : undefined} // 클릭 핸들러를 조건적으로 설정
+                            onClick={handleOrder}
                             href={cartCount > 0 && selectedItems.size > 0 ? "/order" : "/cart"}
                             style={{
                                 pointerEvents: (cartCount === 0 || selectedItems.size === 0) ? 'none' : 'auto',

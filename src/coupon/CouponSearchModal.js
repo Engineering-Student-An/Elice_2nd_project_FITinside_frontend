@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
+import axios from "axios";
 
 const CouponSearchModal = ({ isOpen, onRequestClose }) => {
     const [couponCode, setCouponCode] = useState('');
@@ -19,31 +20,35 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
         }
 
         try {
-            const response = await fetch(`http://localhost:8080/api/coupons/code/${couponCode}`, {
-                method: 'GET',
+            const response = await axios.get(`http://localhost:8080/api/coupons/code/${couponCode}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'application/json'
                 },
             });
 
-            if (!response.ok) {
-                throw new Error('유효하지 않은 쿠폰 코드입니다!');
-            }
-
-            const data = await response.json();
-            setCoupon(data); // 쿠폰 정보 설정
+            setCoupon(response.data); // 쿠폰 정보 설정
             setErrorMessage(''); // 에러 메시지 초기화
         } catch (error) {
-            if (error.response && (error.response.status === 400)) {
+            if (error.response && error.response.status === 400) {
                 setCoupon(null);
-                setErrorMessage(error.message); // 유효하지 않은 쿠폰 코드 에러 메시지 설정
+                setErrorMessage('유효하지 않은 쿠폰 코드입니다!'); // 유효하지 않은 쿠폰 코드 에러 메시지 설정
             } else {
                 try {
                     await sendRefreshTokenAndStoreAccessToken();
-                    window.location.reload();
+
+                    // 토큰 갱신 후 다시 요청
+                    const response = await axios.get(`http://localhost:8080/api/coupons/code/${couponCode}`, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`, // 갱신된 토큰 사용
+                            'Content-Type': 'application/json'
+                        },
+                    });
+
+                    setCoupon(response.data); // 쿠폰 정보 설정
+                    setErrorMessage(''); // 에러 메시지 초기화
                 } catch (e) {
-                    console.error(error.message);
+                    console.error(e.message);
                 }
             }
         }
@@ -51,21 +56,14 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
 
     const handleCouponSubmit = async () => {
         if (!coupon || !coupon.active) return; // 쿠폰이 없거나 비활성화 상태일 때는 아무것도 하지 않음
-        console.log(coupon);
-        console.log(coupon.code);
-        try {
-            const response = await fetch('http://localhost:8080/api/coupons', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                body: coupon.code, // 쿠폰 코드를 JSON 형식으로 전송
-            });
 
-            if (!response.ok) {
-                console.log(response);
-                throw new Error('쿠폰 입력에 실패했습니다!'); // 실패 시 에러 메시지
-            }
+        try {
+            const response = await axios.post('http://localhost:8080/api/coupons', couponCode, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'text/plain' // 문자열로 전송하므로 Content-Type 변경
+                },
+            });
 
             alert('쿠폰을 다운로드 받았습니다!'); // 성공 메시지 표시
             // 모달 닫기
@@ -76,9 +74,29 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
+
+                // 토큰 갱신 후 다시 요청
+                const response = await axios.post('http://localhost:8080/api/coupons', couponCode, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'text/plain' // 문자열로 전송하므로 Content-Type 변경
+                    },
+                });
+
+                alert('쿠폰을 다운로드 받았습니다!'); // 성공 메시지 표시
+                // 모달 닫기
+                onRequestClose();
+
+                // 페이지 새로 고침
                 window.location.reload();
             } catch (e) {
-                console.error(error.message);
+                if(e.status === 409) {
+                    alert("이미 쿠폰을 보유 중입니다!");
+                } else {
+                    alert("쿠폰 다운로드 중 오류가 발생했습니다!");
+                }
+
+                console.error(e.message);
             }
         }
     };

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import sendRefreshTokenAndStoreAccessToken from "../../auth/RefreshAccessToken";
+import axios from "axios";
 
 const CouponCreateModal = ({ isOpen, onRequestClose, onCreate, categories }) => {
     const [newCoupon, setNewCoupon] = useState({
@@ -31,18 +32,12 @@ const CouponCreateModal = ({ isOpen, onRequestClose, onCreate, categories }) => 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:8080/api/admin/coupons', {
-                method: 'POST',
+            const response = await axios.post('http://localhost:8080/api/admin/coupons', newCoupon, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(newCoupon),
+                }
             });
-
-            if (!response.ok) {
-                throw new Error();
-            }
 
             alert('쿠폰을 생성했습니다!');
             onCreate(); // 쿠폰 생성 후 부모 컴포넌트에게 알리기
@@ -63,7 +58,31 @@ const CouponCreateModal = ({ isOpen, onRequestClose, onCreate, categories }) => 
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
-                window.location.reload();
+
+                // 토큰 갱신 후 다시 요청
+                const response = await axios.post('http://localhost:8080/api/admin/coupons', newCoupon, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`, // 갱신된 토큰 사용
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                alert('쿠폰을 생성했습니다!');
+                onCreate(); // 쿠폰 생성 후 부모 컴포넌트에게 알리기
+
+                // 상태 초기화
+                setNewCoupon({
+                    name: '',
+                    code: '',
+                    type: '',
+                    value: 0,
+                    percentage: 0,
+                    minValue: 0,
+                    expiredAt: '',
+                    categoryId: 0,
+                });
+
+                onRequestClose(); // 모달 닫기
             } catch (e) {
                 alert('유효하지 않은 입력입니다!');
             }

@@ -1,10 +1,62 @@
 /* 컨테이너 스타일 */
+/*.category-list {*/
+/*    display: flex;*/
+/*    flex-wrap: wrap; !* 요소가 넘치면 줄바꿈 *!*/
+/*    justify-content: center; !* 중앙 정렬 *!*/
+/*    gap: 20px; !* 각 카테고리 사이 간격 *!*/
+/*    padding: 40px 0; !* 상하 패딩 *!*/
+/*}*/
+
+/*!* 개별 카테고리 스타일 *!*/
+/*.category-item {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    align-items: center;*/
+/*    text-align: center;*/
+/*    width: 80px; !* 카테고리 너비 조정 *!*/
+/*    padding: 10px;*/
+/*}*/
+
+/*!* 카테고리 이미지 스타일 *!*/
+/*.category-item img {*/
+/*    width: 70px; !* 이미지 크기 조정 *!*/
+/*    height: 70px;*/
+/*    border-radius: 50%;*/
+/*    object-fit: cover;*/
+/*}*/
+
+/*!* 카테고리 텍스트 스타일 *!*/
+/*.category-item span {*/
+/*    margin-top: 8px;*/
+/*    font-size: 12px;*/
+/*    color: #333;*/
+/*}*/
+
+/*!* 카테고리 추가 버튼 스타일 *!*/
+/*.add-category-button {*/
+/*    position: absolute;*/
+/*    bottom: 40px;*/
+/*    left: 20px;*/
+/*    padding: 10px 20px;*/
+/*    background-color: #efefef;*/
+/*    color: #333;*/
+/*    border: 1px solid #ccc;*/
+/*    border-radius: 5px;*/
+/*    cursor: pointer;*/
+/*}*/
+
+
+
+
+/* 컨테이너 스타일 */
 .category-list {
     display: flex;
     flex-wrap: wrap; /* 요소가 넘치면 줄바꿈 */
     justify-content: center; /* 중앙 정렬 */
     gap: 20px; /* 각 카테고리 사이 간격 */
     padding: 40px 0; /* 상하 패딩 */
+    max-width: 700px; /* 6개 카테고리만 한 줄에 표시되도록 최대 너비 제한 */
+    margin: 0 auto; /* 가운데 정렬 */
 }
 
 /* 개별 카테고리 스타일 */
@@ -13,8 +65,9 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
-    width: 80px; /* 카테고리 너비 조정 */
+    flex-basis: calc(16.6% - 20px); /* 한 행에 6개가 들어가도록 기본 너비 조정 */
     padding: 10px;
+    margin: 10px 0; /* 위아래 마진 추가 */
 }
 
 /* 카테고리 이미지 스타일 */
@@ -44,3 +97,4 @@
     border-radius: 5px;
     cursor: pointer;
 }
+

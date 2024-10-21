@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import sendRefreshTokenAndStoreAccessToken from "../../auth/RefreshAccessToken";
+import axios from "axios";
 
 const CouponMemberModal = ({ isMemberModalOpen, handleCloseMemberModal, couponId }) => {
     const [memberModalData, setMemberModalData] = useState(null);
@@ -8,25 +9,34 @@ const CouponMemberModal = ({ isMemberModalOpen, handleCloseMemberModal, couponId
     const [totalPages, setTotalPages] = useState(1);
 
     const fetchMembers = async (id, page) => {
-        try{
-            const response = await fetch(`http://localhost:8080/api/admin/coupons/${id}?page=${page}`, {
-                method: 'GET',
+        try {
+            const response = await axios.get(`http://localhost:8080/api/admin/coupons/${id}`, {
+                params: {
+                    page: page
+                },
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
             });
 
-            if (!response.ok) {
-                throw new Error('회원 목록을 가져오는 데 실패했습니다.');
-            }
-
-            const data = await response.json();
-            setMemberModalData(data);
-            setTotalPages(data.totalPages);
+            setMemberModalData(response.data);
+            setTotalPages(response.data.totalPages);
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
-                window.location.reload();
+
+                // 토큰 갱신 후 다시 요청
+                const response = await axios.get(`http://localhost:8080/api/admin/coupons/${id}`, {
+                    params: {
+                        page: page // 페이지 파라미터 재전송
+                    },
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}` // 갱신된 토큰 사용
+                    },
+                });
+
+                setMemberModalData(response.data);
+                setTotalPages(response.data.totalPages);
             } catch (e) {
                 console.error(error.message);
             }

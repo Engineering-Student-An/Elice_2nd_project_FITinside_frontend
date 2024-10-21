@@ -161,14 +161,14 @@ const AdBanner = ({ userRole }) => {
     }
 
     return (
-        <div className="ad-banner">
+        <div className="ad-banner" style={{marginTop: '90px'}}>
             {ads.length > 0 ? (
                 <>
                     <img
                         src={ads[currentAdIndex]?.imageUrl}
                         alt={ads[currentAdIndex]?.title}
                         onClick={handleAdClick}
-                        style={{ cursor: 'pointer' }}
+                        style={{cursor: 'pointer'}}
                     />
                     {userRole === 'ROLE_ADMIN' && (
                         <button className="add-ad-button">광고 수정</button>
