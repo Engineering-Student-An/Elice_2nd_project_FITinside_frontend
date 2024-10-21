@@ -165,7 +165,7 @@ const ProductSection = () => {
                             <p>{product.info}</p>
                             {/* 상품 설명 이미지 추가 */}
                             <div className="description-images mt-3">
-                                {productDescImages.length > 0 ? (
+                                {productDescImages.length > 0 &&
                                     productDescImages.map((image, index) => (
                                         <img
                                             key={index}
@@ -174,10 +174,9 @@ const ProductSection = () => {
                                             className="img-fluid mb-3"
                                         />
                                     ))
-                                ) : (
-                                    <p>설명 이미지가 없습니다.</p>
-                                )}
+                                }
                             </div>
+
                         </div>
                         <div className="tab-pane fade" id="qna" role="tabpanel" aria-labelledby="qna-tab">
                             <p>여기에서 상품에 대한 Q&A를 볼 수 있습니다.</p>
