@@ -26,6 +26,7 @@ const ProductAdmin = () => {
         fetchProducts(page);
     }, [page, sortField, sortDir]); // page, sortField, sortDir가 변경될 때마다 새 데이터를 가져옴
 
+    const token = localStorage.getItem('token');
     const fetchProducts = async (pageNumber) => {
         try {
             setLoading(true); // 로딩 시작
@@ -34,6 +35,9 @@ const ProductAdmin = () => {
             const endpoint = searchType === 'productName' ? '/api/products' : '/api/products/byCategory';
 
             const response = await axios.get(`http://localhost:8080${endpoint}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가
+                },
                 params: {
                     page: pageNumber,
                     size: pageSize,
