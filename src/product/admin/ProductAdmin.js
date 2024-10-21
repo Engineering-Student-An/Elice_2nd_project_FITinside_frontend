@@ -66,12 +66,37 @@ const ProductAdmin = () => {
     };
 
     // 상품 삭제 로직
+    // const handleDeleteClick = async (productId) => {
+    //     const confirmDelete = window.confirm("정말로 이 상품을 삭제하시겠습니까?");
+    //     if (!confirmDelete) return;
+    //
+    //     try {
+    //         const response = await axios.delete(`http://localhost:8080/api/admin/products/${productId}`);
+    //         if (response.status === 200) {
+    //             // 삭제 성공 후 목록 갱신
+    //             fetchProducts(page);
+    //         } else {
+    //             console.error('상품 삭제 실패');
+    //             alert('상품 삭제에 실패했습니다.');
+    //         }
+    //     } catch (error) {
+    //         console.error('상품 삭제 중 오류 발생:', error);
+    //         alert('상품 삭제 중 오류가 발생했습니다.');
+    //     }
+    // };
+
     const handleDeleteClick = async (productId) => {
         const confirmDelete = window.confirm("정말로 이 상품을 삭제하시겠습니까?");
         if (!confirmDelete) return;
 
         try {
-            const response = await axios.delete(`http://localhost:8080/api/admin/products/${productId}`);
+            const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
+            const response = await axios.delete(`http://localhost:8080/api/admin/products/${productId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가
+                },
+            });
+
             if (response.status === 200) {
                 // 삭제 성공 후 목록 갱신
                 fetchProducts(page);
