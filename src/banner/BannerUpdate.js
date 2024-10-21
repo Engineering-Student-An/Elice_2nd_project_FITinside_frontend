@@ -140,7 +140,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap CSS 추가
+import 'bootstrap/dist/css/bootstrap.min.css';
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken"; // Bootstrap CSS 추가
 
 const BannerUpdate = () => {
     const [title, setTitle] = useState(''); // 배너 제목
@@ -170,13 +171,31 @@ const BannerUpdate = () => {
                 setTargetUrl(banner.targetUrl || ''); // URL 값도 함께 설정
                 setLoading(false);
             })
-            .catch(error => {
-                console.error('Error fetching banner data:', error);
-                setError('배너 정보를 불러오는 중 오류가 발생했습니다.');
-                if (error.response && error.response.status === 401) {
-                    alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+            .catch(async error => {
+                try {
+                    await sendRefreshTokenAndStoreAccessToken();
+                    axios.get(`http://localhost:8080/api/banners/${id}`, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    })
+                        .then(response => {
+                            const banner = response.data;
+                            setTitle(banner.title);
+                            setDisplayOrder(banner.displayOrder);
+                            setImage(banner.imageUrl || null);
+                            setPreviewImage(banner.imageUrl || null); // 기존 이미지 미리보기 설정
+                            setTargetUrl(banner.targetUrl || ''); // URL 값도 함께 설정
+                            setLoading(false);
+                        })
+                } catch(error) {
+                    console.error('Error fetching banner data:', error);
+                    setError('배너 정보를 불러오는 중 오류가 발생했습니다.');
+                    if (error.response && error.response.status === 401) {
+                        alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+                    }
+                    setLoading(false);
                 }
-                setLoading(false);
             });
     }, [id]);
 

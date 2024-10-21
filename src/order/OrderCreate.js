@@ -283,13 +283,25 @@ const OrderCreate = () => {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             alert('주문이 완료되었습니다.');
-            // 주문 완료 후 로컬 스토리지 정리
+
             localStorage.removeItem('orderData');
             localStorage.removeItem('shippingCost');
-            localStorage.removeItem('localCart');
-            localStorage.removeItem('dbCart');
-            localStorage.removeItem('deliveryFormData');
-            // 주문 완료 페이지로 리다이렉트
+
+            // localCart에서 주문된 상품 삭제
+            const storedLocalCart = JSON.parse(localStorage.getItem('localCart')) || [];
+            const updatedLocalCart = storedLocalCart.filter(item =>
+                !orderItems.some(orderItem => orderItem.productId === item.id)
+            );
+            localStorage.setItem('localCart', JSON.stringify(updatedLocalCart)); // 주문되지 않은 상품은 유지
+
+            // dbCart에서 주문된 상품 삭제
+            const storedDbCart = JSON.parse(localStorage.getItem('dbCart')) || [];
+            const updatedDbCart = storedDbCart.filter(item =>
+                !orderItems.some(orderItem => orderItem.productId === item.id)
+            );
+            localStorage.setItem('dbCart', JSON.stringify(updatedDbCart)); // 주문되지 않은 상품은 유지
+
+            // localStorage.removeItem('deliveryFormData');
             window.location.href = `/orders/${response.data.orderId}`;
         } catch (error) {
             console.error('주문 생성 실패 ', error);

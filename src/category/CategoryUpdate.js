@@ -164,7 +164,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap CSS 추가
+import 'bootstrap/dist/css/bootstrap.min.css';
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken"; // Bootstrap CSS 추가
 
 const CategoryUpdate = () => {
     const [name, setName] = useState('');
@@ -191,10 +192,24 @@ const CategoryUpdate = () => {
                 const filteredParentCategories = response.data.filter(category => category.parentId === null);
                 setParentCategories(filteredParentCategories);
             })
-            .catch(error => {
-                console.error('Error fetching categories:', error);
-                if (error.response && error.response.status === 401) {
-                    alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+            .catch(async error => {
+                try {
+                    await sendRefreshTokenAndStoreAccessToken();
+                    axios.get('http://localhost:8080/api/categories', {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    })
+                        .then(response => {
+                            const filteredParentCategories = response.data.filter(category => category.parentId === null);
+                            setParentCategories(filteredParentCategories);
+                        })
+
+                } catch (error) {
+                    console.error('Error fetching categories:', error);
+                    if (error.response && error.response.status === 401) {
+                        alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+                    }
                 }
             });
 
@@ -213,11 +228,29 @@ const CategoryUpdate = () => {
                 setPreviewImageUrl(category.imageUrl || null); // 기존 이미지 URL 설정
                 setLoading(false);
             })
-            .catch(error => {
-                console.error('Error fetching category data:', error);
-                setError('카테고리 정보를 불러오는 중 오류가 발생했습니다.');
-                if (error.response && error.response.status === 401) {
-                    alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+            .catch(async error => {
+                try {
+                    await sendRefreshTokenAndStoreAccessToken();
+                    axios.get(`http://localhost:8080/api/categories/${id}`, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    })
+                        .then(response => {
+                            const category = response.data;
+                            setName(category.name);
+                            setDisplayOrder(category.displayOrder);
+                            setMainDisplayOrder(category.mainDisplayOrder || ''); // 메인 표시 순서 초기값 설정
+                            setParentId(category.parentId || null);
+                            setPreviewImageUrl(category.imageUrl || null); // 기존 이미지 URL 설정
+                            setLoading(false);
+                        })
+                } catch (error) {
+                    console.error('Error fetching category data:', error);
+                    setError('카테고리 정보를 불러오는 중 오류가 발생했습니다.');
+                    if (error.response && error.response.status === 401) {
+                        alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+                    }
                 }
                 setLoading(false);
             });
@@ -253,11 +286,38 @@ const CategoryUpdate = () => {
                 alert('카테고리가 성공적으로 수정되었습니다.');
                 navigate('/admin/categories');
             })
-            .catch(error => {
-                console.error('Error updating category:', error);
-                alert('카테고리 수정 중 오류가 발생했습니다.');
-                if (error.response && error.response.status === 401) {
-                    alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+            .catch(async error => {
+                try {
+                    await sendRefreshTokenAndStoreAccessToken();
+                    e.preventDefault();
+
+                    const formData = new FormData();
+                    formData.append('name', name);
+                    formData.append('displayOrder', displayOrder ? Number(displayOrder) : null);
+                    // mainDisplayOrder가 빈칸이 아닐 때만 추가
+                    if (mainDisplayOrder !== '') {
+                        formData.append('mainDisplayOrder', Number(mainDisplayOrder));
+                    }
+                    if (parentId) formData.append('parentId', parentId);
+                    if (image) formData.append('imageFile', image);
+
+                    axios.put(`http://localhost:8080/api/admin/categories/${id}`, formData, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    })
+                        .then(response => {
+                            console.log('Category updated:', response.data);
+                            alert('카테고리가 성공적으로 수정되었습니다.');
+                            navigate('/admin/categories');
+                        })
+                } catch(error) {
+                    console.error('Error updating category:', error);
+                    alert('카테고리 수정 중 오류가 발생했습니다.');
+                    if (error.response && error.response.status === 401) {
+                        alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+                    }
                 }
             });
     };

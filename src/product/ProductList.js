@@ -133,10 +133,10 @@ const ProductList = () => {
                         {products.map((product) => (
                             <div className="col mb-5" key={product.id}>
                                 <div className="card h-100">
-                                    {/* Sale badge */}
-                                    {product.onSale && (
-                                        <div className="badge bg-dark text-white position-absolute" style={{ top: '0.5rem', right: '0.5rem' }}>
-                                            Sale
+                                    {/* 품절 표시 */}
+                                    {product.soldOut && (
+                                        <div className="badge bg-danger text-white position-absolute" style={{ top: '0.5rem', right: '0.5rem' }}>
+                                            품절
                                         </div>
                                     )}
                                     {/* Product image */}

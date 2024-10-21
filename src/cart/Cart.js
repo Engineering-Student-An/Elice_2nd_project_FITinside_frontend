@@ -4,6 +4,7 @@ import {getCart, removeFromCart, clearCart, fetchProduct, useCartCount, updateCa
 import AvailableCouponModal from '../coupon/AvailableCouponModal';
 import './cart.css';
 import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
+import axios from "axios";
 
 
 const Cart = () => {
@@ -61,13 +62,21 @@ const Cart = () => {
     };
 
     const handleSelectAll = () => {
-        if (selectedItems.size === cart.length) {
+        // 재고가 있는 상품의 ID만 가져오기
+        const availableIds = cart
+            .filter(item => productDetails[item.id].stock > 0)
+            .map(item => item.id);
+
+        // 모든 상품이 선택되어 있는 경우 선택 해제
+        if (selectedItems.size === availableIds.length) {
             setSelectedItems(new Set());
         } else {
-            const allIds = new Set(cart.map(item => item.id));
+            // 재고가 있는 모든 상품을 선택
+            const allIds = new Set(availableIds);
             setSelectedItems(allIds);
         }
     };
+
 
     const handleRemoveSelected = () => {
         selectedItems.forEach(id => {
@@ -91,25 +100,27 @@ const Cart = () => {
     const fetchAvailableCoupons = async (productId) => {
 
         try {
-            const response = await fetch(`http://localhost:8080/api/coupons/${productId}`, {
-                method: 'GET',
+            const response = await axios.get(`http://localhost:8080/api/coupons/${productId}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
             });
 
-            if (!response.ok) {
-                throw new Error('적용 가능 쿠폰 목록을 가져오는 데 실패했습니다.');
-            }
-
-            const data = await response.json();
-            setCurrentProductCoupons(data.coupons);
+            setCurrentProductCoupons(response.data.coupons);
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
-                window.location.reload();
+
+                // 새로 요청
+                const newResponse = await axios.get(`http://localhost:8080/api/coupons/${productId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                });
+
+                setCurrentProductCoupons(newResponse.data.coupons);
             } catch (e) {
-                console.error(error.message);
+                console.error(e.message);
             }
         }
     };
@@ -200,6 +211,25 @@ const Cart = () => {
     };
 
     const handleOrder = () => {
+        if (cartCount === 0 || selectedItems.size === 0) {
+            return false; // 조건이 만족하지 않으면 아무 동작도 하지 않음
+        }
+        // 선택된 상품의 수량이 재고보다 많은지 체크
+        const outOfStockItems = cart.filter(item =>
+            selectedItems.has(item.id) && item.quantity > productDetails[item.id].stock
+        );
+
+        if (outOfStockItems.length > 0) {
+            // 품절 상품 목록 생성
+            const outOfStockDetails = outOfStockItems.map(item => {
+                const productDetail = productDetails[item.id];
+                return `${productDetail.productName} (요청 수량: ${item.quantity}, 재고: ${productDetail.stock})`;
+            }).join('\n'); // 각 상품 정보를 줄바꿈으로 연결
+
+            alert(`장바구니에 있는 상품의 수량이 재고보다 많습니다:\n${outOfStockDetails}`); // 경고 메시지
+            return false; // 수량이 재고보다 많으면 리턴
+        }
+
         const orderData = cart
             .filter(item => selectedItems.has(item.id)) // 선택된 상품만 필터링
             .map(item => {
@@ -230,6 +260,8 @@ const Cart = () => {
         // 로컬 스토리지에 저장
         localStorage.setItem('orderData', JSON.stringify(orderData));
         localStorage.setItem('shippingCost', JSON.stringify(shippingCost));
+
+        return true;
     };
 
 
@@ -296,6 +328,7 @@ const Cart = () => {
                                                 }
                                                 setSelectedItems(newSelectedItems);
                                             }}
+                                            disabled={productDetails[item.id] && productDetails[item.id].stock === 0} // 재고가 0일 때 체크박스 비활성화
                                         />
                                     </td>
                                     <td>
@@ -312,22 +345,31 @@ const Cart = () => {
                                                                 {productDetails[item.id].productName}
                                                             </Link>
                                                         </p>
-                                                        <label className="d-flex align-items-center">
-                                                            수량
-                                                            <select
-                                                                className="form-select ms-2"
-                                                                style={{width: 'auto'}}
-                                                                value={item.quantity}
-                                                                onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value, 10))}
-                                                            >
-                                                                {/* 1부터 20까지의 수량 선택 */}
-                                                                {[...Array(20)].map((_, index) => (
-                                                                    <option key={index + 1} value={index + 1}>
-                                                                        {index + 1}
-                                                                    </option>
-                                                                ))}
-                                                            </select>
-                                                        </label>
+                                                        {productDetails[item.id].stock === 0 && (
+                                                            <p style={{color: 'red', fontWeight: 'bold'}}>
+                                                                품절
+                                                            </p>
+                                                        )}
+                                                        {productDetails[item.id].stock > 0 && (
+                                                            <label className="d-flex align-items-center">
+                                                                수량
+                                                                <select
+                                                                    className="form-select ms-2"
+                                                                    style={{width: 'auto'}}
+                                                                    value={item.quantity}
+                                                                    onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value, 10))}
+                                                                >
+                                                                    {/* 1부터 20까지의 수량 선택 */}
+                                                                    {[...Array(20)].map((_, index) => (
+                                                                        <option key={index + 1} value={index + 1}>
+                                                                            {index + 1}
+                                                                        </option>
+                                                                    ))}
+                                                                </select>
+                                                            </label>
+                                                        )}
+
+
                                                     </div>
                                                 </div>
 
@@ -336,8 +378,9 @@ const Cart = () => {
                                                 {appliedCoupons.filter(coupon => coupon.productId === item.id).map((coupon, index) => {
                                                     const discountAmount = coupon.type === 'AMOUNT' ? coupon.value : (productDetails[item.id].price * coupon.percentage) / 100;
                                                     return (
-                                                        <div className="d-flex justify-content-start align-items-center">
-                                                            <button  style={{
+                                                        <div
+                                                            className="d-flex justify-content-start align-items-center">
+                                                            <button style={{
                                                                 background: 'none',
                                                                 border: 'none',
                                                                 cursor: 'pointer',
@@ -362,12 +405,21 @@ const Cart = () => {
                                         {productDetails[item.id] ? (
                                             <div>
                                                 <p>
-                                                    {(productDetails[item.id].price * item.quantity).toLocaleString()} 원
+                                                    {productDetails[item.id].stock === 0 ? (
+                                                        <strong style={{color: 'red'}}>품절</strong>
+                                                    ) : (
+                                                        `${(productDetails[item.id].price * item.quantity).toLocaleString()} 원`
+                                                    )}
                                                 </p>
-                                                <button className="btn btn-light text-dark me-2"
-                                                        style={{border: '1px solid #ced4da'}}
-                                                        onClick={() => handleShowCouponModal(item)}>적용 가능 쿠폰
-                                                </button>
+
+                                                {productDetails[item.id].stock > 0 && (
+                                                    <button className="btn btn-light text-dark me-2"
+                                                            style={{border: '1px solid #ced4da'}}
+                                                            onClick={() => handleShowCouponModal(item)}>
+                                                        적용 가능 쿠폰
+                                                    </button>
+                                                )}
+
                                             </div>
                                         ) : (
                                             <p>상품 정보를 불러올 수 없습니다...</p>
@@ -461,17 +513,25 @@ const Cart = () => {
                             쇼핑하기</a>
                         <a
                             className="btn btn-custom p-3"
-                            onClick={cartCount > 0 && selectedItems.size > 0 ? handleOrder : undefined} // 클릭 핸들러를 조건적으로 설정
-                            href={cartCount > 0 && selectedItems.size > 0 ? "/order" : "/cart"}
+                            onClick={(e) => {
+                                e.preventDefault(); // 기본 링크 이동 방지
+                                const isOrderSuccessful = handleOrder(); // 주문 처리 함수 호출
+
+                                // 주문이 성공적으로 처리되면 /order로 이동
+                                if (isOrderSuccessful) {
+                                    window.location.href = "/order"; // 페이지 이동
+                                }
+                            }}
                             style={{
                                 pointerEvents: (cartCount === 0 || selectedItems.size === 0) ? 'none' : 'auto',
                                 opacity: (cartCount === 0 || selectedItems.size === 0) ? 0.5 : 1,
-                                cursor: (cartCount === 0 || selectedItems.size === 0) ? 'not-allowed' : 'pointer' // 금지 아이콘 표시
-
-                            }} // 비활성화 스타일
+                                cursor: (cartCount === 0 || selectedItems.size === 0) ? 'not-allowed' : 'pointer'
+                            }}
                         >
                             주문하기
                         </a>
+
+
                     </div>
                 </div>
             </div>

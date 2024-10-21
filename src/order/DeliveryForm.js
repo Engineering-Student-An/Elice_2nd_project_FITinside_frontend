@@ -15,13 +15,51 @@ const DeliveryForm = forwardRef(({ initialValues = {}, onAddressSelect, onNewAdd
     const [saveAsDefault, setSaveAsDefault] = useState(false); // 기본 배송지로 저장 여부 상태 추가
     const [isDefaultAddress, setIsDefaultAddress] = useState(false); // 기본 배송지 여부 관리
 
+    // 에러 메시지 상태 관리
+    const [errors, setErrors] = useState({
+        deliveryReceiver: '',
+        phone: '',
+        postalCode: '',
+        deliveryAddress: ''
+    });
+
+    // 유효성 검사 함수
+    const validateForm = () => {
+        let formIsValid = true;
+        const newErrors = {
+            deliveryReceiver: '',
+            phone: '',
+            postalCode: '',
+            deliveryAddress: ''
+        };
+
+        if (!deliveryReceiver.trim()) {
+            newErrors.deliveryReceiver = '수령인을 입력해주세요.';
+            formIsValid = false;
+        }
+
+        if (!phoneMiddle.trim() || !phoneLast.trim()) {
+            newErrors.phone = '연락처를 입력해주세요.';
+            formIsValid = false;
+        }
+
+        if (!postalCode.trim()) {
+            newErrors.postalCode = '우편번호를 입력해주세요.';
+            formIsValid = false;
+        }
+
+        if (!deliveryAddress.trim()) {
+            newErrors.deliveryAddress = '주소를 입력해주세요.';
+            formIsValid = false;
+        }
+
+        setErrors(newErrors);
+        return formIsValid;
+    };
+
     useEffect(() => {
-        console.log('forceShowCheckbox: ', forceShowCheckbox);
-        console.log('saveAsDefault: ', saveAsDefault);
-        console.log('isDefaultAddress: ', isDefaultAddress);
         // 초기값을 설정하기 위한 useEffect: 컴포넌트가 처음 렌더링될 때만 초기값을 설정
         if (initialValues) {
-            console.log('deliveryForm에 넘어온 initialValue: ', initialValues);
             setPostalCode(initialValues.postalCode || '');
             setDeliveryAddress(initialValues.deliveryAddress || '');
             setDetailedAddress(initialValues.detailedAddress || '');
@@ -37,28 +75,30 @@ const DeliveryForm = forwardRef(({ initialValues = {}, onAddressSelect, onNewAdd
                     setPhoneLast(phoneParts[2] || '');
                 }
             }
-
-            // 기본 배송지가 있을 경우 readOnly 설정 (기본배송지가 있는데 false로 나옴)
-            // console.log("기본배송지가 있으면 readOnly: true");
-            console.log('initialValues : ', initialValues);
-            // console.log('readOnly 우편번호: ', !!initialValues.postalCode);
-            // setIsReadOnly(!!initialValues.postalCode); // 기본 배송지가 있으면 true
-            console.log('saveAsDefault: ', saveAsDefault);
-            console.log('isDefaultAddress: ', isDefaultAddress);
-
         }
     }, []); // 빈 배열로 두어 컴포넌트가 처음 렌더링될 때만 실행되도록 합니다.
-
-
 
     // 부모 컴포넌트에서 호출
     useImperativeHandle(ref, () => ({
         getFormData: () => {
             const deliveryPhone = `${phoneFirst}-${phoneMiddle}-${phoneLast}`;
+            console.log({
+                postalCode,
+                deliveryAddress,
+                detailedAddress,
+                deliveryMemo,
+                deliveryReceiver,
+                deliveryPhone
+            });
+
+            // 유효성 검사를 먼저 실행
+            if (!validateForm()) {
+                return null; // 유효성 검사 실패 시 null 반환
+            }
+
             return { postalCode, deliveryAddress, detailedAddress, deliveryMemo, deliveryReceiver, deliveryPhone, saveAsDefault };
         },
         setFormData: (address) => {
-            console.log('입력폼 setFormData 호출');
             setPostalCode(address.postalCode || '');
             setDeliveryAddress(address.deliveryAddress || '');
             setDetailedAddress(address.detailedAddress || '');
@@ -135,97 +175,105 @@ const DeliveryForm = forwardRef(({ initialValues = {}, onAddressSelect, onNewAdd
             </div>
             <table className="delivery-table">
                 <tbody>
-                <tr>
-                    <td className="label-cell"><label>받는 분</label></td>
-                    <td className="input-cell">
-                        <input
-                            type="text"
-                            value={deliveryReceiver}
-                            onChange={(e) => setDeliveryReceiver(e.target.value)}
-                            readOnly={isReadOnly} // readOnly 상태 적용
-                            required
-                            placeholder="받는 분의 이름을 입력해주세요"
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <td className="label-cell"><label>연락처</label></td>
-                    <td className="input-cell phone-number-container">
-                        <select
-                            value={phoneFirst}
-                            onChange={(e) => setPhoneFirst(e.target.value)}
-                            disabled={isReadOnly} // readOnly 대신 disabled 적용
-                        >
-                            <option value="010">010</option>
-                            <option value="011">011</option>
-                            <option value="016">016</option>
-                            <option value="017">017</option>
-                        </select>
-                        <input
-                            type="text"
-                            value={phoneMiddle}
-                            onChange={(e) => setPhoneMiddle(e.target.value)}
-                            readOnly={isReadOnly}
-                            required
-                            maxLength={4}
-                        />
-                        <input
-                            type="text"
-                            value={phoneLast}
-                            onChange={(e) => setPhoneLast(e.target.value)}
-                            readOnly={isReadOnly}
-                            required
-                            maxLength={4}
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <td className="label-cell"><label>우편번호</label></td>
-                    <td className="input-cell">
-                        <input
-                            type="text"
-                            value={postalCode}
-                            onChange={(e) => setPostalCode(e.target.value)}
-                            readOnly
-                            required
-                        />
-                        <PostcodeSearch setPostalCode={setPostalCode} setDeliveryAddress={setDeliveryAddress} disabled={isReadOnly} />
-                    </td>
-                </tr>
-                <tr>
-                    <td className="label-cell"><label>주소</label></td>
-                    <td className="input-cell">
-                        <input
-                            type="text"
-                            value={deliveryAddress}
-                            onChange={(e) => setDeliveryAddress(e.target.value)}
-                            readOnly
-                            required
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <td className="label-cell"><label>상세주소</label></td>
-                    <td className="input-cell">
-                        <input
-                            type="text"
-                            value={detailedAddress}
-                            onChange={(e) => setDetailedAddress(e.target.value)}
-                            readOnly={isReadOnly}
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <td className="label-cell"><label>배송 메모</label></td>
-                    <td className="input-cell">
-                        <input
-                            type="text"
-                            value={deliveryMemo}
-                            onChange={(e) => setDeliveryMemo(e.target.value)}
-                            readOnly={isReadOnly}
-                        />
-                    </td>
-                </tr>
+                    <tr>
+                        <td className="label-cell"><label>받는 분</label></td>
+                        <td className="input-cell">
+                            <input
+                                type="text"
+                                value={deliveryReceiver}
+                                onChange={(e) => setDeliveryReceiver(e.target.value)}
+                                readOnly={isReadOnly} // readOnly 상태 적용
+                                required
+                                placeholder="받는 분의 이름을 입력해주세요"
+                            />
+                            {errors.deliveryReceiver && <p style={{ color: 'red' }}>{errors.deliveryReceiver}</p>}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td className="label-cell"><label>연락처</label></td>
+                        <td className="input-cell phone-number-container">
+                            <div className="phone-input-group">
+                                <select
+                                    value={phoneFirst}
+                                    onChange={(e) => setPhoneFirst(e.target.value)}
+                                    disabled={isReadOnly} // readOnly 대신 disabled 적용
+                                >
+                                    <option value="010">010</option>
+                                    <option value="011">011</option>
+                                    <option value="016">016</option>
+                                    <option value="017">017</option>
+                                </select>
+                                <input
+                                    type="text"
+                                    value={phoneMiddle}
+                                    onChange={(e) => setPhoneMiddle(e.target.value)}
+                                    readOnly={isReadOnly}
+                                    required
+                                    maxLength={4}
+                                />
+                                <input
+                                    type="text"
+                                    value={phoneLast}
+                                    onChange={(e) => setPhoneLast(e.target.value)}
+                                    readOnly={isReadOnly}
+                                    required
+                                    maxLength={4}
+                                />
+                            </div>
+                            {errors.phone && (
+                                <p style={{ color: 'red' }}>{errors.phone}</p>
+                            )}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td className="label-cell"><label>우편번호</label></td>
+                        <td className="input-cell">
+                            <input
+                                type="text"
+                                value={postalCode}
+                                onChange={(e) => setPostalCode(e.target.value)}
+                                readOnly
+                                required
+                            />
+                            {errors.postalCode && <p style={{ color: 'red' }}>{errors.postalCode}</p>}
+                            <PostcodeSearch setPostalCode={setPostalCode} setDeliveryAddress={setDeliveryAddress} disabled={isReadOnly} />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td className="label-cell"><label>주소</label></td>
+                        <td className="input-cell">
+                            <input
+                                type="text"
+                                value={deliveryAddress}
+                                onChange={(e) => setDeliveryAddress(e.target.value)}
+                                readOnly
+                                required
+                            />
+                            {errors.deliveryAddress && <p style={{ color: 'red' }}>{errors.deliveryAddress}</p>}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td className="label-cell"><label>상세주소</label></td>
+                        <td className="input-cell">
+                            <input
+                                type="text"
+                                value={detailedAddress}
+                                onChange={(e) => setDetailedAddress(e.target.value)}
+                                readOnly={isReadOnly}
+                            />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td className="label-cell"><label>배송 메모</label></td>
+                        <td className="input-cell">
+                            <input
+                                type="text"
+                                value={deliveryMemo}
+                                onChange={(e) => setDeliveryMemo(e.target.value)}
+                                readOnly={isReadOnly}
+                            />
+                        </td>
+                    </tr>
                 </tbody>
             </table>
 

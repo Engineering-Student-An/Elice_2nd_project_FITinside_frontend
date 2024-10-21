@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './coupon.css';
 import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
+import axios from "axios";
 
 const CouponList = () => {
     const [welcomeCoupons, setWelcomeCoupons] = useState([]);
@@ -15,81 +16,87 @@ const CouponList = () => {
 
     const fetchWelcomeCoupons = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/coupons/welcome`, {
-                method: 'GET',
+            // 첫 번째 요청: 웰컴 쿠폰 가져오기
+            const response = await axios.get('http://localhost:8080/api/coupons/welcome', {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
             });
 
-            if (!response.ok) {
-                throw new Error('네트워크 응답이 정상적이지 않습니다.');
-            }
+            setWelcomeCoupons(response.data.coupons); // 웰컴 쿠폰 설정
 
-            const data = await response.json();
-            setWelcomeCoupons(data.coupons);
-            // MyWelcomeCouponResponseWrapperDto 응답에서 couponIds 설정
-            const myWelcomeResponse = await fetch(`http://localhost:8080/api/coupons/myWelcome`, {
-                method: 'GET',
+            // 두 번째 요청: 내 웰컴 쿠폰 IDs 가져오기
+            const myWelcomeResponse = await axios.get('http://localhost:8080/api/coupons/my-welcome', {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
             });
-            const welcomeData = await myWelcomeResponse.json();
-            setCouponIds(welcomeData.couponIds); // 응답의 couponIds 저장
+
+            setCouponIds(myWelcomeResponse.data.couponIds); // 응답의 couponIds 저장
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
-                window.location.reload();
+
+                // 토큰 갱신 후 첫 번째 요청 다시 시도
+                const response = await axios.get('http://localhost:8080/api/coupons/welcome', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}` // 갱신된 토큰 사용
+                    },
+                });
+
+                setWelcomeCoupons(response.data.coupons); // 웰컴 쿠폰 설정
+
+                // 두 번째 요청: 내 웰컴 쿠폰 IDs 가져오기
+                const myWelcomeResponse = await axios.get('http://localhost:8080/api/coupons/my-welcome', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}` // 갱신된 토큰 사용
+                    },
+                });
+
+                setCouponIds(myWelcomeResponse.data.couponIds); // 응답의 couponIds 저장
             } catch (e) {
-                console.error('쿠폰 목록을 가져오는 데 실패했습니다.', error);
+                console.error('쿠폰 목록을 가져오는 데 실패했습니다.', error.message);
             }
         }
     };
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/categories', {
-                method: 'GET',
+            const response = await axios.get('http://localhost:8080/api/categories', {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
             });
 
-            if (!response.ok) {
-                throw new Error('카테고리 목록을 가져오는 데 실패했습니다.');
-            }
-
-            const data = await response.json();
-            setCategories(data);
+            setCategories(response.data); // 카테고리 목록 설정
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
-                window.location.reload();
+
+                // 토큰 갱신 후 다시 요청
+                const response = await axios.get('http://localhost:8080/api/categories', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}` // 갱신된 토큰 사용
+                    },
+                });
+
+                setCategories(response.data); // 카테고리 목록 설정
             } catch (e) {
-                console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
+                console.error('카테고리 목록을 가져오는 데 실패했습니다.', error.message);
             }
         }
     };
 
     const handleCouponSubmit = async (code) => {
         try {
-            const response = await fetch('http://localhost:8080/api/coupons', {
-                method: 'POST',
+            const response = await axios.post('http://localhost:8080/api/coupons', {
+                code: code // 쿠폰 코드를 JSON 형식으로 전송
+            }, {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json'
                 },
-                body: code, // 쿠폰 코드를 JSON 형식으로 전송
             });
-
-            if (!response.ok) {
-                if (response.status === 409) {
-                    alert('이미 쿠폰을 다운로드했습니다!'); // 409 상태 코드 처리
-                    throw new Error('이미 쿠폰을 다운로드했습니다!'); // 409 상태 코드 처리
-                }
-                alert('쿠폰 다운로드에 실패했습니다!'); // 실패 시 에러 메시지
-                throw new Error('쿠폰 다운로드에 실패했습니다!'); // 실패 시 에러 메시지
-            }
 
             alert('쿠폰을 다운로드 받았습니다!'); // 성공 메시지 표시
 
@@ -99,15 +106,40 @@ const CouponList = () => {
                     coupon.code === code ? { ...coupon, active: false } : coupon
                 )
             );
-            window.location.reload();
         } catch (error) {
-            try {
-                if(error.code !== 409){
-                    await sendRefreshTokenAndStoreAccessToken();
-                    window.location.reload();
+            if (error.response) {
+                if (error.response.status === 409) {
+                    alert('이미 쿠폰을 다운로드했습니다!'); // 409 상태 코드 처리
+                    throw new Error('이미 쿠폰을 다운로드했습니다!'); // 409 상태 코드 처리
+                } else {
+                    alert('쿠폰 다운로드에 실패했습니다!'); // 실패 시 에러 메시지
+                    throw new Error('쿠폰 다운로드에 실패했습니다!'); // 실패 시 에러 메시지
                 }
+            }
+
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+
+                // 토큰 갱신 후 다시 요청
+                const response = await axios.post('http://localhost:8080/api/coupons', {
+                    code: code // 쿠폰 코드를 JSON 형식으로 전송
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`, // 갱신된 토큰 사용
+                        'Content-Type': 'application/json'
+                    },
+                });
+
+                alert('쿠폰을 다운로드 받았습니다!'); // 성공 메시지 표시
+
+                // 쿠폰 다운로드 후 상태 업데이트
+                setWelcomeCoupons(prevCoupons =>
+                    prevCoupons.map(coupon =>
+                        coupon.code === code ? { ...coupon, active: false } : coupon
+                    )
+                );
             } catch (e) {
-                console.error(error.message);
+                console.error(e.message);
             }
         }
     };

@@ -119,7 +119,7 @@ const OrderDetail = () => {
             setIsEditing(false); // 수정 완료 후 편집 모드 종료
         } catch (err) {
             console.error('주문 수정 실패:', err.response ? err.response.data : err.message);
-            alert('주문 수정에 실패했습니다. 다시 시도해주세요.');
+            alert('배송 정보를 입력해주세요.');
         }
     };
 
