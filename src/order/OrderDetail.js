@@ -62,7 +62,7 @@ const OrderDetail = () => {
         };
 
         fetchOrderDetail();
-        localStorage.removeItem('deliveryFormData');
+        // localStorage.removeItem('deliveryFormData');
     }, [orderId]);
 
     const handleEditClick = () => {
@@ -85,18 +85,18 @@ const OrderDetail = () => {
                 deliveryFormRef.current.setIsReadOnly(false);
             }
         }, 0); // 0ms라도 렌더링 후에 실행되도록 지연
-
-
-        // deliveryFormRef.current.setIsReadOnly(false);
-        // if(formRef.current){
-        //     formRef.current.setIsReadOnly(false);
-        // }
     };
 
     const handleSaveClick = async () => {
         // DeliveryForm의 최신 폼 데이터를 가져옴
         const updatedData = deliveryFormRef.current.getFormData();
         console.log('저장할 데이터:', updatedData); // 최신 데이터 확인을 위한 로그
+
+        // 유효성 검사
+        if (!updatedData) {
+            alert('배송 정보를 입력해주세요.');
+            return;
+        }
 
         try {
             const token = localStorage.getItem('token');

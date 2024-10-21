@@ -54,7 +54,12 @@ const AddressList = () => {
     // 수정 또는 추가 저장 시 호출되는 함수
     const handleSave = async () => {
         const formData = formRef.current.getFormData(); // 폼의 데이터 가져오기
-        console.log('수정/추가 전 가져온 formData: ', JSON.stringify(formData, null, 2));
+
+        // 유효성 검사
+        if (!formData) {
+            alert('배송 정보를 입력해주세요.');
+            return;
+        }
 
         const dataToSend = {
             ...formData,
@@ -109,6 +114,13 @@ const AddressList = () => {
     };
 
     const handleDelete = async (addressId) => {
+        const addressToDelete = addresses.find(address => address.addressId === addressId);
+        console.log('삭제할 배송지의 기본 배송지 정보: ', JSON.stringify(addressToDelete, null, 2));
+        if(addressToDelete && addressToDelete.defaultAddress === 'Y'){
+            alert('기본 배송지는 삭제할 수 없습니다. 수정 후 진행해주세요.');
+            return;
+        }
+
         const confirmDelete = window.confirm("배송지를 삭제하시겠습니까?");
         if (!confirmDelete) return;
 

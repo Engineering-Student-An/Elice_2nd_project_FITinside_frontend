@@ -158,14 +158,16 @@ const OrderCreate = () => {
 
     const handleOrderSubmit = async () => {
         const deliveryData = deliveryFormRef.current.getFormData(); // DeliveryForm의 데이터 가져오기
-        deliveryData.defaultAddress = deliveryData.saveAsDefault ? "Y" : "N"; // 폼에서 기본 배송지 여부 가져오기
 
-        console.log("넘겨질 배송 데이터: ", deliveryData);
-
-        if (!deliveryData || Object.keys(deliveryData).length === 0) {
+        // 유효성 검사
+        if (!deliveryData) {
             alert('배송 정보를 입력해주세요.');
             return;
         }
+
+        deliveryData.defaultAddress = deliveryData.saveAsDefault ? "Y" : "N"; // 폼에서 기본 배송지 여부 가져오기
+
+        console.log("넘겨질 배송 데이터: ", deliveryData);
 
         let addressResponse = null;
 
@@ -187,50 +189,6 @@ const OrderCreate = () => {
 
     };
 
-    // const submitOrder = async (deliveryData, retry = false) => {
-    //     try {
-    //         const token = localStorage.getItem('token');
-    //
-    //         console.log('넘겨지는 데이터: ', deliveryData);
-    //         console.log('타입 확인: ', typeof deliveryData.isDefault);
-    //
-    //         // 1. 배송지 추가
-    //         try {
-    //             const addressResponse = await axios.post('http://localhost:8080/api/addresses', deliveryData, {
-    //                 headers: {
-    //                     'Authorization': `Bearer ${token}`
-    //                 }
-    //             });
-    //             console.log("배송지 추가 완료: ", addressResponse.data);
-    //         } catch (addressError) {
-    //             if (addressError.response) {
-    //                 alert(addressError.response.data.message); // 중복된 주소, 저장 개수 초과, ..
-    //             } else {
-    //                 alert("배송지 추가 중 오류가 발생했습니다.");
-    //             }
-    //             return; // 배송지 추가 실패 시 주문을 진행하지 않음
-    //         }
-    //
-    //         console.log('배송지 추가 로직 완료');
-    //
-    //         // 2. 주문 생성
-    //         const response = await axios.post('http://localhost:8080/api/order', {
-    //             ...deliveryData,
-    //             orderItems,
-    //             deliveryFee,
-    //         }, { headers: { 'Authorization': `Bearer ${token}` } });
-    //         alert('주문이 완료되었습니다.');
-    //         localStorage.removeItem('orderData');
-    //         localStorage.removeItem('shippingCost');
-    //         localStorage.removeItem('localCart');
-    //         localStorage.removeItem('dbCart');
-    //         localStorage.removeItem('deliveryFormData');
-    //         window.location.href = `/orders/${response.data.orderId}`;
-    //     } catch (error) {
-    //         console.error('주문 실패 ', error);
-    //         alert('주문을 처리하는 중 오류가 발생했습니다.');
-    //     }
-    // };
 
     // 배송지 추가
     const addAddress = async (deliveryData) => {
