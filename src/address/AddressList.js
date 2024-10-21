@@ -39,17 +39,37 @@ const AddressList = () => {
         const addressToEdit = addresses.find(address => address.addressId === addressId);
         setSelectedAddress(addressToEdit); // 수정할 주소 설정
         setIsEditing(true); // 수정 모드 활성화
+
+        setTimeout(() => {
+                    if (formRef.current) {
+                        console.log('시간 지연 후 formRef 확인: ', formRef);
+                        formRef.current.setIsReadOnly(false);
+                        //폼에 기본 배송지인지 확인해서 값 전달해주기
+                        const isDefault= addressToEdit.defaultAddress === 'Y' ? true : false;
+                        formRef.current.setIsDefaultAddress(isDefault);
+            }
+        }, 0); // 0ms라도 렌더링 후에 실행되도록 지연
     };
 
     // 수정 또는 추가 저장 시 호출되는 함수
     const handleSave = async () => {
         const formData = formRef.current.getFormData(); // 폼의 데이터 가져오기
+        console.log('수정/추가 전 가져온 formData: ', JSON.stringify(formData, null, 2));
+
+        const dataToSend = {
+            ...formData,
+            defaultAddress: formData.saveAsDefault ? 'Y' : 'N'
+        }
+
+        console.log('서버로 보낼 데이터: ', JSON.stringify(dataToSend, null, 2));
+
+
         const token = localStorage.getItem('token');
 
         if (isAdding) {
             // 배송지 추가 로직
             try {
-                const response = await axios.post('http://localhost:8080/api/addresses', formData, {
+                const response = await axios.post('http://localhost:8080/api/addresses', dataToSend, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -65,7 +85,7 @@ const AddressList = () => {
         } else if (isEditing) {
             // 배송지 수정 로직
             try {
-                const response = await axios.patch(`http://localhost:8080/api/addresses/${selectedAddress.addressId}`, formData, {
+                const response = await axios.patch(`http://localhost:8080/api/addresses/${selectedAddress.addressId}`, dataToSend, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -111,6 +131,14 @@ const AddressList = () => {
         setSelectedAddress(null); // 추가는 빈 폼으로 진행
         setIsAdding(true); // 추가 모드 활성화
         setIsEditing(false); // 수정 모드 비활성화
+
+        setTimeout(() => {
+            if (formRef.current) {
+                console.log('시간 지연 후 formRef 확인: ', formRef);
+                formRef.current.setIsReadOnly(false);
+                formRef.current.setIsDefaultAddress(false);
+            }
+        }, 0); // 0ms라도 렌더링 후에 실행되도록 지연
     };
 
     // 기본 배송지로 설정하는 함수
@@ -211,7 +239,9 @@ const AddressList = () => {
                     <DeliveryForm
                         ref={formRef}
                         initialValues={selectedAddress || {}}  // selectedAddress가 null이면 빈 객체 전달
-                        showDefaultSelect={false}  // 추가 및 수정 모드일 때 기본 배송지 선택 버튼을 숨김
+                        // showDefaultSelect={true}  // 추가 및 수정 모드일 때 기본 배송지 선택 버튼을 숨김
+                        hideButtons={true}
+                        forceShowCheckbox={true}
                     />
                     <button className="btn btn-success mt-3" onClick={handleSave}>저장</button>
                     <button className="btn btn-secondary mt-3 ms-2" onClick={handleCancel}>취소</button>
