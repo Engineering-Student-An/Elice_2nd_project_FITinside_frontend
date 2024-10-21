@@ -25,7 +25,10 @@ const ProductUpdate = () => {
     const [descPreviewImages, setDescPreviewImages] = useState([]); // 설명 이미지 미리보기
     const [imageUrlsToDelete, setImageUrlsToDelete] = useState([]); // 삭제할 상품 이미지
     const [descImageUrlsToDelete, setDescImageUrlsToDelete] = useState([]); // 삭제할 설명 이미지
-    const [infoError, setInfoError] = useState(""); // info 글자수 에러 상태
+
+    const [productNameError, setProductNameError] = useState("");
+    const [infoError, setInfoError] = useState("");
+    const [manufacturerError, setManufacturerError] = useState("");
     const [error, setError] = useState(""); // 기타 에러 상태
     const [loading, setLoading] = useState(true); // 로딩 상태
     const [categories, setCategories] = useState([]); // 카테고리 목록 상태
@@ -65,15 +68,29 @@ const ProductUpdate = () => {
         fetchCategories();
     }, []);
 
-    // 입력 값 변경 처리 (info 글자수 제한 추가)
+    // 입력 값 변경 처리 (각 필드별 글자 수 제한 추가)
     const handleInputChange = (e) => {
         const { name, value } = e.target;
 
-        // info 글자 수 제한 추가 (최대 500자)
+        // productName 글자 수 제한 (최대 100자)
+        if (name === "productName" && value.length > 100) {
+            setProductNameError("상품명은 최대 100자까지 입력할 수 있습니다.");
+        } else {
+            setProductNameError("");
+        }
+
+        // info 글자 수 제한 (최대 500자)
         if (name === "info" && value.length > 500) {
             setInfoError("상품 설명은 최대 500자까지 입력할 수 있습니다.");
         } else {
-            setInfoError(""); // 에러 메시지 초기화
+            setInfoError("");
+        }
+
+        // manufacturer 글자 수 제한 (최대 100자)
+        if (name === "manufacturer" && value.length > 100) {
+            setManufacturerError("제조사는 최대 100자까지 입력할 수 있습니다.");
+        } else {
+            setManufacturerError("");
         }
 
         setProduct((prevProduct) => ({
@@ -152,10 +169,18 @@ const ProductUpdate = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // info 필드 길이 유효성 검사
+        // 유효성 검사
+        if (product.productName.length > 100) {
+            setProductNameError("상품명은 최대 100자까지 입력할 수 있습니다.");
+            return;
+        }
         if (product.info.length > 500) {
             setInfoError("상품 설명은 최대 500자까지 입력할 수 있습니다.");
-            return; // 유효성 검사가 통과되지 않으면 요청 전송 안 함
+            return;
+        }
+        if (product.manufacturer.length > 100) {
+            setManufacturerError("제조사는 최대 100자까지 입력할 수 있습니다.");
+            return;
         }
 
         const formData = new FormData();
@@ -225,17 +250,18 @@ const ProductUpdate = () => {
                     </select>
                 </div>
 
-                {/* 상품명 입력 */}
+                {/* 상품명 입력 (글자 수 제한 에러 메시지 추가) */}
                 <div className="form-group">
                     <label>상품명</label>
                     <input
                         type="text"
-                        className="form-control"
+                        className={`form-control ${productNameError ? "is-invalid" : ""}`}
                         name="productName"
                         value={product.productName}
                         onChange={handleInputChange}
                         required
                     />
+                    {productNameError && <div className="invalid-feedback">{productNameError}</div>}
                 </div>
 
                 {/* 가격 입력 */}
@@ -277,16 +303,17 @@ const ProductUpdate = () => {
                     />
                 </div>
 
-                {/* 제조사 입력 */}
+                {/* 제조사 입력 (글자 수 제한 에러 메시지 추가) */}
                 <div className="form-group">
                     <label>제조사</label>
                     <input
                         type="text"
-                        className="form-control"
+                        className={`form-control ${manufacturerError ? "is-invalid" : ""}`}
                         name="manufacturer"
                         value={product.manufacturer}
                         onChange={handleInputChange}
                     />
+                    {manufacturerError && <div className="invalid-feedback">{manufacturerError}</div>}
                 </div>
 
                 {/* 상품 이미지 추가 및 미리보기 */}
