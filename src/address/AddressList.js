@@ -76,7 +76,7 @@ const AddressList = () => {
                 setSelectedAddress(null); // 선택된 주소 초기화 (필요 시)
             } catch (error) {
                 console.error('수정 실패: ', error);
-                alert('배송지 수정 중 오류가 발생했습니다.');
+                alert('배송 정보를 입력해주세요.');
             }
         }
     };
