@@ -18,6 +18,9 @@ const ProductCreate = () => {
     const [descImages, setDescImages] = useState([]); // 설명 이미지 상태 추가
     const [previewImages, setPreviewImages] = useState([]);
     const [previewDescImages, setPreviewDescImages] = useState([]); // 설명 이미지 미리보기 상태 추가
+    const [productNameError, setProductNameError] = useState('');
+    const [infoError, setInfoError] = useState('');
+    const [manufacturerError, setManufacturerError] = useState('');
     const navigate = useNavigate();
 
     // 카테고리 목록을 서버에서 가져오는 useEffect
@@ -38,6 +41,28 @@ const ProductCreate = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+
+        // 상품명 글자 수 제한 (최대 100자)
+        if (name === 'productName' && value.length > 100) {
+            setProductNameError('상품명은 최대 100자까지 입력할 수 있습니다.');
+        } else {
+            setProductNameError('');
+        }
+
+        // 상세 정보 글자 수 제한 (최대 500자)
+        if (name === 'info' && value.length > 500) {
+            setInfoError('상품 설명은 최대 500자까지 입력할 수 있습니다.');
+        } else {
+            setInfoError('');
+        }
+
+        // 제조사 글자 수 제한 (최대 100자)
+        if (name === 'manufacturer' && value.length > 100) {
+            setManufacturerError('제조사는 최대 100자까지 입력할 수 있습니다.');
+        } else {
+            setManufacturerError('');
+        }
+
         setFormData({ ...formData, [name]: value });
     };
 
@@ -62,6 +87,20 @@ const ProductCreate = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // 유효성 검사
+        if (formData.productName.length > 100) {
+            setProductNameError('상품명은 최대 100자까지 입력할 수 있습니다.');
+            return;
+        }
+        if (formData.info.length > 500) {
+            setInfoError('상품 설명은 최대 500자까지 입력할 수 있습니다.');
+            return;
+        }
+        if (formData.manufacturer.length > 100) {
+            setManufacturerError('제조사는 최대 100자까지 입력할 수 있습니다.');
+            return;
+        }
 
         const data = new FormData();
         data.append('categoryName', formData.categoryName);
@@ -128,9 +167,10 @@ const ProductCreate = () => {
                             name="productName"
                             value={formData.productName}
                             onChange={handleChange}
-                            className="form-control"
+                            className={`form-control ${productNameError ? "is-invalid" : ""}`}
                             required
                         />
+                        {productNameError && <div className="invalid-feedback">{productNameError}</div>}
                     </div>
                 </div>
                 <div className="form-group row">
@@ -154,9 +194,10 @@ const ProductCreate = () => {
                             value={formData.info}
                             onChange={handleChange}
                             rows="2"
-                            className="form-control"
+                            className={`form-control ${infoError ? "is-invalid" : ""}`}
                             required
                         />
+                        {infoError && <div className="invalid-feedback">{infoError}</div>}
                     </div>
                 </div>
                 <div className="form-group row">
@@ -167,8 +208,9 @@ const ProductCreate = () => {
                             name="manufacturer"
                             value={formData.manufacturer}
                             onChange={handleChange}
-                            className="form-control"
+                            className={`form-control ${manufacturerError ? "is-invalid" : ""}`}
                         />
+                        {manufacturerError && <div className="invalid-feedback">{manufacturerError}</div>}
                     </div>
                 </div>
                 <div className="form-group row">
