@@ -229,7 +229,7 @@ const ProductUpdate = () => {
 
     return (
         <div className="container mt-5">
-            <h2>상품 수정</h2>
+            <h1 className="display-4 mb-4">상품 수정 </h1>
             <form onSubmit={handleSubmit} encType="multipart/form-data">
                 {/* 카테고리 선택 */}
                 <div className="form-group">

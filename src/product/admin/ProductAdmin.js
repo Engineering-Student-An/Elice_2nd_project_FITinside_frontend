@@ -125,7 +125,7 @@ const ProductAdmin = () => {
     return (
         <div className="page-content"> {/* 콘텐츠에 margin-top 적용 */}
             <div className="container mt-5">
-                <h2>상품 관리</h2>
+                <h1 className="display-4 mb-4">상품 관리 </h1>
                 <button onClick={handleCreateProduct} className="btn btn-primary mb-3">상품 등록</button>
 
                 <div className="form-group mb-3">
@@ -207,7 +207,7 @@ const ProductAdmin = () => {
                                 <td>
                                     {product.productImgUrls && product.productImgUrls.length > 0
                                         ? product.productImgUrls.map((url, index) => (
-                                            <img key={index} src={url} alt={`Product ${product.id}`} width="50" />
+                                            <img key={index} src={url} alt={`Product ${product.id}`} width="50"/>
                                         ))
                                         : '이미지 없음'}
                                 </td>
@@ -220,7 +220,7 @@ const ProductAdmin = () => {
                                 <td>
                                     {product.productDescImgUrls && product.productDescImgUrls.length > 0
                                         ? product.productDescImgUrls.map((url, index) => (
-                                            <img key={index} src={url} alt={`Desc Image ${product.id}`} width="50" />
+                                            <img key={index} src={url} alt={`Desc Image ${product.id}`} width="50"/>
                                         ))
                                         : '설명 이미지 없음'}
                                 </td>
