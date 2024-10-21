@@ -10,6 +10,7 @@ const ProductAdmin = () => {
     const [page, setPage] = useState(0); // 현재 페이지 번호
     const [totalPages, setTotalPages] = useState(1); // 총 페이지 수
     const [pageSize] = useState(9); // 페이지당 상품 수
+    const [dummyImage] = useState('https://dummyimage.com/100x100'); // dummy 이미지 URL 설정
 
     // 정렬 기준 및 정렬 방향 상태
     const [sortField, setSortField] = useState('createdAt'); // 기본 정렬 필드: 생성일
@@ -66,25 +67,6 @@ const ProductAdmin = () => {
     };
 
     // 상품 삭제 로직
-    // const handleDeleteClick = async (productId) => {
-    //     const confirmDelete = window.confirm("정말로 이 상품을 삭제하시겠습니까?");
-    //     if (!confirmDelete) return;
-    //
-    //     try {
-    //         const response = await axios.delete(`http://localhost:8080/api/admin/products/${productId}`);
-    //         if (response.status === 200) {
-    //             // 삭제 성공 후 목록 갱신
-    //             fetchProducts(page);
-    //         } else {
-    //             console.error('상품 삭제 실패');
-    //             alert('상품 삭제에 실패했습니다.');
-    //         }
-    //     } catch (error) {
-    //         console.error('상품 삭제 중 오류 발생:', error);
-    //         alert('상품 삭제 중 오류가 발생했습니다.');
-    //     }
-    // };
-
     const handleDeleteClick = async (productId) => {
         const confirmDelete = window.confirm("정말로 이 상품을 삭제하시겠습니까?");
         if (!confirmDelete) return;
@@ -238,7 +220,7 @@ const ProductAdmin = () => {
                                         ? product.productImgUrls.map((url, index) => (
                                             <img key={index} src={url} alt={`Product ${product.id}`} width="50"/>
                                         ))
-                                        : '이미지 없음'}
+                                        : <img src={dummyImage} alt="Dummy Product" width="50"/>}
                                 </td>
                                 <td>{product.price}</td>
                                 <td>{product.info}</td>
@@ -251,7 +233,7 @@ const ProductAdmin = () => {
                                         ? product.productDescImgUrls.map((url, index) => (
                                             <img key={index} src={url} alt={`Desc Image ${product.id}`} width="50"/>
                                         ))
-                                        : '설명 이미지 없음'}
+                                        : <img src={dummyImage} alt="Dummy Desc Image" width="50"/>}
                                 </td>
                                 <td>{product.soldOut ? '품절' : '판매 중'}</td>
                             </tr>
