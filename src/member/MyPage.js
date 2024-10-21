@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
+import {UrlConstantContext} from "../UrlConstant";
 
 const MyPage = () => {
     const [userInfo, setUserInfo] = useState(null); // 사용자 정보를 저장할 상태
@@ -10,13 +11,14 @@ const MyPage = () => {
     const [isEditingPhone, setIsEditingPhone] = useState(false); // 전화번호 수정 모드
     const [newName, setNewName] = useState(''); // 수정된 이름 상태
     const [newPhone, setNewPhone] = useState(''); // 수정된 전화번호 상태
+    const URL = useContext(UrlConstantContext)
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
                 const token = localStorage.getItem('token'); // 로컬 스토리지에서 토큰 가져오기
 
-                const response = await axios.get('http://localhost:8080/api/user/me', {
+                const response = await axios.get(URL + '/api/user/me', {
                     headers: {
                         Authorization: `Bearer ${token}`, // Authorization 헤더에 토큰 추가
                     },
@@ -28,7 +30,17 @@ const MyPage = () => {
             } catch (err) {
                 try {
                     await sendRefreshTokenAndStoreAccessToken();
-                    window.location.reload(); // 새로고침
+                    const token = localStorage.getItem('token'); // 로컬 스토리지에서 토큰 가져오기
+
+                    const response = await axios.get(URL + '/api/user/me', {
+                        headers: {
+                            Authorization: `Bearer ${token}`, // Authorization 헤더에 토큰 추가
+                        },
+                    });
+
+                    setUserInfo(response.data); // 사용자 정보를 상태에 저장
+                    setNewName(response.data.userName); // 기본 이름 설정
+                    setNewPhone(response.data.phone); // 기본 전화번호 설정
                 } catch (error) {
                     setError('사용자 정보를 가져오는 데 실패했습니다.');
                 }
