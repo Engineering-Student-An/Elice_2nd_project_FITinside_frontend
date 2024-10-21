@@ -110,7 +110,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap CSS 추가
+import 'bootstrap/dist/css/bootstrap.min.css';
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken"; // Bootstrap CSS 추가
 
 const BannerAdminMain = () => {
     const [banners, setBanners] = useState([]);
@@ -134,9 +135,22 @@ const BannerAdminMain = () => {
                 const sortedBanners = response.data.sort((a, b) => a.displayOrder - b.displayOrder);
                 setBanners(sortedBanners);
             })
-            .catch(error => {
-                console.error('Error fetching banners:', error);
-                setError('배너 목록을 가져오는 중 오류가 발생했습니다.');
+            .catch(async error => {
+                try {
+                    await sendRefreshTokenAndStoreAccessToken();
+                    axios.get('http://localhost:8080/api/banners', {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    })
+                        .then(response => {
+                            const sortedBanners = response.data.sort((a, b) => a.displayOrder - b.displayOrder);
+                            setBanners(sortedBanners);
+                        })
+                } catch (error) {
+                    console.error('Error fetching banners:', error);
+                    setError('배너 목록을 가져오는 중 오류가 발생했습니다.');
+                }
             });
     };
 
@@ -161,9 +175,25 @@ const BannerAdminMain = () => {
                 setBanners(banners.filter(banner => banner.id !== id)); // 상태를 업데이트하여 삭제된 배너를 목록에서 제거
                 alert('배너가 성공적으로 삭제되었습니다.');
             })
-            .catch(error => {
-                console.error('Error deleting banner:', error);
-                alert('배너 삭제 중 오류가 발생했습니다.');
+            .catch(async error => {
+                try {
+                    await sendRefreshTokenAndStoreAccessToken();
+                    if (!window.confirm('정말로 이 배너를 삭제하시겠습니까?')) return;
+
+                    // 배너 삭제 요청 (Authorization 헤더 추가)
+                    axios.delete(`http://localhost:8080/api/admin/banners/${id}`, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    })
+                        .then(() => {
+                            setBanners(banners.filter(banner => banner.id !== id)); // 상태를 업데이트하여 삭제된 배너를 목록에서 제거
+                            alert('배너가 성공적으로 삭제되었습니다.');
+                        })
+                } catch(error) {
+                    console.error('Error deleting banner:', error);
+                    alert('배너 삭제 중 오류가 발생했습니다.');
+                }
             });
     };
 
