@@ -178,6 +178,7 @@ const ProductAdmin = () => {
                     <th>생성일</th>
                     <th>수정일</th>
                     <th>상품 설명 이미지</th>
+                    <th>품절 여부</th> {/* soldOut 필드 추가 */}
                 </tr>
                 </thead>
                 <tbody>
@@ -223,11 +224,12 @@ const ProductAdmin = () => {
                                     ))
                                     : '설명 이미지 없음'}
                             </td>
+                            <td>{product.soldOut ? '품절' : '판매 중'}</td> {/* soldOut 필드 추가 */}
                         </tr>
                     ))
                 ) : (
                     <tr>
-                        <td colSpan="13" className="text-center">상품이 없습니다.</td>
+                        <td colSpan="14" className="text-center">상품이 없습니다.</td>
                     </tr>
                 )}
                 </tbody>
