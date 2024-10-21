@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './ProductCreate.css';
 
 const ProductCreate = () => {
     const [formData, setFormData] = useState({
@@ -18,13 +19,39 @@ const ProductCreate = () => {
     const [descImages, setDescImages] = useState([]); // 설명 이미지 상태 추가
     const [previewImages, setPreviewImages] = useState([]);
     const [previewDescImages, setPreviewDescImages] = useState([]); // 설명 이미지 미리보기 상태 추가
+    const [productNameError, setProductNameError] = useState('');
+    const [infoError, setInfoError] = useState('');
+    const [manufacturerError, setManufacturerError] = useState('');
     const navigate = useNavigate();
 
     // 카테고리 목록을 서버에서 가져오는 useEffect
+    // useEffect(() => {
+    //     const fetchCategories = async () => {
+    //         try {
+    //             const response = await fetch('http://localhost:8080/api/categories');
+    //             const data = await response.json();
+    //             const filteredCategories = data.filter(category => category.parentId !== null);
+    //             setCategories(filteredCategories);
+    //         } catch (error) {
+    //             console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
+    //         }
+    //     };
+    //
+    //     fetchCategories();
+    // }, []);
+
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch('http://localhost:8080/api/categories');
+                const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
+                const response = await fetch('http://localhost:8080/api/categories', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`  // Authorization 헤더 추가
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error('카테고리 목록을 가져오는 데 실패했습니다.');
+                }
                 const data = await response.json();
                 const filteredCategories = data.filter(category => category.parentId !== null);
                 setCategories(filteredCategories);
@@ -36,8 +63,31 @@ const ProductCreate = () => {
         fetchCategories();
     }, []);
 
+
     const handleChange = (e) => {
         const { name, value } = e.target;
+
+        // 상품명 글자 수 제한 (최대 100자)
+        if (name === 'productName' && value.length > 100) {
+            setProductNameError('상품명은 최대 100자까지 입력할 수 있습니다.');
+        } else {
+            setProductNameError('');
+        }
+
+        // 상세 정보 글자 수 제한 (최대 500자)
+        if (name === 'info' && value.length > 500) {
+            setInfoError('상품 설명은 최대 500자까지 입력할 수 있습니다.');
+        } else {
+            setInfoError('');
+        }
+
+        // 제조사 글자 수 제한 (최대 100자)
+        if (name === 'manufacturer' && value.length > 100) {
+            setManufacturerError('제조사는 최대 100자까지 입력할 수 있습니다.');
+        } else {
+            setManufacturerError('');
+        }
+
         setFormData({ ...formData, [name]: value });
     };
 
@@ -60,8 +110,72 @@ const ProductCreate = () => {
         setPreviewDescImages(previewDescUrls);
     };
 
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //
+    //     // 유효성 검사
+    //     if (formData.productName.length > 100) {
+    //         setProductNameError('상품명은 최대 100자까지 입력할 수 있습니다.');
+    //         return;
+    //     }
+    //     if (formData.info.length > 500) {
+    //         setInfoError('상품 설명은 최대 500자까지 입력할 수 있습니다.');
+    //         return;
+    //     }
+    //     if (formData.manufacturer.length > 100) {
+    //         setManufacturerError('제조사는 최대 100자까지 입력할 수 있습니다.');
+    //         return;
+    //     }
+    //
+    //     const data = new FormData();
+    //     data.append('categoryName', formData.categoryName);
+    //     data.append('productName', formData.productName);
+    //     data.append('price', formData.price);
+    //     data.append('info', formData.info);
+    //     data.append('manufacturer', formData.manufacturer);
+    //     data.append('stock', formData.stock);
+    //
+    //     // 상품 이미지를 FormData에 추가
+    //     images.forEach((image) => {
+    //         data.append('productImgUrls', image);
+    //     });
+    //
+    //     // 상품 설명 이미지를 FormData에 추가
+    //     descImages.forEach((image) => {
+    //         data.append('productDescImgUrls', image);
+    //     });
+    //
+    //     try {
+    //         const response = await fetch('http://localhost:8080/api/admin/products', {
+    //             method: 'POST',
+    //             body: data
+    //         });
+    //         if (!response.ok) {
+    //             throw new Error('상품 등록에 실패했습니다.');
+    //         }
+    //         console.log('상품이 성공적으로 등록되었습니다.');
+    //         navigate('/admin/products');
+    //     } catch (error) {
+    //         console.error('에러 발생:', error);
+    //     }
+    // };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // 유효성 검사
+        if (formData.productName.length > 100) {
+            setProductNameError('상품명은 최대 100자까지 입력할 수 있습니다.');
+            return;
+        }
+        if (formData.info.length > 500) {
+            setInfoError('상품 설명은 최대 500자까지 입력할 수 있습니다.');
+            return;
+        }
+        if (formData.manufacturer.length > 100) {
+            setManufacturerError('제조사는 최대 100자까지 입력할 수 있습니다.');
+            return;
+        }
 
         const data = new FormData();
         data.append('categoryName', formData.categoryName);
@@ -82,10 +196,15 @@ const ProductCreate = () => {
         });
 
         try {
+            const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
             const response = await fetch('http://localhost:8080/api/admin/products', {
                 method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가
+                },
                 body: data
             });
+
             if (!response.ok) {
                 throw new Error('상품 등록에 실패했습니다.');
             }
@@ -95,6 +214,7 @@ const ProductCreate = () => {
             console.error('에러 발생:', error);
         }
     };
+
 
     return (
         <div className="container mt-5">
@@ -128,9 +248,10 @@ const ProductCreate = () => {
                             name="productName"
                             value={formData.productName}
                             onChange={handleChange}
-                            className="form-control"
+                            className={`form-control ${productNameError ? "is-invalid" : ""}`}
                             required
                         />
+                        {productNameError && <div className="invalid-feedback">{productNameError}</div>}
                     </div>
                 </div>
                 <div className="form-group row">
@@ -154,9 +275,10 @@ const ProductCreate = () => {
                             value={formData.info}
                             onChange={handleChange}
                             rows="2"
-                            className="form-control"
+                            className={`form-control ${infoError ? "is-invalid" : ""}`}
                             required
                         />
+                        {infoError && <div className="invalid-feedback">{infoError}</div>}
                     </div>
                 </div>
                 <div className="form-group row">
@@ -167,8 +289,9 @@ const ProductCreate = () => {
                             name="manufacturer"
                             value={formData.manufacturer}
                             onChange={handleChange}
-                            className="form-control"
+                            className={`form-control ${manufacturerError ? "is-invalid" : ""}`}
                         />
+                        {manufacturerError && <div className="invalid-feedback">{manufacturerError}</div>}
                     </div>
                 </div>
                 <div className="form-group row">
