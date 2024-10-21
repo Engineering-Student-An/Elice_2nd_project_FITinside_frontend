@@ -3,6 +3,7 @@ import './coupon.css';
 import CouponSearchModal from './CouponSearchModal';
 import { useNavigate } from 'react-router-dom';
 import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
+import axios from "axios";
 
 const CouponList = () => {
     const [coupons, setCoupons] = useState([]);
@@ -30,52 +31,66 @@ const CouponList = () => {
 
     const fetchCoupons = async (page, includeInActiveCoupons) => {
         try {
-            const response = await fetch(`http://localhost:8080/api/coupons?page=${page}&includeInActiveCoupons=${includeInActiveCoupons}`, {
-                method: 'GET',
+            const response = await axios.get(`http://localhost:8080/api/coupons`, {
+                params: {
+                    page: page,
+                    includeInActiveCoupons: includeInActiveCoupons
+                },
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
             });
 
-            if (!response.ok) {
-                throw new Error('네트워크 응답이 정상적이지 않습니다.');
-            }
-
-            const data = await response.json();
-            setCoupons(data.coupons);
-            console.log(data.coupons);
-            setTotalPages(data.totalPages); // 총 페이지 수 설정
+            setCoupons(response.data.coupons);
+            console.log(response.data.coupons);
+            setTotalPages(response.data.totalPages); // 총 페이지 수 설정
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
-                window.location.reload();
+
+                // 토큰 갱신 후 다시 요청
+                const response = await axios.get(`http://localhost:8080/api/coupons`, {
+                    params: {
+                        page: page,
+                        includeInActiveCoupons: includeInActiveCoupons // 재전송할 파라미터
+                    },
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}` // 갱신된 토큰 사용
+                    },
+                });
+
+                setCoupons(response.data.coupons);
+                console.log(response.data.coupons);
+                setTotalPages(response.data.totalPages); // 총 페이지 수 설정
             } catch (e) {
-                console.error('쿠폰 목록을 가져오는 데 실패했습니다.', error);
+                console.error('쿠폰 목록을 가져오는 데 실패했습니다.', error.message);
             }
         }
     };
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/categories', {
-                method: 'GET',
+            const response = await axios.get('http://localhost:8080/api/categories', {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
             });
 
-            if (!response.ok) {
-                throw new Error('카테고리 목록을 가져오는 데 실패했습니다.');
-            }
-
-            const data = await response.json();
-            setCategories(data);
+            setCategories(response.data); // 카테고리 목록 설정
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
-                window.location.reload();
+
+                // 토큰 갱신 후 다시 요청
+                const response = await axios.get('http://localhost:8080/api/categories', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}` // 갱신된 토큰 사용
+                    },
+                });
+
+                setCategories(response.data); // 카테고리 목록 설정
             } catch (e) {
-                console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
+                console.error('카테고리 목록을 가져오는 데 실패했습니다.', error.message);
             }
         }
     };
@@ -99,17 +114,13 @@ const CouponList = () => {
 
     const handleOrderHistoryClick = async (couponId) => {
         try {
-            const response = await fetch(`http://localhost:8080/api/coupons/${couponId}/order`, {
-                method: `GET`,
+            const response = await axios.get(`http://localhost:8080/api/coupons/${couponId}/order`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
             });
-            if (!response.ok) {
-                throw new Error('네트워크 응답이 좋지 않습니다.');
-            }
 
-            const orderId = await response.text(); // 반환된 문자열을 받아옴
+            const orderId = response.data; // 반환된 문자열을 받아옴
             console.log(response);
             navigate(`/orders/${orderId}`);
         } catch (error) {

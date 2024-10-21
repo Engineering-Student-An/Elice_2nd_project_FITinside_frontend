@@ -3,7 +3,8 @@ import '../coupon.css';
 import CouponCreateModal from "./CouponCreateModal";
 import CouponMemberModal from "./CouponMemberModal";
 import CouponEmailModal from "./CouponEmailModal";
-import sendRefreshTokenAndStoreAccessToken from "../../auth/RefreshAccessToken"; // 이메일 모달 컴포넌트 import
+import sendRefreshTokenAndStoreAccessToken from "../../auth/RefreshAccessToken";
+import axios from "axios"; // 이메일 모달 컴포넌트 import
 
 const CouponAdmin = () => {
     const [coupons, setCoupons] = useState([]);
@@ -23,51 +24,64 @@ const CouponAdmin = () => {
 
     const fetchCoupons = async (page, includeInActiveCoupons) => {
         try {
-            const response = await fetch(`http://localhost:8080/api/admin/coupons?page=${page}&includeInActiveCoupons=${includeInActiveCoupons}`, {
-                method: 'GET',
+            const response = await axios.get(`http://localhost:8080/api/admin/coupons`, {
+                params: {
+                    page: page,
+                    includeInActiveCoupons: includeInActiveCoupons
+                },
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
             });
 
-            if (!response.ok) {
-                throw new Error('네트워크 응답이 정상적이지 않습니다.');
-            }
-
-            const data = await response.json();
-            setCoupons(data.coupons);
-            setTotalPages(data.totalPages); // 총 페이지 수 설정
+            setCoupons(response.data.coupons);
+            setTotalPages(response.data.totalPages); // 총 페이지 수 설정
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
-                window.location.reload();
+
+                // 토큰 갱신 후 다시 요청
+                const newResponse = await axios.get(`http://localhost:8080/api/admin/coupons`, {
+                    params: {
+                        page: page,
+                        includeInActiveCoupons: includeInActiveCoupons
+                    },
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}` // 갱신된 토큰 사용
+                    },
+                });
+
+                setCoupons(newResponse.data.coupons);
+                setTotalPages(newResponse.data.totalPages); // 총 페이지 수 설정
             } catch (e) {
-                console.error(error.message);
+                console.error(e.message);
             }
         }
     };
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/categories', {
-                method: 'GET',
+            const response = await axios.get('http://localhost:8080/api/categories', {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
             });
 
-            if (!response.ok) {
-                throw new Error('카테고리 목록을 가져오는 데 실패했습니다.');
-            }
-
-            const data = await response.json();
-            setCategories(data);
+            setCategories(response.data); // 카테고리 목록 설정
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
-                window.location.reload();
+
+                // 토큰 갱신 후 다시 요청
+                const newResponse = await axios.get('http://localhost:8080/api/categories', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}` // 갱신된 토큰 사용
+                    },
+                });
+
+                setCategories(newResponse.data); // 카테고리 목록 설정
             } catch (e) {
-                console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
+                console.error('카테고리 목록을 가져오는 데 실패했습니다.', error.message);
             }
         }
     };
@@ -92,27 +106,36 @@ const CouponAdmin = () => {
 
     const deactivateCoupon = async (id) => {
         try {
-            const response = await fetch(`http://localhost:8080/api/admin/coupons/${id}`, {
-                method: 'DELETE',
+            const response = await axios.delete(`http://localhost:8080/api/admin/coupons/${id}`, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
             });
 
-            if (response.ok) {
-                alert('쿠폰이 비활성화되었습니다.');
-                fetchCoupons(currentPage, includeInactiveCoupons);
-            } else {
-                const errorData = await response.json();
-                alert(`오류 발생: ${errorData.message}`);
-            }
+            alert('쿠폰이 비활성화되었습니다.');
+            fetchCoupons(currentPage, includeInactiveCoupons); // 쿠폰 목록 새로 고침
         } catch (error) {
-            try {
-                await sendRefreshTokenAndStoreAccessToken();
-                window.location.reload();
-            } catch (e) {
-                console.error(`네트워크 오류 발생: ${error.message}`);
+            if (error.response) {
+                // 서버에서 응답이 온 경우
+                alert(`오류 발생: ${error.response.data.message}`);
+            } else {
+                try {
+                    await sendRefreshTokenAndStoreAccessToken();
+
+                    // 토큰 갱신 후 다시 요청
+                    const response = await axios.delete(`http://localhost:8080/api/admin/coupons/${id}`, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('token')}` // 갱신된 토큰 사용
+                        }
+                    });
+
+                    alert('쿠폰이 비활성화되었습니다.');
+                    fetchCoupons(currentPage, includeInactiveCoupons); // 쿠폰 목록 새로 고침
+                } catch (e) {
+                    console.error(`네트워크 오류 발생: ${e.message}`);
+                }
             }
         }
     };

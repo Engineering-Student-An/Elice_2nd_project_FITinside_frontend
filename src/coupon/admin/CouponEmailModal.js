@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal'; // 모달 라이브러리 사용
 import CouponEmailTemplate from "./CouponEmailTemplate";
-import sendRefreshTokenAndStoreAccessToken from "../../auth/RefreshAccessToken"; // 이메일 템플릿 컴포넌트 추가
+import sendRefreshTokenAndStoreAccessToken from "../../auth/RefreshAccessToken";
+import axios from "axios"; // 이메일 템플릿 컴포넌트 추가
 
 const CouponEmailModal = ({ isOpen, onRequestClose, coupon }) => {
     const [members, setMembers] = useState([]);
@@ -21,23 +22,25 @@ const CouponEmailModal = ({ isOpen, onRequestClose, coupon }) => {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch(`http://localhost:8080/api/admin/coupons/${id}/members`, {
-                method: 'GET',
+            const response = await axios.get(`http://localhost:8080/api/admin/coupons/${id}/members`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
             });
 
-            if (!response.ok) {
-                throw new Error('회원 목록을 가져오는 데 실패했습니다.');
-            }
-
-            const data = await response.json();
-            setMembers(data.members); // 응답 데이터 설정
+            setMembers(response.data.members); // 응답 데이터 설정
         } catch (err) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
-                window.location.reload();
+
+                // 토큰 갱신 후 다시 요청
+                const response = await axios.get(`http://localhost:8080/api/admin/coupons/${id}/members`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}` // 갱신된 토큰 사용
+                    },
+                });
+
+                setMembers(response.data.members); // 응답 데이터 설정
             } catch (e) {
                 setError(err.message);
             }
@@ -61,30 +64,29 @@ const CouponEmailModal = ({ isOpen, onRequestClose, coupon }) => {
         setProgress(0); // 진행률 초기화
 
         try {
-            for (let i = 0; i < selectedEmails.length; i++) {
-                const email = selectedEmails[i];
-                const emailTemplate = CouponEmailTemplate({coupon: coupon}); // 이메일 템플릿 HTML 가져오기
+            await Promise.all(selectedEmails.map(async (email, index) => {
+                const emailTemplate = CouponEmailTemplate({ coupon: coupon }); // 이메일 템플릿 HTML 가져오기
 
                 // 실제 이메일 전송 요청
-                const response = await fetch('http://localhost:8080/api/admin/coupons/email', {
-                    method: 'POST',
+                const response = await axios.post('http://localhost:8080/api/admin/coupons/email', {
+                    couponId: coupon.id,
+                    address: email,
+                    template: emailTemplate // 결합된 템플릿 사용
+                }, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    },
-                    body: JSON.stringify({
-                        couponId: coupon.id, address: email, template: emailTemplate // 결합된 템플릿 사용
-                    })
+                    }
                 });
 
-                if (!response.ok) {
+                if (response.status !== 200) {
                     throw new Error(`이메일 전송에 실패했습니다: ${email}`);
                 }
 
                 // 진행률 업데이트
-                setProgress(((i + 1) / selectedEmails.length) * 100);
+                setProgress(((index + 1) / selectedEmails.length) * 100);
                 await new Promise(resolve => setTimeout(resolve, 50)); // 요청 사이에 잠시 대기
-            }
+            }));
 
             alert('모든 쿠폰 이메일 전송을 완료했습니다!');
             onRequestClose(); // 모달 닫기
