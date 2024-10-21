@@ -11,7 +11,7 @@ const DeliveryForm = forwardRef(({ initialValues = {}, onAddressSelect, onNewAdd
     const [phoneFirst, setPhoneFirst] = useState('010');
     const [phoneMiddle, setPhoneMiddle] = useState('');
     const [phoneLast, setPhoneLast] = useState('');
-    const [isReadOnly, setIsReadOnly] = useState(false); // readOnly 상태 관리
+    const [isReadOnly, setIsReadOnly] = useState(true); // readOnly 상태 관리
     const [saveAsDefault, setSaveAsDefault] = useState(false); // 기본 배송지로 저장 여부 상태 추가
     const [isDefaultAddress, setIsDefaultAddress] = useState(false); // 기본 배송지 여부 관리
 
@@ -35,7 +35,9 @@ const DeliveryForm = forwardRef(({ initialValues = {}, onAddressSelect, onNewAdd
             }
 
             // 기본 배송지가 있을 경우 readOnly 설정
+            console.log("기본배송지가 있으면 readOnly: true");
             setIsReadOnly(!!initialValues.postalCode); // 기본 배송지가 있으면 true
+
         }
     }, []); // 빈 배열로 두어 컴포넌트가 처음 렌더링될 때만 실행되도록 합니다.
 
@@ -43,15 +45,7 @@ const DeliveryForm = forwardRef(({ initialValues = {}, onAddressSelect, onNewAdd
     useImperativeHandle(ref, () => ({
         getFormData: () => {
             const deliveryPhone = `${phoneFirst}-${phoneMiddle}-${phoneLast}`;
-            return {
-                postalCode,
-                deliveryAddress,
-                detailedAddress,
-                deliveryMemo,
-                deliveryReceiver,
-                deliveryPhone,
-                defaultAddress: saveAsDefault ? 'Y' : 'N'
-            };
+            return { postalCode, deliveryAddress, detailedAddress, deliveryMemo, deliveryReceiver, deliveryPhone, saveAsDefault };
         },
         setFormData: (address) => {
             setPostalCode(address.postalCode || '');
@@ -73,7 +67,9 @@ const DeliveryForm = forwardRef(({ initialValues = {}, onAddressSelect, onNewAdd
                 setPhoneLast('');
             }
 
-            setIsReadOnly(true); // 기본 배송지 설정 시 readOnly로 변경
+            setIsReadOnly(true); // 기본적으로 true, 수정 버튼을 눌렀을 때만 false로 변경
+            // setIsReadOnly(false); // 수정할 때 readOnly 해제
+            // setSaveAsDefault(false); // 수정 시 기본 배송지 체크 초기화
         },
         clearFormData: () => {
             setPostalCode('');
@@ -90,8 +86,10 @@ const DeliveryForm = forwardRef(({ initialValues = {}, onAddressSelect, onNewAdd
         setIsDefaultAddress: (isDefault) => {
             setIsDefaultAddress(isDefault); // 기본 배송지 여부 설정
         },
-        setIsReadOnly: (isReadOnlyState) => {
-            setIsReadOnly(isReadOnlyState); // readOnly 상태 제어 추가
+        // 추가된 부분: setIsReadOnly 함수 정의
+        setIsReadOnly: (isReadOnly) => {
+            console.log(`setIsReadOnly 호출: ${isReadOnly}`);
+            setIsReadOnly(isReadOnly); // readOnly 상태 변경 함수
         }
     }));
 

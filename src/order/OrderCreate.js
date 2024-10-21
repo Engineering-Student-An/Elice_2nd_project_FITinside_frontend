@@ -18,6 +18,8 @@ const OrderCreate = () => {
     const [selectedAddressId, setSelectedAddressId] = useState(null); // 선택된 주소 ID 저장
     const [defaultAddress, setDefaultAddress] = useState("N"); // 선택된 주소가 기본 배송지인지 확인
     const [addressCount, setAddressCount] = useState(0); // 저장된 배송지 개수
+    const [isAddressEdited, setIsAddressEdited] = useState(false); // 주소가 수정된 경우를 추적하는 상태 추가
+
 
     // 장바구니 데이터와 배송비, 할인가격 로컬 스토리지에서 가져오기
     // 기본 배송지가 있는지 조회
@@ -111,6 +113,10 @@ const OrderCreate = () => {
         setSelectedAddressId(address.addressId); // 선택된 주소 ID 설정
         console.log("선택한 주소 ID:", address.addressId); // 선택한 주소 ID 확인
         // setDefaultAddress(address.defaultAddress); // 선택한 주소가 기본 배송지인지 확인
+        setIsAddressEdited(false);
+
+        // 선택된 주소가 기본 배송지라면 readOnly 유지
+        deliveryFormRef.current.setIsReadOnly(true);
 
         // 선택한 주소가 기본 배송지인지 여부를 확인하고 상태 업데이트
         if (address.defaultAddress === "Y") {
@@ -132,12 +138,25 @@ const OrderCreate = () => {
         setSelectedAddressId(null); // 새 주소를 입력하므로 기존 선택된 주소 해제
         setDefaultAddress("N"); // 새 주소는 기본 배송지가 아님
         // setSaveAsDefault(false); // 새 주소 입력 시 기본 배송지로 저장하지 않도록 초기화
+        setIsAddressEdited(false);
         deliveryFormRef.current.setIsDefaultAddress(false); // 새 배송지 입력 시 체크박스 표시
+    };
+
+    // 모달창에서 수정 클릭 시
+    const handleEditAddress = (address) => {
+        setIsModalOpen(false); // 모달 닫기
+        setSelectedAddressId(address.addressId); // 수정할 주소 ID 저장
+        setIsAddressEdited(true); // 주소가 수정되었음을 설정
+        deliveryFormRef.current.setFormData(address); // 수정할 주소 정보를 폼에 로드
+        deliveryFormRef.current.setIsDefaultAddress(address.defaultAddress === "Y"); // 기본 배송지 여부 설정
+
+        // 수정 버튼을 눌렀을 때는 readOnly 해제
+        deliveryFormRef.current.setIsReadOnly(false);
     };
 
     const handleOrderSubmit = async () => {
         const deliveryData = deliveryFormRef.current.getFormData(); // DeliveryForm의 데이터 가져오기
-        // deliveryData.defaultAddress = deliveryData.saveAsDefault ? "Y" : "N"; // 폼에서 기본 배송지 여부 가져오기
+        deliveryData.defaultAddress = deliveryData.saveAsDefault ? "Y" : "N"; // 폼에서 기본 배송지 여부 가져오기
 
         console.log("넘겨질 배송 데이터: ", deliveryData);
 
@@ -146,50 +165,132 @@ const OrderCreate = () => {
             return;
         }
 
-        submitOrder(deliveryData);
+        let addressResponse = null;
+
+        // 배송지 수정 여부에 따라 추가 또는 수정 로직 수행
+        if (!isAddressEdited) { // 배송지 선택 또는 새 배송지 추가
+            addressResponse = await addAddress(deliveryData);
+        } else { // 기존 배송지 수정
+            addressResponse = await updateAddress(deliveryData);
+        }
+
+        // 배송지 추가 또는 수정이 실패한 경우 주문 생성하지 않음
+        if (!addressResponse) {
+            console.error("배송지 추가/수정 실패로 인해 주문이 중단되었습니다.");
+            return;
+        }
+
+        // 배송지 추가 또는 수정이 성공하면 주문 생성
+        await createOrder(deliveryData);
+
     };
 
-    const submitOrder = async (deliveryData, retry = false) => {
+    // const submitOrder = async (deliveryData, retry = false) => {
+    //     try {
+    //         const token = localStorage.getItem('token');
+    //
+    //         console.log('넘겨지는 데이터: ', deliveryData);
+    //         console.log('타입 확인: ', typeof deliveryData.isDefault);
+    //
+    //         // 1. 배송지 추가
+    //         try {
+    //             const addressResponse = await axios.post('http://localhost:8080/api/addresses', deliveryData, {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${token}`
+    //                 }
+    //             });
+    //             console.log("배송지 추가 완료: ", addressResponse.data);
+    //         } catch (addressError) {
+    //             if (addressError.response) {
+    //                 alert(addressError.response.data.message); // 중복된 주소, 저장 개수 초과, ..
+    //             } else {
+    //                 alert("배송지 추가 중 오류가 발생했습니다.");
+    //             }
+    //             return; // 배송지 추가 실패 시 주문을 진행하지 않음
+    //         }
+    //
+    //         console.log('배송지 추가 로직 완료');
+    //
+    //         // 2. 주문 생성
+    //         const response = await axios.post('http://localhost:8080/api/order', {
+    //             ...deliveryData,
+    //             orderItems,
+    //             deliveryFee,
+    //         }, { headers: { 'Authorization': `Bearer ${token}` } });
+    //         alert('주문이 완료되었습니다.');
+    //         localStorage.removeItem('orderData');
+    //         localStorage.removeItem('shippingCost');
+    //         localStorage.removeItem('localCart');
+    //         localStorage.removeItem('dbCart');
+    //         localStorage.removeItem('deliveryFormData');
+    //         window.location.href = `/orders/${response.data.orderId}`;
+    //     } catch (error) {
+    //         console.error('주문 실패 ', error);
+    //         alert('주문을 처리하는 중 오류가 발생했습니다.');
+    //     }
+    // };
+
+    // 배송지 추가
+    const addAddress = async (deliveryData) => {
         try {
             const token = localStorage.getItem('token');
-
-            console.log('넘겨지는 데이터: ', deliveryData);
-            console.log('타입 확인: ', typeof deliveryData.isDefault);
-
-            // 1. 배송지 추가
-            try {
-                const addressResponse = await axios.post('http://localhost:8080/api/addresses', deliveryData, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                console.log("배송지 추가 완료: ", addressResponse.data);
-            } catch (addressError) {
-                if (addressError.response) {
-                    alert(addressError.response.data.message); // 중복된 주소, 저장 개수 초과, ..
-                } else {
-                    alert("배송지 추가 중 오류가 발생했습니다.");
+            const addressResponse = await axios.post('http://localhost:8080/api/addresses', deliveryData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
                 }
-                return; // 배송지 추가 실패 시 주문을 진행하지 않음
+            });
+            console.log("배송지 추가 완료: ", addressResponse.data);
+            return addressResponse.data; // 성공적으로 추가된 주소 데이터를 반환
+        } catch (addressError) {
+            if (addressError.response) {
+                alert(addressError.response.data.message); // 중복된 주소, 저장 개수 초과 등 처리
+            } else {
+                alert("배송지 추가 중 오류가 발생했습니다.");
             }
+            return null; // 오류 발생 시 null을 반환
+        }
+    };
 
-            console.log('배송지 추가 로직 완료');
+    // 배송지 수정
+    const updateAddress = async (deliveryData) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.patch(`http://localhost:8080/api/addresses/${selectedAddressId}`, deliveryData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            console.log("배송지 수정 완료: ", response.data);
+            return response.data;
+        } catch (error) {
+            console.error("배송지 수정 실패: ", error);
+            alert("배송지 수정 중 오류가 발생했습니다.");
+            return null; // 오류 발생 시 null을 반환
+        }
+    };
 
-            // 2. 주문 생성
+    // 주문 생성
+    const createOrder = async (deliveryData) => {
+        try {
+            const token = localStorage.getItem('token');
             const response = await axios.post('http://localhost:8080/api/order', {
-                ...deliveryData,
+                ...deliveryData, // 배송지 데이터 추가
                 orderItems,
                 deliveryFee,
-            }, { headers: { 'Authorization': `Bearer ${token}` } });
+            }, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             alert('주문이 완료되었습니다.');
+            // 주문 완료 후 로컬 스토리지 정리
             localStorage.removeItem('orderData');
             localStorage.removeItem('shippingCost');
             localStorage.removeItem('localCart');
             localStorage.removeItem('dbCart');
             localStorage.removeItem('deliveryFormData');
+            // 주문 완료 페이지로 리다이렉트
             window.location.href = `/orders/${response.data.orderId}`;
         } catch (error) {
-            console.error('주문 실패 ', error);
+            console.error('주문 생성 실패 ', error);
             alert('주문을 처리하는 중 오류가 발생했습니다.');
         }
     };
@@ -260,6 +361,7 @@ const OrderCreate = () => {
                         isOpen={isModalOpen}
                         onClose={() => setIsModalOpen(false)}
                         onSelect={handleAddressSelect}
+                        onEdit={handleEditAddress}
                         selectedAddressId={selectedAddressId} // 선택된 주소 ID를 모달에 전달
                     />
 

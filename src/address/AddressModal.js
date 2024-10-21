@@ -3,7 +3,7 @@ import axios from 'axios';
 import sendRefreshTokenAndStoreAccessToken from '../auth/RefreshAccessToken';
 import './addressModal.css';
 
-const AddressModal = ({ isOpen, onClose, onSelect, selectedAddressId }) => {
+const AddressModal = ({ isOpen, onClose, onSelect, onEdit, selectedAddressId }) => {
     const [addresses, setAddresses] = useState([]);
 
     useEffect(() => {
@@ -47,6 +47,12 @@ const AddressModal = ({ isOpen, onClose, onSelect, selectedAddressId }) => {
         onClose(); // 모달 닫기
     };
 
+    const handleEdit = (address) => {
+        console.log('수정할 주소 정보: ', address);
+        onEdit(address); // 선택한 주소 데이터를 수정하기 위해 상위 컴포넌트로 전달
+        onClose(); // 모달 닫기
+    };
+
     return (
         <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1" role="dialog">
             <div className="modal-dialog modal-lg" role="document">
@@ -65,7 +71,10 @@ const AddressModal = ({ isOpen, onClose, onSelect, selectedAddressId }) => {
                                     <div className="d-flex justify-content-between align-items-center">
                                         <strong>{address.deliveryReceiver}</strong>
                                         <div>
-                                            <button className="btn btn-sm btn-outline-secondary" style={{ marginRight: '8px' }}>수정</button>
+                                            <button className="btn btn-sm btn-outline-secondary"
+                                                    style={{ marginRight: '8px' }}
+                                                    onClick={() => handleEdit(address)}
+                                            >수정</button>
                                             <button className="btn btn-sm btn-outline-primary" onClick={() => handleSelect(address)}>선택</button>
                                         </div>
                                     </div>
