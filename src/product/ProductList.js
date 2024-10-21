@@ -18,6 +18,8 @@ const ProductList = () => {
     const pagesPerGroup = 5; // 한 번에 표시할 페이지 번호 개수
     const [searchKeyword, setSearchKeyword] = useState(''); // 엔터로 입력할 검색어
 
+    const dummyImage = 'https://dummyimage.com/100x100'; // dummy 이미지 URL 설정
+
     // 카테고리 이름을 가져오는 함수
     const fetchCategoryName = async () => {
         try {
@@ -143,7 +145,7 @@ const ProductList = () => {
                                     {product.productImgUrls && product.productImgUrls.length > 0 ? (
                                         <img className="card-img-top product-image" src={product.productImgUrls[0]} alt={product.productName} />
                                     ) : (
-                                        <img className="card-img-top product-image" src="/placeholder-image.jpg" alt="No image available" />
+                                        <img className="card-img-top product-image" src={dummyImage} alt="No image available" />
                                     )}
                                     {/* Product details */}
                                     <div className="card-body p-4">

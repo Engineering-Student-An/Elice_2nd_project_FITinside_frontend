@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
 import { addToCart } from '../cart/cartStorage';
 
 const ProductSection = () => {
@@ -12,14 +13,9 @@ const ProductSection = () => {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/products/${productId}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    setProduct(data);
-                    setSelectedImage(data.productImgUrls ? data.productImgUrls[0] : '');
-                } else {
-                    throw new Error("Failed to fetch product data");
-                }
+                const response = await axios.get(`http://localhost:8080/api/products/${productId}`);
+                setProduct(response.data);
+                setSelectedImage(response.data.productImgUrls ? response.data.productImgUrls[0] : '');
             } catch (error) {
                 console.error("Error fetching product data:", error);
             }
@@ -169,7 +165,7 @@ const ProductSection = () => {
                             <p>{product.info}</p>
                             {/* 상품 설명 이미지 추가 */}
                             <div className="description-images mt-3">
-                                {productDescImages.length > 0 ? (
+                                {productDescImages.length > 0 &&
                                     productDescImages.map((image, index) => (
                                         <img
                                             key={index}
@@ -178,10 +174,9 @@ const ProductSection = () => {
                                             className="img-fluid mb-3"
                                         />
                                     ))
-                                ) : (
-                                    <p>설명 이미지가 없습니다.</p>
-                                )}
+                                }
                             </div>
+
                         </div>
                         <div className="tab-pane fade" id="qna" role="tabpanel" aria-labelledby="qna-tab">
                             <p>여기에서 상품에 대한 Q&A를 볼 수 있습니다.</p>
