@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
 const ProductCreate = () => {
     const [formData, setFormData] = useState({
@@ -28,8 +27,9 @@ const ProductCreate = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/categories');
-                const filteredCategories = response.data.filter(category => category.parentId !== null);
+                const response = await fetch('http://localhost:8080/api/categories');
+                const data = await response.json();
+                const filteredCategories = data.filter(category => category.parentId !== null);
                 setCategories(filteredCategories);
             } catch (error) {
                 console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
@@ -121,13 +121,17 @@ const ProductCreate = () => {
         });
 
         try {
-            const response = await axios.post('http://localhost:8080/api/admin/products', data);
-            if (response.status === 200) {
-                console.log('상품이 성공적으로 등록되었습니다.');
-                navigate('/admin/products');
+            const response = await fetch('http://localhost:8080/api/admin/products', {
+                method: 'POST',
+                body: data
+            });
+            if (!response.ok) {
+                throw new Error('상품 등록에 실패했습니다.');
             }
+            console.log('상품이 성공적으로 등록되었습니다.');
+            navigate('/admin/products');
         } catch (error) {
-            console.error('상품 등록에 실패했습니다.', error);
+            console.error('에러 발생:', error);
         }
     };
 
