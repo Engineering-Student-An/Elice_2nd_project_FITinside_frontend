@@ -244,8 +244,8 @@ const ProductAdmin = () => {
                                 <td>{product.info}</td>
                                 <td>{product.stock}</td>
                                 <td>{product.manufacturer}</td>
-                                <td>{product.createdAt}</td>
-                                <td>{product.updatedAt}</td>
+                                <td>{new Date(product.createdAt).toLocaleString()}</td>
+                                <td>{new Date(product.updatedAt).toLocaleString()}</td>
                                 <td>
                                     {product.productDescImgUrls && product.productDescImgUrls.length > 0
                                         ? product.productDescImgUrls.map((url, index) => (
