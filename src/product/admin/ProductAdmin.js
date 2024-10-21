@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './ProductAdmin.css';  // CSS 파일 임포트
 
 const ProductAdmin = () => {
     const [products, setProducts] = useState([]);
@@ -122,136 +123,135 @@ const ProductAdmin = () => {
     }
 
     return (
-        <div className="container mt-5">
-            <h2>상품 관리</h2>
-            <button onClick={handleCreateProduct} className="btn btn-primary mb-3">상품 등록</button>
+        <div className="page-content"> {/* 콘텐츠에 margin-top 적용 */}
+            <div className="container mt-5">
+                <h2>상품 관리</h2>
+                <button onClick={handleCreateProduct} className="btn btn-primary mb-3">상품 등록</button>
 
-            {/* 검색 입력 필드 및 검색 타입 선택 추가 */}
-            <div className="form-group mb-3">
-                <label>검색</label>
-                <div className="d-flex">
-                    <select value={searchType} onChange={handleSearchTypeChange} className="form-control w-25">
-                        <option value="productName">상품명</option>
-                        <option value="categoryName">카테고리명</option>
-                    </select>
-                    <input
-                        type="text"
-                        className="form-control ml-2"
-                        placeholder="검색어를 입력하세요"
-                        value={searchTerm}
-                        onChange={handleSearchChange}
-                        onKeyPress={handleKeyPress} // Enter 키로 검색
-                    />
+                <div className="form-group mb-3">
+                    <label>검색</label>
+                    <div className="d-flex">
+                        <select value={searchType} onChange={handleSearchTypeChange} className="form-control w-25">
+                            <option value="productName">상품명</option>
+                            <option value="categoryName">카테고리명</option>
+                        </select>
+                        <input
+                            type="text"
+                            className="form-control ml-2"
+                            placeholder="검색어를 입력하세요"
+                            value={searchTerm}
+                            onChange={handleSearchChange}
+                            onKeyPress={handleKeyPress}
+                        />
+                    </div>
                 </div>
-            </div>
 
-            {/* 정렬 기준과 방향 선택 */}
-            <div className="sorting-controls mb-3">
-                <label>정렬 기준: </label>
-                <select value={sortField} onChange={(e) => setSortField(e.target.value)} className="mx-2">
-                    <option value="createdAt">생성일</option>
-                    <option value="productName">상품명</option>
-                    <option value="price">가격</option>
-                    <option value="stock">재고</option>
-                </select>
+                <div className="sorting-controls mb-3">
+                    <label>정렬 기준: </label>
+                    <select value={sortField} onChange={(e) => setSortField(e.target.value)} className="mx-2">
+                        <option value="createdAt">생성일</option>
+                        <option value="productName">상품명</option>
+                        <option value="price">가격</option>
+                        <option value="stock">재고</option>
+                    </select>
 
-                <label>정렬 방향: </label>
-                <select value={sortDir} onChange={(e) => setSortDir(e.target.value)} className="mx-2">
-                    <option value="asc">오름차순</option>
-                    <option value="desc">내림차순</option>
-                </select>
-            </div>
+                    <label>정렬 방향: </label>
+                    <select value={sortDir} onChange={(e) => setSortDir(e.target.value)} className="mx-2">
+                        <option value="asc">오름차순</option>
+                        <option value="desc">내림차순</option>
+                    </select>
+                </div>
 
-            <table className="table table-bordered">
-                <thead>
-                <tr>
-                    <th>수정</th>
-                    <th>삭제</th>
-                    <th>카테고리 이름</th>
-                    <th>상품 아이디</th>
-                    <th>상품 이름</th>
-                    <th>상품 이미지</th>
-                    <th>상품 가격</th>
-                    <th>상품 정보</th>
-                    <th>상품 재고</th>
-                    <th>제조사</th>
-                    <th>생성일</th>
-                    <th>수정일</th>
-                    <th>상품 설명 이미지</th>
-                    <th>품절 여부</th> {/* soldOut 필드 추가 */}
-                </tr>
-                </thead>
-                <tbody>
-                {products.length > 0 ? (
-                    products.map((product) => (
-                        <tr key={product.id}>
-                            <td>
-                                <button
-                                    onClick={() => handleUpdateProduct(product.id)}
-                                    className="btn btn-warning"
-                                >
-                                    ✏️
-                                </button>
-                            </td>
-                            <td>
-                                <button
-                                    onClick={() => handleDeleteClick(product.id)}
-                                    className="btn btn-danger"
-                                >
-                                    ❌
-                                </button>
-                            </td>
-                            <td>{product.categoryName}</td>
-                            <td>{product.id}</td>
-                            <td>{product.productName}</td>
-                            <td>
-                                {product.productImgUrls && product.productImgUrls.length > 0
-                                    ? product.productImgUrls.map((url, index) => (
-                                        <img key={index} src={url} alt={`Product ${product.id}`} width="50" />
-                                    ))
-                                    : '이미지 없음'}
-                            </td>
-                            <td>{product.price}</td>
-                            <td>{product.info}</td>
-                            <td>{product.stock}</td>
-                            <td>{product.manufacturer}</td>
-                            <td>{product.createdAt}</td>
-                            <td>{product.updatedAt}</td>
-                            <td>
-                                {product.productDescImgUrls && product.productDescImgUrls.length > 0
-                                    ? product.productDescImgUrls.map((url, index) => (
-                                        <img key={index} src={url} alt={`Desc Image ${product.id}`} width="50" />
-                                    ))
-                                    : '설명 이미지 없음'}
-                            </td>
-                            <td>{product.soldOut ? '품절' : '판매 중'}</td> {/* soldOut 필드 추가 */}
-                        </tr>
-                    ))
-                ) : (
+                <table className="table table-bordered">
+                    <thead>
                     <tr>
-                        <td colSpan="14" className="text-center">상품이 없습니다.</td>
+                        <th>수정</th>
+                        <th>삭제</th>
+                        <th>카테고리 이름</th>
+                        <th>상품 아이디</th>
+                        <th>상품 이름</th>
+                        <th>상품 이미지</th>
+                        <th>상품 가격</th>
+                        <th>상품 정보</th>
+                        <th>상품 재고</th>
+                        <th>제조사</th>
+                        <th>생성일</th>
+                        <th>수정일</th>
+                        <th>상품 설명 이미지</th>
+                        <th>품절 여부</th>
                     </tr>
-                )}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {products.length > 0 ? (
+                        products.map((product) => (
+                            <tr key={product.id}>
+                                <td>
+                                    <button
+                                        onClick={() => handleUpdateProduct(product.id)}
+                                        className="btn btn-warning"
+                                    >
+                                        ✏️
+                                    </button>
+                                </td>
+                                <td>
+                                    <button
+                                        onClick={() => handleDeleteClick(product.id)}
+                                        className="btn btn-danger"
+                                    >
+                                        ❌
+                                    </button>
+                                </td>
+                                <td>{product.categoryName}</td>
+                                <td>{product.id}</td>
+                                <td>{product.productName}</td>
+                                <td>
+                                    {product.productImgUrls && product.productImgUrls.length > 0
+                                        ? product.productImgUrls.map((url, index) => (
+                                            <img key={index} src={url} alt={`Product ${product.id}`} width="50" />
+                                        ))
+                                        : '이미지 없음'}
+                                </td>
+                                <td>{product.price}</td>
+                                <td>{product.info}</td>
+                                <td>{product.stock}</td>
+                                <td>{product.manufacturer}</td>
+                                <td>{product.createdAt}</td>
+                                <td>{product.updatedAt}</td>
+                                <td>
+                                    {product.productDescImgUrls && product.productDescImgUrls.length > 0
+                                        ? product.productDescImgUrls.map((url, index) => (
+                                            <img key={index} src={url} alt={`Desc Image ${product.id}`} width="50" />
+                                        ))
+                                        : '설명 이미지 없음'}
+                                </td>
+                                <td>{product.soldOut ? '품절' : '판매 중'}</td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="14" className="text-center">상품이 없습니다.</td>
+                        </tr>
+                    )}
+                    </tbody>
+                </table>
 
-            {/* 페이지네이션 버튼 */}
-            <div className="d-flex justify-content-center">
-                <button
-                    className="btn btn-secondary"
-                    onClick={() => handlePageChange(page - 1)}
-                    disabled={page === 0}
-                >
-                    이전
-                </button>
-                <span className="mx-3">{page + 1} / {totalPages}</span>
-                <button
-                    className="btn btn-secondary"
-                    onClick={() => handlePageChange(page + 1)}
-                    disabled={page + 1 >= totalPages}
-                >
-                    다음
-                </button>
+                <div className="d-flex justify-content-center">
+                    <button
+                        className="btn btn-secondary"
+                        onClick={() => handlePageChange(page - 1)}
+                        disabled={page === 0}
+                    >
+                        이전
+                    </button>
+                    <span className="mx-3">{page + 1} / {totalPages}</span>
+                    <button
+                        className="btn btn-secondary"
+                        onClick={() => handlePageChange(page + 1)}
+                        disabled={page + 1 >= totalPages}
+                    >
+                        다음
+                    </button>
+                </div>
             </div>
         </div>
     );
