@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
 import { addToCart } from '../cart/cartStorage';
 
 const ProductSection = () => {
@@ -12,14 +13,9 @@ const ProductSection = () => {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/products/${productId}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    setProduct(data);
-                    setSelectedImage(data.productImgUrls ? data.productImgUrls[0] : '');
-                } else {
-                    throw new Error("Failed to fetch product data");
-                }
+                const response = await axios.get(`http://localhost:8080/api/products/${productId}`);
+                setProduct(response.data);
+                setSelectedImage(response.data.productImgUrls ? response.data.productImgUrls[0] : '');
             } catch (error) {
                 console.error("Error fetching product data:", error);
             }
