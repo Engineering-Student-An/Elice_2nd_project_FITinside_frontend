@@ -25,7 +25,8 @@ const ProductUpdate = () => {
     const [descPreviewImages, setDescPreviewImages] = useState([]); // 설명 이미지 미리보기
     const [imageUrlsToDelete, setImageUrlsToDelete] = useState([]); // 삭제할 상품 이미지
     const [descImageUrlsToDelete, setDescImageUrlsToDelete] = useState([]); // 삭제할 설명 이미지
-    const [error, setError] = useState("");
+    const [infoError, setInfoError] = useState(""); // info 글자수 에러 상태
+    const [error, setError] = useState(""); // 기타 에러 상태
     const [loading, setLoading] = useState(true); // 로딩 상태
     const [categories, setCategories] = useState([]); // 카테고리 목록 상태
 
@@ -64,9 +65,17 @@ const ProductUpdate = () => {
         fetchCategories();
     }, []);
 
-    // 입력 값 변경 처리
+    // 입력 값 변경 처리 (info 글자수 제한 추가)
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+
+        // info 글자 수 제한 추가 (최대 500자)
+        if (name === "info" && value.length > 500) {
+            setInfoError("상품 설명은 최대 500자까지 입력할 수 있습니다.");
+        } else {
+            setInfoError(""); // 에러 메시지 초기화
+        }
+
         setProduct((prevProduct) => ({
             ...prevProduct,
             [name]: value,
@@ -142,6 +151,12 @@ const ProductUpdate = () => {
     // 상품 수정 요청 처리
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // info 필드 길이 유효성 검사
+        if (product.info.length > 500) {
+            setInfoError("상품 설명은 최대 500자까지 입력할 수 있습니다.");
+            return; // 유효성 검사가 통과되지 않으면 요청 전송 안 함
+        }
 
         const formData = new FormData();
         formData.append("categoryName", product.categoryName);
@@ -236,16 +251,17 @@ const ProductUpdate = () => {
                     />
                 </div>
 
-                {/* 상품 설명 입력 */}
+                {/* 상품 설명 입력 (글자 수 제한 에러 메시지 추가) */}
                 <div className="form-group">
                     <label>상품 설명</label>
                     <textarea
-                        className="form-control"
+                        className={`form-control ${infoError ? "is-invalid" : ""}`}
                         name="info"
                         value={product.info}
                         onChange={handleInputChange}
                         required
                     ></textarea>
+                    {infoError && <div className="invalid-feedback">{infoError}</div>}
                 </div>
 
                 {/* 재고 입력 */}
