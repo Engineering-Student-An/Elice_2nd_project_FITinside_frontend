@@ -2,7 +2,7 @@ import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'rea
 import './deliveryForm.css';
 import PostcodeSearch from "./PostcodeSearch";
 
-const DeliveryForm = forwardRef(({ initialValues = {}, onAddressSelect, onNewAddress, showDefaultSelect = true }, ref) => {
+const DeliveryForm = forwardRef(({ initialValues = {}, onAddressSelect, onNewAddress, showDefaultSelect = true, hideButtons = false, forceShowCheckbox = false }, ref) => {
     const [postalCode, setPostalCode] = useState(initialValues.postalCode || '');
     const [deliveryAddress, setDeliveryAddress] = useState(initialValues.deliveryAddress || '');
     const [detailedAddress, setDetailedAddress] = useState(initialValues.detailedAddress || '');
@@ -16,8 +16,12 @@ const DeliveryForm = forwardRef(({ initialValues = {}, onAddressSelect, onNewAdd
     const [isDefaultAddress, setIsDefaultAddress] = useState(false); // 기본 배송지 여부 관리
 
     useEffect(() => {
+        console.log('forceShowCheckbox: ', forceShowCheckbox);
+        console.log('saveAsDefault: ', saveAsDefault);
+        console.log('isDefaultAddress: ', isDefaultAddress);
         // 초기값을 설정하기 위한 useEffect: 컴포넌트가 처음 렌더링될 때만 초기값을 설정
         if (initialValues) {
+            console.log('deliveryForm에 넘어온 initialValue: ', initialValues);
             setPostalCode(initialValues.postalCode || '');
             setDeliveryAddress(initialValues.deliveryAddress || '');
             setDetailedAddress(initialValues.detailedAddress || '');
@@ -34,12 +38,18 @@ const DeliveryForm = forwardRef(({ initialValues = {}, onAddressSelect, onNewAdd
                 }
             }
 
-            // 기본 배송지가 있을 경우 readOnly 설정
-            console.log("기본배송지가 있으면 readOnly: true");
-            setIsReadOnly(!!initialValues.postalCode); // 기본 배송지가 있으면 true
+            // 기본 배송지가 있을 경우 readOnly 설정 (기본배송지가 있는데 false로 나옴)
+            // console.log("기본배송지가 있으면 readOnly: true");
+            console.log('initialValues : ', initialValues);
+            // console.log('readOnly 우편번호: ', !!initialValues.postalCode);
+            // setIsReadOnly(!!initialValues.postalCode); // 기본 배송지가 있으면 true
+            console.log('saveAsDefault: ', saveAsDefault);
+            console.log('isDefaultAddress: ', isDefaultAddress);
 
         }
     }, []); // 빈 배열로 두어 컴포넌트가 처음 렌더링될 때만 실행되도록 합니다.
+
+
 
     // 부모 컴포넌트에서 호출
     useImperativeHandle(ref, () => ({
@@ -48,6 +58,7 @@ const DeliveryForm = forwardRef(({ initialValues = {}, onAddressSelect, onNewAdd
             return { postalCode, deliveryAddress, detailedAddress, deliveryMemo, deliveryReceiver, deliveryPhone, saveAsDefault };
         },
         setFormData: (address) => {
+            console.log('입력폼 setFormData 호출');
             setPostalCode(address.postalCode || '');
             setDeliveryAddress(address.deliveryAddress || '');
             setDetailedAddress(address.detailedAddress || '');
@@ -67,7 +78,8 @@ const DeliveryForm = forwardRef(({ initialValues = {}, onAddressSelect, onNewAdd
                 setPhoneLast('');
             }
 
-            setIsReadOnly(true); // 기본적으로 true, 수정 버튼을 눌렀을 때만 false로 변경
+            console.log('데이터 변환: ', isReadOnly);
+            // setIsReadOnly(true); // 기본적으로 true, 수정 버튼을 눌렀을 때만 false로 변경
             // setIsReadOnly(false); // 수정할 때 readOnly 해제
             // setSaveAsDefault(false); // 수정 시 기본 배송지 체크 초기화
         },
@@ -85,6 +97,8 @@ const DeliveryForm = forwardRef(({ initialValues = {}, onAddressSelect, onNewAdd
         },
         setIsDefaultAddress: (isDefault) => {
             setIsDefaultAddress(isDefault); // 기본 배송지 여부 설정
+            setSaveAsDefault(isDefault);
+            console.log('setSaveAsDefault: ', saveAsDefault);
         },
         // 추가된 부분: setIsReadOnly 함수 정의
         setIsReadOnly: (isReadOnly) => {
@@ -98,21 +112,25 @@ const DeliveryForm = forwardRef(({ initialValues = {}, onAddressSelect, onNewAdd
             <div style={{ display: 'flex', alignItems: 'center', marginTop: 80 }}>
                 <h4 style={{ margin: 0, lineHeight: '1.5', paddingTop: 0 }}>배송 정보</h4>
 
-                {/* 기본 배송지 선택 버튼은 항상 표시 */}
-                <button
-                    className="btn btn-outline-primary"
-                    style={{ marginLeft: '20px', padding: '8px 16px', height: '40px' }}
-                    onClick={onAddressSelect}
-                >
-                    배송지 선택
-                </button>
-                <button
-                    className="btn btn-outline-secondary"
-                    style={{ marginLeft: '10px', padding: '8px 16px', height: '40px' }}
-                    onClick={onNewAddress} // 새 배송지 입력 버튼
-                >
-                    새 배송지 입력
-                </button>
+                {/* hideButtons가 true일 때 버튼 숨김 */}
+                {!hideButtons && (
+                    <>
+                        <button
+                            className="btn btn-outline-primary"
+                            style={{ marginLeft: '20px', padding: '8px 16px', height: '40px' }}
+                            onClick={onAddressSelect}
+                        >
+                            배송지 선택
+                        </button>
+                        <button
+                            className="btn btn-outline-secondary"
+                            style={{ marginLeft: '10px', padding: '8px 16px', height: '40px' }}
+                            onClick={onNewAddress}
+                        >
+                            새 배송지 입력
+                        </button>
+                    </>
+                )}
 
             </div>
             <table className="delivery-table">
@@ -212,14 +230,19 @@ const DeliveryForm = forwardRef(({ initialValues = {}, onAddressSelect, onNewAdd
             </table>
 
             {/* 기본 배송지로 저장 체크박스 */}
-            {!isDefaultAddress  && (
+            {/* 기본 배송지가 아니면 표시 */}
+            {/*{!isDefaultAddress  && (*/}
+            {(forceShowCheckbox || (!isDefaultAddress && !hideButtons)) && (
                 <div className="form-check" style={{ marginTop: '10px' }}>
                     <input
                         className="form-check-input"
                         type="checkbox"
                         id="saveAsDefault"
                         checked={saveAsDefault}
-                        onChange={(e) => setSaveAsDefault(e.target.checked)}
+                        onChange={(e) => {
+                            setSaveAsDefault(e.target.checked); // 상태 업데이트
+                            console.log('체크박스 상태 변경: ', e.target.checked);
+                        }}
                     />
                     <label className="form-check-label" htmlFor="saveAsDefault" style={{ marginLeft: '8px' }}>
                         이 주소를 기본 배송지로 저장

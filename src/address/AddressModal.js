@@ -66,7 +66,7 @@ const AddressModal = ({ isOpen, onClose, onSelect, onEdit, selectedAddressId }) 
                                 <li
                                     key={address.addressId}
                                     className={`list-group-item ${address.addressId === selectedAddressId ? 'selected-address' : ''}`}
-                                    onClick={() => handleSelect(address)}
+                                    // onClick={() => handleSelect(address)}
                                 >
                                     <div className="d-flex justify-content-between align-items-center">
                                         <strong>{address.deliveryReceiver}</strong>

@@ -70,11 +70,13 @@ const OrderCreate = () => {
                     console.log("기본 배송지 ID 설정:", response.data.addressId); // 기본 배송지 ID 확인
                     setDefaultAddress("Y"); // 기본 배송지 상태 설정
                     deliveryFormRef.current.setIsDefaultAddress(true); // 기본 배송지임을 설정
+                    deliveryFormRef.current.setIsReadOnly(true);
                 } else {
                     // 기본 배송지가 없는 경우
                     console.log("기본 배송지 없음");
                     setHasDefaultAddress(false);
                     deliveryFormRef.current.setIsDefaultAddress(false);
+                    deliveryFormRef.current.setIsReadOnly(false);
                 }
             } catch (error) {
                 console.error('기본 배송지 조회 실패', error);
@@ -115,7 +117,6 @@ const OrderCreate = () => {
         // setDefaultAddress(address.defaultAddress); // 선택한 주소가 기본 배송지인지 확인
         setIsAddressEdited(false);
 
-        // 선택된 주소가 기본 배송지라면 readOnly 유지
         deliveryFormRef.current.setIsReadOnly(true);
 
         // 선택한 주소가 기본 배송지인지 여부를 확인하고 상태 업데이트
@@ -151,6 +152,7 @@ const OrderCreate = () => {
         deliveryFormRef.current.setIsDefaultAddress(address.defaultAddress === "Y"); // 기본 배송지 여부 설정
 
         // 수정 버튼을 눌렀을 때는 readOnly 해제
+        console.log("handleEditAddress에서 isReadOnly 설정: false");
         deliveryFormRef.current.setIsReadOnly(false);
     };
 
