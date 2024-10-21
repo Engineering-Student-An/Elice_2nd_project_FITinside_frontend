@@ -215,6 +215,7 @@ const CategoryCreate = () => {
                 }
             });
             navigate('/admin/categories');
+            window.location.reload()
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
