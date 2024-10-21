@@ -175,13 +175,49 @@ const ProductUpdate = () => {
     };
 
     // 상품 이미지 삭제 요청
+    // const deleteProductImages = async () => {
+    //     try {
+    //         if (imageUrlsToDelete.length > 0) {
+    //             await axios.delete(
+    //                 `http://localhost:8080/api/admin/products/${id}/images`,
+    //                 {
+    //                     params: { imageUrlsToDelete },
+    //                     paramsSerializer: (params) => {
+    //                         return qs.stringify(params, { arrayFormat: "repeat" });
+    //                     },
+    //                 }
+    //             );
+    //         }
+    //
+    //         if (descImageUrlsToDelete.length > 0) {
+    //             await axios.delete(
+    //                 `http://localhost:8080/api/admin/products/${id}/description-images`,
+    //                 {
+    //                     params: { descImageUrlsToDelete },
+    //                     paramsSerializer: (params) => {
+    //                         return qs.stringify(params, { arrayFormat: "repeat" });
+    //                     },
+    //                 }
+    //             );
+    //         }
+    //     } catch (err) {
+    //         console.error("이미지 삭제 중 오류 발생:", err);
+    //         setError("이미지 삭제에 실패했습니다.");
+    //     }
+    // };
+
     const deleteProductImages = async () => {
         try {
+            const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
+
             if (imageUrlsToDelete.length > 0) {
                 await axios.delete(
                     `http://localhost:8080/api/admin/products/${id}/images`,
                     {
                         params: { imageUrlsToDelete },
+                        headers: {
+                            'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가
+                        },
                         paramsSerializer: (params) => {
                             return qs.stringify(params, { arrayFormat: "repeat" });
                         },
@@ -194,6 +230,9 @@ const ProductUpdate = () => {
                     `http://localhost:8080/api/admin/products/${id}/description-images`,
                     {
                         params: { descImageUrlsToDelete },
+                        headers: {
+                            'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가
+                        },
                         paramsSerializer: (params) => {
                             return qs.stringify(params, { arrayFormat: "repeat" });
                         },
@@ -205,6 +244,7 @@ const ProductUpdate = () => {
             setError("이미지 삭제에 실패했습니다.");
         }
     };
+
 
     // 상품 수정 요청 처리
     // const handleSubmit = async (e) => {
