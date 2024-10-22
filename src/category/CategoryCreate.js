@@ -193,21 +193,32 @@ const CategoryCreate = () => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        const formData = new FormData();
-        formData.append('name', name);
-        formData.append('displayOrder', displayOrder ? Number(displayOrder) : null);
-
-        // mainDisplayOrder가 빈칸이 아닐 때만 추가
-        if (mainDisplayOrder !== '') {
-            formData.append('mainDisplayOrder', Number(mainDisplayOrder));
-        }
-
-        if (parentId) formData.append('parentId', parentId);
-        if (imageFile) formData.append('imageFile', imageFile);
-
         try {
+            e.preventDefault();
+
+            // displayOrder와 mainDisplayOrder가 1 이상의 값인지 확인
+            if (displayOrder < 1) {
+                alert('표시 순서는 1 이상의 값이어야 합니다.');
+                return;
+            }
+
+            if (mainDisplayOrder !== '' && mainDisplayOrder < 1) {
+                alert('메인 카테고리 정렬 순서는 1 이상의 값이어야 합니다.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('displayOrder', displayOrder ? Number(displayOrder) : null);
+
+            // mainDisplayOrder가 빈칸이 아닐 때만 추가
+            if (mainDisplayOrder !== '') {
+                formData.append('mainDisplayOrder', Number(mainDisplayOrder));
+            }
+
+            if (parentId) formData.append('parentId', parentId);
+            if (imageFile) formData.append('imageFile', imageFile);
+
             await axios.post('http://localhost:8080/api/admin/categories', formData, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -220,6 +231,39 @@ const CategoryCreate = () => {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
                 // 요청을 다시 시도할 수 있습니다.
+                e.preventDefault();
+
+                // displayOrder와 mainDisplayOrder가 1 이상의 값인지 확인
+                if (displayOrder < 1) {
+                    alert('표시 순서는 1 이상의 값이어야 합니다.');
+                    return;
+                }
+
+                if (mainDisplayOrder !== '' && mainDisplayOrder < 1) {
+                    alert('메인 카테고리 정렬 순서는 1 이상의 값이어야 합니다.');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('name', name);
+                formData.append('displayOrder', displayOrder ? Number(displayOrder) : null);
+
+                // mainDisplayOrder가 빈칸이 아닐 때만 추가
+                if (mainDisplayOrder !== '') {
+                    formData.append('mainDisplayOrder', Number(mainDisplayOrder));
+                }
+
+                if (parentId) formData.append('parentId', parentId);
+                if (imageFile) formData.append('imageFile', imageFile);
+
+                await axios.post('http://localhost:8080/api/admin/categories', formData, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+                navigate('/admin/categories');
+                window.location.reload()
             } catch (e) {
                 console.error('Error creating category:', error);
                 if (error.response && error.response.status === 401) {
