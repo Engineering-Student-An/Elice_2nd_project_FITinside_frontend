@@ -34,22 +34,6 @@ const ProductUpdate = () => {
     const [categories, setCategories] = useState([]); // 카테고리 목록 상태
 
     // 상품 정보 불러오기
-    // useEffect(() => {
-    //     const fetchProduct = async () => {
-    //         try {
-    //             const response = await axios.get(
-    //                 `http://localhost:8080/api/products/${id}`
-    //             );
-    //             setProduct(response.data); // 기존 상품 정보 설정
-    //             setLoading(false);
-    //         } catch (err) {
-    //             console.error("상품 정보를 불러오는 중 오류 발생:", err);
-    //             setError("상품 정보를 불러오는 중 오류가 발생했습니다.");
-    //             setLoading(false);
-    //         }
-    //     };
-    //     fetchProduct();
-    // }, [id]);
     useEffect(() => {
         const fetchProduct = async () => {
             try {
@@ -72,21 +56,6 @@ const ProductUpdate = () => {
 
 
     // 카테고리 목록을 불러와 필터링
-    // useEffect(() => {
-    //     const fetchCategories = async () => {
-    //         try {
-    //             const response = await axios.get("http://localhost:8080/api/categories");
-    //             const filteredCategories = response.data.filter(
-    //                 (category) => category.parentId !== null
-    //             );
-    //             setCategories(filteredCategories);
-    //         } catch (err) {
-    //             console.error("카테고리 목록을 불러오는 중 오류 발생:", err);
-    //             setError("카테고리 목록을 불러오는 중 오류가 발생했습니다.");
-    //         }
-    //     };
-    //     fetchCategories();
-    // }, []);
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -175,37 +144,6 @@ const ProductUpdate = () => {
     };
 
     // 상품 이미지 삭제 요청
-    // const deleteProductImages = async () => {
-    //     try {
-    //         if (imageUrlsToDelete.length > 0) {
-    //             await axios.delete(
-    //                 `http://localhost:8080/api/admin/products/${id}/images`,
-    //                 {
-    //                     params: { imageUrlsToDelete },
-    //                     paramsSerializer: (params) => {
-    //                         return qs.stringify(params, { arrayFormat: "repeat" });
-    //                     },
-    //                 }
-    //             );
-    //         }
-    //
-    //         if (descImageUrlsToDelete.length > 0) {
-    //             await axios.delete(
-    //                 `http://localhost:8080/api/admin/products/${id}/description-images`,
-    //                 {
-    //                     params: { descImageUrlsToDelete },
-    //                     paramsSerializer: (params) => {
-    //                         return qs.stringify(params, { arrayFormat: "repeat" });
-    //                     },
-    //                 }
-    //             );
-    //         }
-    //     } catch (err) {
-    //         console.error("이미지 삭제 중 오류 발생:", err);
-    //         setError("이미지 삭제에 실패했습니다.");
-    //     }
-    // };
-
     const deleteProductImages = async () => {
         try {
             const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
@@ -247,59 +185,6 @@ const ProductUpdate = () => {
 
 
     // 상품 수정 요청 처리
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-    //
-    //     // 유효성 검사
-    //     if (product.productName.length > 100) {
-    //         setProductNameError("상품명은 최대 100자까지 입력할 수 있습니다.");
-    //         return;
-    //     }
-    //     if (product.info.length > 500) {
-    //         setInfoError("상품 설명은 최대 500자까지 입력할 수 있습니다.");
-    //         return;
-    //     }
-    //     if (product.manufacturer.length > 100) {
-    //         setManufacturerError("제조사는 최대 100자까지 입력할 수 있습니다.");
-    //         return;
-    //     }
-    //
-    //     const formData = new FormData();
-    //     formData.append("categoryName", product.categoryName);
-    //     formData.append("productName", product.productName);
-    //     formData.append("price", product.price);
-    //     formData.append("info", product.info);
-    //     formData.append("stock", product.stock);
-    //     formData.append("manufacturer", product.manufacturer);
-    //
-    //     // 새로운 이미지 파일 추가
-    //     newImages.forEach((image) => {
-    //         formData.append("productImgUrls", image);
-    //     });
-    //
-    //     // 새로운 설명 이미지 파일 추가
-    //     newDescImages.forEach((image) => {
-    //         formData.append("productDescImgUrls", image);
-    //     });
-    //
-    //     try {
-    //         // 상품 업데이트
-    //         await axios.put(`http://localhost:8080/api/admin/products/${id}`, formData, {
-    //             headers: {
-    //                 "Content-Type": "multipart/form-data",
-    //             },
-    //         });
-    //
-    //         // 이미지 삭제 처리
-    //         await deleteProductImages();
-    //
-    //         navigate("/admin/products");
-    //     } catch (err) {
-    //         console.error("상품 수정 중 오류 발생:", err);
-    //         setError("상품 수정에 실패했습니다.");
-    //     }
-    // };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
