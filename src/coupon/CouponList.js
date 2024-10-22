@@ -140,14 +140,14 @@ const CouponList = () => {
                 top: '86px'
             }}>
                 <h2>내 쿠폰 목록</h2>
-                <div className="d-flex flex-row justify-content-between mt-3" style={{width: '90%'}}>
-                    <button className="btn btn-light text-dark mb-4" style={{border: '1px solid #ced4da'}}
-                            onClick={handleOpenSearchModal}>쿠폰 검색
+                <div className="d-flex flex-row justify-content-start align-items-center mt-5" style={{width: '70%'}}>
+                    <button className="btn btn-light text-dark me-4" style={{border: '1px solid #ced4da'}}
+                            onClick={handleOpenSearchModal}>쿠폰 발급
                     </button>
                     <CouponSearchModal isOpen={isSearchModalOpen} onRequestClose={handleCloseSearchModal}/>
 
                     {/* 유효하지 않은 쿠폰 포함 드롭다운 */}
-                    <div style={{width: '30%'}}>
+                    <div style={{width: '30%', margin: '20px 0'}}>
                         <select
                             className="form-select"
                             value={includeInactiveCoupons ? 'true' : 'false'}
@@ -160,7 +160,7 @@ const CouponList = () => {
                 </div>
             </div>
 
-            <div className="row" style={{marginTop: '230px'}}>
+            <div className="row" style={{marginTop: '200px'}}>
                 {coupons.map((coupon) => (
                     <div className="couponWrap" key={coupon.id}>
                         <div

@@ -74,8 +74,8 @@ const Header = () => {
     };
 
     return (
-        <nav className="navbar navbar-expand-lg navbar-light bg-light" style={{position: 'fixed', width: '100%', zIndex:'100'}}>
-            <div className="container px-4 px-lg-5">
+        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+            <div className="container px-4 px-lg-1">
                 <a className="navbar-brand" href="/"><img src="/img/fitinside_logo_transparent.png" alt="로고"/> </a>
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span className="navbar-toggler-icon"></span>
