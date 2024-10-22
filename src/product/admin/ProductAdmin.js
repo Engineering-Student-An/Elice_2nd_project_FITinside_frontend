@@ -27,13 +27,35 @@ const ProductAdmin = () => {
         fetchProducts(page);
     }, [page, sortField, sortDir]); // page, sortField, sortDir가 변경될 때마다 새 데이터를 가져옴
 
-    const token = localStorage.getItem('token');
+    // 토큰 재발급 및 로컬 스토리지에 저장하는 함수
+    const sendRefreshTokenAndStoreAccessToken = async () => {
+        try {
+            // refreshToken을 /api/auth/token으로 JSON 형식으로 전송
+            const response = await axios.post(
+                'http://localhost:8080/api/auth/token',
+                {},  // refreshToken을 요청 바디에 포함
+                {
+                    headers: {
+                        'Content-Type': 'application/json',  // 요청 헤더 설정
+                    },
+                    withCredentials: true,  // 쿠키 기반 인증 사용 (httponly 쿠키를 같이 보냄)
+                }
+            );
+
+            const accessToken = response.data.accessToken;  // 서버에서 새로운 accessToken 받기
+            localStorage.setItem('token', accessToken);  // accessToken을 로컬 스토리지에 저장
+            console.log('새로운 accessToken이 로컬 스토리지에 저장되었습니다.');
+        } catch (error) {
+            console.error('토큰 갱신 실패:', error);
+        }
+    };
+
     const fetchProducts = async (pageNumber) => {
+        const endpoint = searchType === 'productName' ? '/api/products' : '/api/products/byCategory'; // 검색 타입에 따라 다른 엔드포인트 호출
+
         try {
             setLoading(true); // 로딩 시작
-
-            // 검색 타입에 따라 다른 엔드포인트 호출
-            const endpoint = searchType === 'productName' ? '/api/products' : '/api/products/byCategory';
+            const token = localStorage.getItem('token');
 
             const response = await axios.get(`http://localhost:8080${endpoint}`, {
                 headers: {
@@ -60,9 +82,46 @@ const ProductAdmin = () => {
             }
             setLoading(false); // 로딩 종료
         } catch (error) {
-            console.error('상품 목록을 불러오는 중 오류 발생:', error);
-            setError('상품 목록을 불러오는 중 오류가 발생했습니다.');
-            setLoading(false);
+            if (error.response && error.response.status === 401) {
+                // 401 에러 발생 시 토큰 갱신 시도
+                try {
+                    await sendRefreshTokenAndStoreAccessToken();
+
+                    // 토큰 갱신 후 다시 요청
+                    const newResponse = await axios.get(`http://localhost:8080${endpoint}`, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`,  // 새로 발급된 토큰 사용
+                        },
+                        params: {
+                            page: pageNumber,
+                            size: pageSize,
+                            sortField: sortField,
+                            sortDir: sortDir,
+                            keyword: searchTerm,
+                        },
+                    });
+
+                    const newData = newResponse.data;
+                    console.log('새로운 데이터:', newData);
+
+                    if (newData && Array.isArray(newData.content)) {
+                        setProducts(newData.content); // 새로운 상품 목록 저장
+                        setTotalPages(newData.totalPages); // 총 페이지 수 설정
+                    } else {
+                        setProducts([]);
+                        setTotalPages(1);
+                    }
+                    setLoading(false); // 로딩 종료
+                } catch (refreshError) {
+                    console.error('토큰 갱신 및 재요청 중 오류 발생:', refreshError);
+                    setError('상품 목록을 불러오는 중 오류가 발생했습니다.');
+                    setLoading(false);
+                }
+            } else {
+                console.error('상품 목록을 불러오는 중 오류 발생:', error);
+                setError('상품 목록을 불러오는 중 오류가 발생했습니다.');
+                setLoading(false);
+            }
         }
     };
 
@@ -87,8 +146,32 @@ const ProductAdmin = () => {
                 alert('상품 삭제에 실패했습니다.');
             }
         } catch (error) {
-            console.error('상품 삭제 중 오류 발생:', error);
-            alert('상품 삭제 중 오류가 발생했습니다.');
+            if (error.response && error.response.status === 401) {
+                // 401 에러 발생 시 토큰 갱신 시도
+                try {
+                    await sendRefreshTokenAndStoreAccessToken();
+
+                    // 토큰 갱신 후 다시 삭제 요청
+                    const newResponse = await axios.delete(`http://localhost:8080/api/admin/products/${productId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`,  // 새로 발급된 토큰 사용
+                        },
+                    });
+
+                    if (newResponse.status === 200) {
+                        fetchProducts(page); // 성공 시 목록 갱신
+                    } else {
+                        console.error('상품 삭제 실패');
+                        alert('상품 삭제에 실패했습니다.');
+                    }
+                } catch (refreshError) {
+                    console.error('토큰 갱신 및 재요청 중 오류 발생:', refreshError);
+                    alert('상품 삭제 중 오류가 발생했습니다.');
+                }
+            } else {
+                console.error('상품 삭제 중 오류 발생:', error);
+                alert('상품 삭제 중 오류가 발생했습니다.');
+            }
         }
     };
 
