@@ -33,13 +33,26 @@ const DeliveryForm = forwardRef(({ initialValues = {}, onAddressSelect, onNewAdd
             deliveryAddress: ''
         };
 
+        // 수령인 유효성 검사: 문자만 허용, 숫자 및 특수문자 제외
+        const nameRegex = /^[가-힣a-zA-Z\s]+$/;
         if (!deliveryReceiver.trim()) {
             newErrors.deliveryReceiver = '수령인을 입력해주세요.';
             formIsValid = false;
+        } else if (!nameRegex.test(deliveryReceiver)) {
+            newErrors.deliveryReceiver = '수령인은 문자만 입력 가능합니다.';
+            formIsValid = false;
         }
 
+        // 전화번호 유효성 검사: 각 칸은 숫자만 허용, 3~4자리 제한
+        const phoneRegex = /^[0-9]+$/;
         if (!phoneMiddle.trim() || !phoneLast.trim()) {
             newErrors.phone = '연락처를 입력해주세요.';
+            formIsValid = false;
+        } else if (phoneMiddle.length < 3 || phoneMiddle.length > 4 || !phoneRegex.test(phoneMiddle)) {
+            newErrors.phone = '중간 번호는 3~4자리의 숫자여야 합니다.';
+            formIsValid = false;
+        } else if (phoneLast.length < 4 || phoneLast.length > 4 || !phoneRegex.test(phoneLast)) {
+            newErrors.phone = '마지막 번호는 4자리의 숫자여야 합니다.';
             formIsValid = false;
         }
 
