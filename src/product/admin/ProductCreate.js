@@ -49,27 +49,6 @@ const ProductCreate = () => {
         fetchCategories();
     }, []);
 
-    const sendRefreshTokenAndStoreAccessToken = async () => {
-        try {
-            // refreshToken을 /api/auth/token으로 전송
-            const response = await axios.post(
-                'http://localhost:8080/api/auth/token',
-                {}, // 요청 바디는 비워둠 (refreshToken은 쿠키에 저장)
-                {
-                    headers: {
-                        'Content-Type': 'application/json', // 요청 헤더 설정
-                    },
-                    withCredentials: true, // 쿠키 기반 인증 사용
-                }
-            );
-
-            const accessToken = response.data.accessToken; // 서버에서 새로운 accessToken 받기
-            localStorage.setItem('token', accessToken); // accessToken을 로컬 스토리지에 저장
-            console.log('새로운 accessToken이 로컬 스토리지에 저장되었습니다.');
-        } catch (error) {
-            console.error('토큰 갱신 실패:', error);
-        }
-    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -187,38 +166,15 @@ const ProductCreate = () => {
             });
 
             if (!response.ok) {
-                if (response.status === 401) { // 토큰 만료 시
-                    await sendRefreshTokenAndStoreAccessToken(); // 토큰 갱신 시도
-                    const newToken = localStorage.getItem('token'); // 갱신된 토큰 가져오기
-                    // 갱신된 토큰으로 다시 요청
-                    const retryResponse = await fetch('http://localhost:8080/api/admin/products', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${newToken}`,  // 갱신된 토큰으로 Authorization 헤더 설정
-                        },
-                        body: data
-                    });
-
-                    if (!retryResponse.ok) {
-                        throw new Error('상품 등록에 실패했습니다.');
-                        alert('상품 등록에 실패했습니다. 다시 시도해주세요.');
-                    }
-
-                    console.log('상품이 성공적으로 등록되었습니다.');
-                    navigate('/admin/products');
-                } else {
-                    throw new Error('상품 등록에 실패했습니다.');
-                    alert('상품 등록에 실패했습니다. 다시 시도해주세요.');
-                }
-            } else {
-                console.log('상품이 성공적으로 등록되었습니다.');
-                navigate('/admin/products');
+                throw new Error('상품 등록에 실패했습니다.');
             }
+            console.log('상품이 성공적으로 등록되었습니다.');
+            navigate('/admin/products');
         } catch (error) {
             console.error('에러 발생:', error);
-            alert('상품 등록에 실패했습니다. 다시 시도해주세요.');
         }
     };
+
 
     return (
         <div className="container mt-5">

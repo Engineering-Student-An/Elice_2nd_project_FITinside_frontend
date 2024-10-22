@@ -23,7 +23,7 @@ const Signup = () => {
         }
 
         try {
-            const response = await axios.post('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/auth', {
+            const response = await axios.post('http://localhost:8080/api/auth', {
                 email,
                 password,
                 userName,

@@ -15,7 +15,7 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/auth/login', {
+            const response = await axios.post('http://localhost:8080/api/auth/login', {
                 email,
                 password
             },
@@ -41,7 +41,7 @@ const Login = () => {
 
     // 구글 로그인 버튼 클릭 시 리다이렉트
     const handleGoogleLogin = () => {
-        window.location.href = 'https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/oauth2/authorization/google';
+        window.location.href = 'http://localhost:8080/oauth2/authorization/google';
     };
 
     return (

@@ -41,7 +41,7 @@ const OrderCreate = () => {
             const details = {};
             for (const item of storedOrderData) {
                 try {
-                    const response = await axios.get(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/products/${item.productId}`, {
+                    const response = await axios.get(`http://localhost:8080/api/products/${item.productId}`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
