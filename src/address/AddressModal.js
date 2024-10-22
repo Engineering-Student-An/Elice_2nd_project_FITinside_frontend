@@ -23,7 +23,7 @@ const AddressModal = ({ isOpen, onClose, onSelect, onEdit, selectedAddressId }) 
                     await sendRefreshTokenAndStoreAccessToken();
 
                     if (isOpen) {
-                        const response = await axios.get('http://localhost:8080/api/addresses', {
+                        const response = await axios.get('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/addresses', {
                             headers: {
                                 'Authorization': `Bearer ${localStorage.getItem('token')}`
                             }

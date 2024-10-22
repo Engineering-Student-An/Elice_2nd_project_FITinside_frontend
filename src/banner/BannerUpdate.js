@@ -157,7 +157,7 @@ const BannerUpdate = () => {
 
     // 배너 정보 가져오기
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/banners/${id}`, {
+        axios.get(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/banners/${id}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -174,7 +174,7 @@ const BannerUpdate = () => {
             .catch(async error => {
                 try {
                     await sendRefreshTokenAndStoreAccessToken();
-                    axios.get(`http://localhost:8080/api/banners/${id}`, {
+                    axios.get(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/banners/${id}`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
@@ -227,7 +227,7 @@ const BannerUpdate = () => {
 
         formData.append('targetUrl', targetUrl); // URL 필드 추가
 
-        axios.put(`http://localhost:8080/api/admin/banners/${id}`, formData, {
+        axios.put(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/admin/banners/${id}`, formData, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 'Content-Type': 'multipart/form-data'

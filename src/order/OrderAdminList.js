@@ -142,7 +142,7 @@ const OrderAdminList = () => {
                 const token = localStorage.getItem('token');
                 const requestData = { status: newStatus };
 
-                const response = await axios.patch(`http://localhost:8080/api/admin/orders/${orderId}/status`, requestData, {
+                const response = await axios.patch(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/admin/orders/${orderId}/status`, requestData, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -177,7 +177,7 @@ const OrderAdminList = () => {
 
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:8080/api/admin/orders/${orderId}`, {
+            await axios.delete(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/admin/orders/${orderId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -190,7 +190,7 @@ const OrderAdminList = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                await axios.delete(`http://localhost:8080/api/admin/orders/${orderId}`, {
+                await axios.delete(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/admin/orders/${orderId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }

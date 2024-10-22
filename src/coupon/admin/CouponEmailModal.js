@@ -34,7 +34,7 @@ const CouponEmailModal = ({ isOpen, onRequestClose, coupon }) => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 // 토큰 갱신 후 다시 요청
-                const response = await axios.get(`http://localhost:8080/api/admin/coupons/${id}/members`, {
+                const response = await axios.get(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/admin/coupons/${id}/members`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}` // 갱신된 토큰 사용
                     },
@@ -68,7 +68,7 @@ const CouponEmailModal = ({ isOpen, onRequestClose, coupon }) => {
                 const emailTemplate = CouponEmailTemplate({ coupon: coupon }); // 이메일 템플릿 HTML 가져오기
 
                 // 실제 이메일 전송 요청
-                const response = await axios.post('http://localhost:8080/api/admin/coupons/email', {
+                const response = await axios.post('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/admin/coupons/email', {
                     couponId: coupon.id,
                     address: email,
                     template: emailTemplate // 결합된 템플릿 사용

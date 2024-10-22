@@ -97,7 +97,7 @@ const AddressList = () => {
         } else if (isEditing) {
             // 배송지 수정 로직
             try {
-                const response = await axios.patch(`http://localhost:8080/api/addresses/${selectedAddress.addressId}`, dataToSend, {
+                const response = await axios.patch(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/addresses/${selectedAddress.addressId}`, dataToSend, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -133,7 +133,7 @@ const AddressList = () => {
 
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:8080/api/addresses/${addressId}`, {
+            await axios.delete(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/addresses/${addressId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -145,7 +145,7 @@ const AddressList = () => {
               await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                await axios.delete(`http://localhost:8080/api/addresses/${addressId}`, {
+                await axios.delete(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/addresses/${addressId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -178,7 +178,7 @@ const AddressList = () => {
     const handleDefaultChange = async (addressId, isChecked) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.patch(`http://localhost:8080/api/addresses/${addressId}/default`, null, {
+            await axios.patch(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/addresses/${addressId}/default`, null, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 },
@@ -193,7 +193,7 @@ const AddressList = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                await axios.patch(`http://localhost:8080/api/addresses/${addressId}/default`, null, {
+                await axios.patch(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/addresses/${addressId}/default`, null, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     },
