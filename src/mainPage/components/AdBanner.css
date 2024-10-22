@@ -1,100 +1,16 @@
-/*!* 광고 배너가 페이지에 고정되도록 설정 *!*/
-/*.ad-banner {*/
-/*    !*!* 배너를 고정 위치로 설정하여 스크롤해도 움직이지 않도록 함 *!*!*/
-/*    !*position: fixed;*!*/
-
-/*    !*!* 배너가 페이지 맨 위에 위치하도록 설정 *!*!*/
-/*    !*top: 0;*!*/
-
-/*    !*!* 배너가 왼쪽 끝에서 시작하도록 설정하여 전체 너비를 차지 *!*!*/
-/*    !*left: 0;*!*/
-
-/*    !*!* 배너가 페이지의 전체 너비를 차지하도록 설정 *!*!*/
-/*    !*width: 100%;*!*/
-
-/*    !*!* 배너의 높이를 150px로 설정하여 적절한 크기로 조정 (필요에 따라 조정 가능) *!*!*/
-/*    !*height: 500px; !* 원하는 높이로 변경 *!*!*/
-
-/*    !* 배너 안의 콘텐츠를 가로 중앙에 배치 *!*/
-/*    display: flex;*/
-
-/*    !* 배너 안의 콘텐츠를 가로 방향으로 중앙 정렬 *!*/
-/*    justify-content: center;*/
-
-/*    !*!* 배너 안의 콘텐츠를 세로 방향으로 중앙 정렬 *!*!*/
-/*    !*align-items: center;*!*/
-
-/*    !*!* 배너의 배경색을 밝은 회색으로 설정 (필요에 따라 수정 가능) *!*!*/
-/*    !*background-color: #f5f5f5; !* 배경 색상 (필요시 수정) *!*!*/
-
-/*    !*!* 배너의 z-index를 높여 다른 요소 위에 표시되도록 설정 *!*!*/
-/*    !*z-index: 1000; !* 다른 요소 위에 표시 *!*!*/
-/*}*/
-
-/*!*!* 광고 배너 안의 이미지에 대한 스타일 설정 *!*!*/
-/*!*.ad-banner img {*!*/
-/*!*    !* 이미지의 최대 너비를 배너의 100%로 설정하여 배너 크기에 맞게 자동 조정 *!*!*/
-/*!*    max-width: 100%;*!*/
-
-/*!*    !* 이미지의 높이를 자동으로 설정하여 비율이 유지되도록 함 *!*!*/
-/*!*    height: auto;*!*/
-/*!*}*!*/
-
-/*.prev-ad-button, .next-ad-button {*/
-/*    position: absolute;*/
-/*    top: 50%;*/
-/*    transform: translateY(-50%);*/
-/*    background-color: rgba(0, 0, 0, 0.5);*/
-/*    color: white;*/
-/*    border: none;*/
-/*    font-size: 24px;*/
-/*    cursor: pointer;*/
-/*    padding: 10px;*/
-/*    z-index: 1;*/
-/*}*/
-
-/*.prev-ad-button {*/
-/*    left: 150px; !* 왼쪽 끝에 위치하도록 *!*/
-/*}*/
-
-/*.next-ad-button {*/
-/*    right: 150px; !* 오른쪽 끝에 위치하도록 *!*/
-/*}*/
-
-
-/*.add-ad-button {*/
-/*    position: absolute;*/
-/*    bottom: 100px;*/
-/*    left: 20px;*/
-/*    padding: 10px 20px;*/
-/*    background-color: #efefef;*/
-/*    color: #333;*/
-/*    border: 1px solid #ccc;*/
-/*    border-radius: 5px;*/
-/*    cursor: pointer;*/
-/*}*/
-
-
 .ad-banner {
-    position: relative; /* 버튼을 광고 이미지에 고정시키기 위해 relative로 설정 */
-    /*width: 100%;*/
-    /*max-width: 100%; !* 필요 시 조정 *!*/
-    height: auto;
-
-    /* 배너 안의 콘텐츠를 가로 중앙에 배치 */
-    display: flex;
-
-    /* 배너 안의 콘텐츠를 가로 방향으로 중앙 정렬 */
-    justify-content: center;
+    width: 1331px; /* 부모 요소의 너비 고정 */
+    height: 553px; /* 부모 요소의 높이 고정 */
+    object-fit: cover; /* 이미지가 부모 요소 크기에 맞게 잘리더라도 꽉 차게 표시 */
+    display: block; /* 이미지를 블록 요소로 처리 */
+    border-radius: 8px; /* 이미지 모서리 둥글게 처리 (선택사항) */
 }
 
 .ad-banner img {
-    width: 1331px;  /* 이미지의 너비를 300px로 고정 */
-    height: 553px; /* 이미지의 높이를 100px로 고정 */
-    object-fit: cover; /* 이미지가 고정된 크기에 맞게 잘리거나 확대됨 */
-    border-radius: 8px; /* 모서리 둥글게 처리 (선택사항) */
+    width: 100%;  /* 부모 요소의 너비에 맞게 설정 */
+    height: 100%; /* 부모 요소의 높이에 맞게 설정 */
+    object-fit: cover; /* 이미지가 비율을 유지하면서도 부모 요소 크기에 꽉 차게 함 */
 }
-
 
 .prev-ad-button, .next-ad-button {
     position: absolute;
@@ -120,16 +36,4 @@
 
 .next-ad-button {
     right: 150px; /* 광고 이미지의 오른쪽 끝에 고정 */
-}
-
-.add-ad-button {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    padding: 10px 20px;
-    background-color: #efefef;
-    color: #333;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    cursor: pointer;
 }
