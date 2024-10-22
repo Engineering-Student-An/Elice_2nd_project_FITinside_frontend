@@ -85,7 +85,7 @@ const OrderList = () => {
 
     return (
         <div className="orderList container my-4">
-            <h2 className="text-center mb-4">주문 내역</h2>
+            <h2 className="text-center mb-4" style={{marginTop: '90px'}}>주문 내역</h2>
 
             {/* 검색 기능 추가 */}
             <div className="input-group mb-4" style={{ maxWidth: '400px', margin: '0 auto' }}>

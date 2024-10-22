@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
 import { addToCart } from '../cart/cartStorage';
 
 const ProductSection = () => {
@@ -12,14 +13,9 @@ const ProductSection = () => {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/products/${productId}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    setProduct(data);
-                    setSelectedImage(data.productImgUrls ? data.productImgUrls[0] : '');
-                } else {
-                    throw new Error("Failed to fetch product data");
-                }
+                const response = await axios.get(`http://localhost:8080/api/products/${productId}`);
+                setProduct(response.data);
+                setSelectedImage(response.data.productImgUrls ? response.data.productImgUrls[0] : '');
             } catch (error) {
                 console.error("Error fetching product data:", error);
             }
@@ -28,9 +24,8 @@ const ProductSection = () => {
         fetchProduct();
     }, [productId]);
 
-
     const handleAddToCart = async () => {
-        if (product) {
+        if (product && !product.soldOut) {
             const cartItem = {
                 id: product.id,
                 quantity,
@@ -45,6 +40,8 @@ const ProductSection = () => {
             if (moveToCart) {
                 navigate('/cart');
             }
+        } else {
+            alert('이 상품은 품절되었습니다.');
         }
     };
 
@@ -64,19 +61,17 @@ const ProductSection = () => {
         ? product.productDescImgUrls
         : []; // 설명 이미지가 없을 경우 비워둠
 
-    // 장바구니 담기 => 상품 재고 수량과 비교
     const handleQuantityChange = (e) => {
         const newQuantity = parseInt(e.target.value, 10);
         const maxQuantity = product.stock || 1; // 재고 수량
 
-        // 수량이 1 이상이고 재고를 초과하지 않도록 설정
         if (newQuantity >= 1 && newQuantity <= maxQuantity) {
             setQuantity(newQuantity);
         } else if (newQuantity > maxQuantity) {
             alert(`남은 재고는 ${maxQuantity}개입니다.`);
-            setQuantity(maxQuantity); // 최대 수량으로 설정
+            setQuantity(maxQuantity);
         } else {
-            setQuantity(1); // 최소 수량을 1로 설정
+            setQuantity(1);
         }
     };
 
@@ -126,22 +121,29 @@ const ProductSection = () => {
                         <div className="fs-5 mb-5">
                             <span>{product.price.toLocaleString()}원</span>
                         </div>
+                        {/* 품절 여부 표시 */}
+                        {product.soldOut && (
+                            <div className="text-danger fw-bold mb-3">
+                                품절된 상품입니다.
+                            </div>
+                        )}
                         {/* 수량 입력 및 장바구니 버튼 */}
-                        <div className="d-flex mb-3">
-                            <input
-                                className="form-control text-center me-3"
-                                id="inputQuantity"
-                                type="number"
-                                value={quantity}
-                                onChange={handleQuantityChange}
-                                style={{maxWidth: '4rem'}}
-                                min="1"
-                            />
-                            <button className="btn btn-dark flex-shrink-0" type="button" onClick={handleAddToCart}>
-                                장바구니 담기
-                            </button>
-                        </div>
-
+                        {!product.soldOut && (
+                            <div className="d-flex mb-3">
+                                <input
+                                    className="form-control text-center me-3"
+                                    id="inputQuantity"
+                                    type="number"
+                                    value={quantity}
+                                    onChange={handleQuantityChange}
+                                    style={{ maxWidth: '4rem' }}
+                                    min="1"
+                                />
+                                <button className="btn btn-dark flex-shrink-0" type="button" onClick={handleAddToCart}>
+                                    장바구니 담기
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
                 {/* 탭 구성 섹션 */}
@@ -163,7 +165,7 @@ const ProductSection = () => {
                             <p>{product.info}</p>
                             {/* 상품 설명 이미지 추가 */}
                             <div className="description-images mt-3">
-                                {productDescImages.length > 0 ? (
+                                {productDescImages.length > 0 &&
                                     productDescImages.map((image, index) => (
                                         <img
                                             key={index}
@@ -172,10 +174,9 @@ const ProductSection = () => {
                                             className="img-fluid mb-3"
                                         />
                                     ))
-                                ) : (
-                                    <p>설명 이미지가 없습니다.</p>
-                                )}
+                                }
                             </div>
+
                         </div>
                         <div className="tab-pane fade" id="qna" role="tabpanel" aria-labelledby="qna-tab">
                             <p>여기에서 상품에 대한 Q&A를 볼 수 있습니다.</p>
