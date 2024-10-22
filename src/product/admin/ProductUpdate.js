@@ -174,16 +174,42 @@ const ProductUpdate = () => {
     // 이미지 파일 선택 처리 및 미리보기
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
-        setNewImages(files);
-        setPreviewImages(files.map((file) => URL.createObjectURL(file))); // 미리보기 이미지 생성
+        const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+        // 파일 형식 검증
+        const validFiles = files.filter(file => validImageTypes.includes(file.type));
+        if (validFiles.length !== files.length) {
+            alert('허용되지 않은 이미지 형식이 포함되어 있습니다. jpg, png, gif, webp 형식의 파일만 업로드할 수 있습니다.');
+            return; // 잘못된 파일 형식이 있는 경우 업로드 중단
+        }
+
+        setNewImages(validFiles);  // 유효한 파일만 저장
+
+        // 미리보기 이미지 생성
+        const previewUrls = validFiles.map((file) => URL.createObjectURL(file));
+        setPreviewImages(previewUrls);
     };
+
 
     // 설명 이미지 파일 선택 처리 및 미리보기
     const handleDescFileChange = (e) => {
         const files = Array.from(e.target.files);
-        setNewDescImages(files);
-        setDescPreviewImages(files.map((file) => URL.createObjectURL(file))); // 미리보기 이미지 생성
+        const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+        // 파일 형식 검증
+        const validFiles = files.filter(file => validImageTypes.includes(file.type));
+        if (validFiles.length !== files.length) {
+            alert('허용되지 않은 이미지 형식이 포함되어 있습니다. jpg, png, gif, webp 형식의 파일만 업로드할 수 있습니다.');
+            return; // 잘못된 파일 형식이 있는 경우 업로드 중단
+        }
+
+        setNewDescImages(validFiles);  // 유효한 파일만 저장
+
+        // 미리보기 설명 이미지 생성
+        const previewDescUrls = validFiles.map((file) => URL.createObjectURL(file));
+        setDescPreviewImages(previewDescUrls);
     };
+
 
     // 삭제할 이미지 선택 처리
     const handleImageDelete = (url) => {

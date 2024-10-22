@@ -106,20 +106,38 @@ const ProductCreate = () => {
 
     const handleImageChange = (e) => {
         const selectedFiles = Array.from(e.target.files);
-        setImages(selectedFiles);
+        const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+        // 파일 형식 검증
+        const validFiles = selectedFiles.filter(file => validImageTypes.includes(file.type));
+        if (validFiles.length !== selectedFiles.length) {
+            alert('허용되지 않은 이미지 형식이 포함되어 있습니다. jpg, png, gif, webp 형식의 파일만 업로드할 수 있습니다.');
+            return; // 잘못된 파일 형식이 있는 경우 업로드 중단
+        }
+
+        setImages(validFiles);  // 유효한 파일만 저장
 
         // 미리보기 이미지 생성
-        const previewUrls = selectedFiles.map(file => URL.createObjectURL(file));
+        const previewUrls = validFiles.map(file => URL.createObjectURL(file));
         setPreviewImages(previewUrls);
     };
 
     // 상품 설명 이미지 핸들러
     const handleDescImageChange = (e) => {
         const selectedDescFiles = Array.from(e.target.files);
-        setDescImages(selectedDescFiles);
+        const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+        // 파일 형식 검증
+        const validDescFiles = selectedDescFiles.filter(file => validImageTypes.includes(file.type));
+        if (validDescFiles.length !== selectedDescFiles.length) {
+            alert('허용되지 않은 이미지 형식이 포함되어 있습니다. jpg, png, gif, webp 형식의 파일만 업로드할 수 있습니다.');
+            return; // 잘못된 파일 형식이 있는 경우 업로드 중단
+        }
+
+        setDescImages(validDescFiles);  // 유효한 파일만 저장
 
         // 미리보기 설명 이미지 생성
-        const previewDescUrls = selectedDescFiles.map(file => URL.createObjectURL(file));
+        const previewDescUrls = validDescFiles.map(file => URL.createObjectURL(file));
         setPreviewDescImages(previewDescUrls);
     };
 
@@ -183,12 +201,14 @@ const ProductCreate = () => {
 
                     if (!retryResponse.ok) {
                         throw new Error('상품 등록에 실패했습니다.');
+                        alert('상품 등록에 실패했습니다. 다시 시도해주세요.');
                     }
 
                     console.log('상품이 성공적으로 등록되었습니다.');
                     navigate('/admin/products');
                 } else {
                     throw new Error('상품 등록에 실패했습니다.');
+                    alert('상품 등록에 실패했습니다. 다시 시도해주세요.');
                 }
             } else {
                 console.log('상품이 성공적으로 등록되었습니다.');
@@ -196,6 +216,7 @@ const ProductCreate = () => {
             }
         } catch (error) {
             console.error('에러 발생:', error);
+            alert('상품 등록에 실패했습니다. 다시 시도해주세요.');
         }
     };
 
@@ -300,6 +321,7 @@ const ProductCreate = () => {
                             onChange={handleImageChange}
                             className="form-control"
                             multiple
+                            accept="image/jpeg, image/png, image/gif, image/webp"
                         />
                     </div>
                 </div>
@@ -333,6 +355,7 @@ const ProductCreate = () => {
                             onChange={handleDescImageChange}
                             className="form-control"
                             multiple
+                            accept="image/jpeg, image/png, image/gif, image/webp"
                         />
                     </div>
                 </div>
