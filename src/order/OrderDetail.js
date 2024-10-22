@@ -263,13 +263,15 @@ const OrderDetail = () => {
                         <td>
                             {/* 상품 이미지 및 정보 */}
                             <div style={{ display: 'flex', alignItems: 'center' }}>
-                                {product.productImgUrl && (
+                                {/*{product.productImgUrl && (*/}
                                     <img
                                         style={{ width: '100px', height: '100px', marginRight: '10px' }}
-                                        src={product.productImgUrl}
+                                        src={
+                                        product.productImgUrl ? product.productImgUrl : 'https://dummyimage.com/100x100'
+                                    }
                                         alt={product.orderProductName}
                                     />
-                                )}
+                                {/*)}*/}
                                 <div>
                                     <p>{product.orderProductName}</p>
                                 </div>

@@ -401,7 +401,11 @@ const OrderCreate = () => {
                                         {productDetails[item.productId] && productDetails[item.productId].productImgUrls && (
                                             <img
                                                 style={{ width: '100px', height: '100px', marginRight: '10px' }}
-                                                src={productDetails[item.productId].productImgUrls[0]}
+                                                src={
+                                                productDetails[item.productId].productImgUrls.length > 0 ?
+                                                    productDetails[item.productId].productImgUrls[0]
+                                                    : 'https://dummyimage.com/100x100'
+                                            }
                                                 alt={item.productName}
                                             />
                                         )}

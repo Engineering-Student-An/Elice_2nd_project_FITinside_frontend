@@ -145,13 +145,15 @@ const OrderList = () => {
                         </div>
                         <div className="card-body d-flex">
                             {/* 대표 상품 이미지 추가 */}
-                            {order.productImgUrl && (
+                            {/*{order.productImgUrl && (*/}
                                 <img
-                                    src={order.productImgUrl}
+                                    src={
+                                    order.productImgUrl ? order.productImgUrl : 'https://dummyimage.com/100x100'
+                                }
                                     alt="주문 상품 대표 이미지"
                                     className="order-img"
                                 />
-                            )}
+                            {/*)}*/}
                             <div className="order-info">
                                 <p className="card-text"><strong>주문 상품:</strong> {order.productNames.join(', ')}</p>
                                 <p className="card-text"><strong>총 가격:</strong> {(order.totalPrice).toLocaleString()}원</p>
