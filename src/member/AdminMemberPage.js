@@ -120,6 +120,7 @@ const MemberList = () => {
                     <th>이메일</th>
                     <th>이름</th>
                     <th>전화번호</th>
+                    <th>가입일자</th>
                     <th>작업</th>
                     {/* 작업 열 추가 */}
                 </tr>
@@ -133,6 +134,7 @@ const MemberList = () => {
                             <td>{member.email}</td>
                             <td>{member.userName}</td>
                             <td>{member.phone}</td>
+                            <td>{new Date(member.createdAt).toLocaleDateString('ko-KR')}</td>
                             <td>
                                 {/* 삭제 버튼 추가 */}
                                 <Button
