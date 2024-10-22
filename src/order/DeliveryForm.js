@@ -141,7 +141,7 @@ const DeliveryForm = forwardRef(({ initialValues = {}, onAddressSelect, onNewAdd
 
     return (
         <div className="delivery-form">
-            <div style={{ display: 'flex', alignItems: 'center', marginTop: 80 }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginTop: 50 }}>
                 <h4 style={{ margin: 0, lineHeight: '1.5', paddingTop: 0 }}>배송 정보</h4>
 
                 {/* hideButtons가 true일 때 버튼 숨김 */}

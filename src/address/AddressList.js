@@ -179,86 +179,88 @@ const AddressList = () => {
 
     return (
         <div className="container mt-5">
-            <h2 className="mb-4">배송지 목록</h2>
-            {!isEditing && !isAdding ? (
-                <>
-                    {/* 배송지가 5개 이상이면 추가 버튼 비활성화 */}
-                    <button
-                        className="btn btn-primary mb-3"
-                        onClick={handleAdd}
-                        disabled={addresses.length >= MAX_ADDRESSES}
-                    >
-                        새 배송지 추가
-                    </button>
-                    {addresses.length >= MAX_ADDRESSES && (
-                        <p className="text-danger">최대 {MAX_ADDRESSES}개의 배송지만 저장할 수 있습니다.</p>
-                    )}
-                    {addresses.length > 0 ? (
-                        <table className="table table-bordered">
-                            <thead>
-                            <tr>
-                                <th>기본 배송지</th>
-                                <th>수령인</th>
-                                <th>전화번호</th>
-                                <th>우편번호</th>
-                                <th>주소</th>
-                                <th>상세주소</th>
-                                <th>배송 메모</th>
-                                <th>관리</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {addresses.map(address => (
-                                <tr key={address.addressId}>
-                                    <td>
-                                        <input
-                                            type="checkbox"
-                                            checked={address.defaultAddress === 'Y'} // 기본 배송지 체크 (defaultAddress가 Y일 경우 체크)
-                                            onChange={(e) => handleDefaultChange(address.addressId, e.target.checked)}
-                                        />
-                                    </td>
-                                    <td>{address.deliveryReceiver}</td>
-                                    <td>{address.deliveryPhone}</td>
-                                    <td>{address.postalCode}</td>
-                                    <td>{address.deliveryAddress}</td>
-                                    <td>{address.detailedAddress}</td>
-                                    <td>{address.deliveryMemo}</td>
-                                    <td>
-                                        <button
-                                            className="btn btn-warning btn-sm me-2"
-                                            onClick={() => handleEdit(address.addressId)}
-                                        >
-                                            수정
-                                        </button>
-                                        <button
-                                            className="btn btn-danger btn-sm"
-                                            onClick={() => handleDelete(address.addressId)}
-                                        >
-                                            삭제
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
+            <h2 className="mb-4" style={{ marginTop: '120px' }}>배송지 목록</h2>
+                <div style={{marginBottom: '80px'}}>
+                    {!isEditing && !isAdding ? (
+                        <>
+                            {/* 배송지가 5개 이상이면 추가 버튼 비활성화 */}
+                            <button
+                                className="btn btn-primary mb-3"
+                                onClick={handleAdd}
+                                disabled={addresses.length >= MAX_ADDRESSES}
+                            >
+                                새 배송지 추가
+                            </button>
+                            {addresses.length >= MAX_ADDRESSES && (
+                                <p className="text-danger">최대 {MAX_ADDRESSES}개의 배송지만 저장할 수 있습니다.</p>
+                            )}
+                            {addresses.length > 0 ? (
+                                <table className="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>기본 배송지</th>
+                                        <th>수령인</th>
+                                        <th>전화번호</th>
+                                        <th>우편번호</th>
+                                        <th>주소</th>
+                                        <th>상세주소</th>
+                                        <th>배송 메모</th>
+                                        <th>관리</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {addresses.map(address => (
+                                        <tr key={address.addressId}>
+                                            <td>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={address.defaultAddress === 'Y'} // 기본 배송지 체크 (defaultAddress가 Y일 경우 체크)
+                                                    onChange={(e) => handleDefaultChange(address.addressId, e.target.checked)}
+                                                />
+                                            </td>
+                                            <td>{address.deliveryReceiver}</td>
+                                            <td>{address.deliveryPhone}</td>
+                                            <td>{address.postalCode}</td>
+                                            <td>{address.deliveryAddress}</td>
+                                            <td>{address.detailedAddress}</td>
+                                            <td>{address.deliveryMemo}</td>
+                                            <td>
+                                                <button
+                                                    className="btn btn-warning btn-sm me-2"
+                                                    onClick={() => handleEdit(address.addressId)}
+                                                >
+                                                    수정
+                                                </button>
+                                                <button
+                                                    className="btn btn-danger btn-sm"
+                                                    onClick={() => handleDelete(address.addressId)}
+                                                >
+                                                    삭제
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <div>등록된 배송지가 없습니다.</div>
+                            )}
+                        </>
                     ) : (
-                        <div>등록된 배송지가 없습니다.</div>
+                        <div>
+                            <h3>{isAdding ? "새 배송지 추가" : "배송지 수정"}</h3>
+                            <DeliveryForm
+                                ref={formRef}
+                                initialValues={selectedAddress || {}}  // selectedAddress가 null이면 빈 객체 전달
+                                // showDefaultSelect={true}  // 추가 및 수정 모드일 때 기본 배송지 선택 버튼을 숨김
+                                hideButtons={true}
+                                forceShowCheckbox={true}
+                            />
+                            <button className="btn btn-success mt-3" onClick={handleSave}>저장</button>
+                            <button className="btn btn-secondary mt-3 ms-2" onClick={handleCancel}>취소</button>
+                        </div>
                     )}
-                </>
-            ) : (
-                <div>
-                    <h3>{isAdding ? "새 배송지 추가" : "배송지 수정"}</h3>
-                    <DeliveryForm
-                        ref={formRef}
-                        initialValues={selectedAddress || {}}  // selectedAddress가 null이면 빈 객체 전달
-                        // showDefaultSelect={true}  // 추가 및 수정 모드일 때 기본 배송지 선택 버튼을 숨김
-                        hideButtons={true}
-                        forceShowCheckbox={true}
-                    />
-                    <button className="btn btn-success mt-3" onClick={handleSave}>저장</button>
-                    <button className="btn btn-secondary mt-3 ms-2" onClick={handleCancel}>취소</button>
                 </div>
-            )}
         </div>
     );
 };

@@ -274,7 +274,7 @@ const OrderCreate = () => {
         <div className="container order-create-container my-5">
             <h2>주문서</h2>
             <br/>
-            <div className="both-container">
+            <div className="both-container" style={{ paddingTop: '0px', marginTop: '30px' }}>
                 <div className="left-container">
                     <table className="table">
                         <thead>
