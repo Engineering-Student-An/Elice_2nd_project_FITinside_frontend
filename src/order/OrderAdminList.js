@@ -4,6 +4,7 @@ import { Form, Button, Row, Col } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './orderAdminList.css';
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
 
 const OrderAdminList = () => {
     const [orders, setOrders] = useState([]);
@@ -46,9 +47,39 @@ const OrderAdminList = () => {
             } else {
                 setIsNoResults(false);
             }
-        } catch (err) {
-            console.error('전체 주문 정보 불러오기 실패:', err.response ? err.response.data : err.message);
-            setError('주문 목록을 불러오는 중 오류가 발생했습니다.');
+        } catch (error) {
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+
+                const token = localStorage.getItem('token');
+                const params = {
+                    page: currentPage,
+                    orderStatus: filter && selectedStatus ? selectedStatus : null,
+                    startDate: filter && startDate ? startDate.toLocaleDateString('en-CA') : null,
+                    endDate: filter && endDate ? endDate.toLocaleDateString('en-CA') : null
+                };
+
+                console.log('Params sent to api: ', params);
+
+                const response = await axios.get('http://localhost:8080/api/admin/orders', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                    params: params
+                });
+
+                setOrders(response.data.orders);
+                setTotalPages(response.data.totalPages);
+
+                if (response.data.orders.length === 0) {
+                    setIsNoResults(true);
+                } else {
+                    setIsNoResults(false);
+                }
+            } catch (err) {
+                console.error('전체 주문 정보 불러오기 실패:', err.response ? err.response.data : err.message);
+                setError('주문 목록을 불러오는 중 오류가 발생했습니다.');
+            }
         }
     };
 
@@ -104,9 +135,37 @@ const OrderAdminList = () => {
                 return updatedChanges;
             });
             window.location.reload();
-        } catch (err) {
-            console.error('주문 상태 변경 실패:', err.response ? err.response.data : err.message);
-            alert('주문 상태 변경에 실패했습니다. 다시 시도해주세요.');
+        } catch (error) {
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+
+                const token = localStorage.getItem('token');
+                const requestData = { status: newStatus };
+
+                const response = await axios.patch(`http://localhost:8080/api/admin/orders/${orderId}/status`, requestData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                // 서버로부터 받은 새로운 주문 상태를 즉시 반영
+                setOrders((prevOrders) =>
+                    prevOrders.map((order) =>
+                        order.orderId === orderId ? { ...order, orderStatus: response.data.orderStatus } : order
+                    )
+                );
+
+                alert('주문 상태가 성공적으로 수정되었습니다.');
+                setPendingStatusChanges((prevChanges) => {
+                    const updatedChanges = { ...prevChanges };
+                    delete updatedChanges[orderId];
+                    return updatedChanges;
+                });
+                window.location.reload();
+            } catch (err) {
+                console.error('주문 상태 변경 실패:', err.response ? err.response.data : err.message);
+                alert('주문 상태 변경에 실패했습니다. 다시 시도해주세요.');
+            }
         }
     };
 
@@ -126,9 +185,23 @@ const OrderAdminList = () => {
 
             alert('주문이 성공적으로 삭제되었습니다.');
             fetchAdminOrders(currentPage);
-        } catch (err) {
-            console.error('주문 삭제 실패:', err.response ? err.response.data : err.message);
-            alert('주문 삭제에 실패했습니다. 다시 시도해주세요.');
+        } catch (error) {
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+
+                const token = localStorage.getItem('token');
+                await axios.delete(`http://localhost:8080/api/admin/orders/${orderId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                alert('주문이 성공적으로 삭제되었습니다.');
+                fetchAdminOrders(currentPage);
+            } catch (err) {
+                console.error('주문 삭제 실패:', err.response ? err.response.data : err.message);
+                alert('주문 삭제에 실패했습니다. 다시 시도해주세요.');
+            }
         }
     };
 

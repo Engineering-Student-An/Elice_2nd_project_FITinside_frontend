@@ -24,7 +24,14 @@ const AddressList = () => {
         } catch (err) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
-                window.location.reload(); // 새로고침
+
+                const token = localStorage.getItem('token');
+                const response = await axios.get('http://localhost:8080/api/addresses', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                setAddresses(response.data);  // API 응답으로 받은 주소 데이터 저장
             } catch (error) {
                 setError(error.message);
             }
@@ -133,10 +140,24 @@ const AddressList = () => {
             });
             setAddresses(addresses.filter(address => address.addressId !== addressId)); // 삭제 후 목록 갱신
             alert('배송지가 삭제되었습니다.');
-        } catch (err) {
-            console.error("배송지 삭제 중 오류 발생: ", err);
-            alert('배송지 삭제 중 오류가 발생했습니다.');
+        } catch (error) {
+            try {
+              await sendRefreshTokenAndStoreAccessToken();
+
+                const token = localStorage.getItem('token');
+                await axios.delete(`http://localhost:8080/api/addresses/${addressId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                setAddresses(addresses.filter(address => address.addressId !== addressId)); // 삭제 후 목록 갱신
+                alert('배송지가 삭제되었습니다.');
+            } catch (err) {
+                console.error("배송지 삭제 중 오류 발생: ", err);
+                alert('배송지 삭제 중 오류가 발생했습니다.');
+            }
         }
+
     };
 
     const handleAdd = () => {
@@ -167,9 +188,25 @@ const AddressList = () => {
             });
             alert(`기본 배송지가 ${isChecked ? '설정' : '해제'}되었습니다.`);
             fetchAddresses();  // 변경 후 목록 갱신
-        } catch (error) {
-            console.error('기본 배송지 설정 중 오류 발생: ', error);
-            alert('기본 배송지 설정 중 오류가 발생했습니다.');
+        } catch (err) {
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+
+                const token = localStorage.getItem('token');
+                await axios.patch(`http://localhost:8080/api/addresses/${addressId}/default`, null, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    params: {
+                        isDefault: isChecked? "Y" : "N"  // 기본 배송지로 설정
+                    }
+                });
+                alert(`기본 배송지가 ${isChecked ? '설정' : '해제'}되었습니다.`);
+                fetchAddresses();  // 변경 후 목록 갱신
+            } catch (error) {
+                console.error('기본 배송지 설정 중 오류 발생: ', error);
+                alert('기본 배송지 설정 중 오류가 발생했습니다.');
+            }
         }
     };
 

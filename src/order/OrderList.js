@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import './orderList.css';
-import { FaSearch } from 'react-icons/fa'; // 돋보기 아이콘
+import { FaSearch } from 'react-icons/fa';
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken"; // 돋보기 아이콘
 
 const statusOptions = [
     { value: 'ORDERED', label: '주문 완료' },
@@ -46,9 +47,29 @@ const OrderList = () => {
 
             setOrders(response.data.orders);
             setTotalPages(response.data.totalPages);
-        } catch (err) {
-            console.error('주문 목록 불러오기 실패:', err.response ? err.response.data : err.message);
-            setError('주문 목록을 불러오는 중 오류가 발생했습니다.');
+        } catch (error) {
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+
+                const token = localStorage.getItem('token');
+                const response = await axios.get(`http://localhost:8080/api/orders?page=${page}&productName=${searchTerm}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                if (response.data.orders.length === 0) {
+                    setNoResults(true); // 검색 결과가 없을 때
+                } else {
+                    setNoResults(false); // 검색 결과가 있을 때
+                }
+
+                setOrders(response.data.orders);
+                setTotalPages(response.data.totalPages);
+            } catch (err) {
+                console.error('주문 목록 불러오기 실패:', err.response ? err.response.data : err.message);
+                setError('주문 목록을 불러오는 중 오류가 발생했습니다.');
+            }
         }
     };
 
@@ -124,13 +145,15 @@ const OrderList = () => {
                         </div>
                         <div className="card-body d-flex">
                             {/* 대표 상품 이미지 추가 */}
-                            {order.productImgUrl && (
+                            {/*{order.productImgUrl && (*/}
                                 <img
-                                    src={order.productImgUrl}
+                                    src={
+                                    order.productImgUrl ? order.productImgUrl : 'https://dummyimage.com/100x100'
+                                }
                                     alt="주문 상품 대표 이미지"
                                     className="order-img"
                                 />
-                            )}
+                            {/*)}*/}
                             <div className="order-info">
                                 <p className="card-text"><strong>주문 상품:</strong> {order.productNames.join(', ')}</p>
                                 <p className="card-text"><strong>총 가격:</strong> {(order.totalPrice).toLocaleString()}원</p>
