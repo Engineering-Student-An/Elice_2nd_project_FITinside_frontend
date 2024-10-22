@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import sendRefreshTokenAndStoreAccessToken from '../../auth/RefreshAccessToken'; // 경로 수정
 import './ProductAdmin.css';  // CSS 파일 임포트
 
 const ProductAdmin = () => {
@@ -26,29 +27,6 @@ const ProductAdmin = () => {
     useEffect(() => {
         fetchProducts(page);
     }, [page, sortField, sortDir]); // page, sortField, sortDir가 변경될 때마다 새 데이터를 가져옴
-
-    // 토큰 재발급 및 로컬 스토리지에 저장하는 함수
-    const sendRefreshTokenAndStoreAccessToken = async () => {
-        try {
-            // refreshToken을 /api/auth/token으로 JSON 형식으로 전송
-            const response = await axios.post(
-                'http://localhost:8080/api/auth/token',
-                {},  // refreshToken을 요청 바디에 포함
-                {
-                    headers: {
-                        'Content-Type': 'application/json',  // 요청 헤더 설정
-                    },
-                    withCredentials: true,  // 쿠키 기반 인증 사용 (httponly 쿠키를 같이 보냄)
-                }
-            );
-
-            const accessToken = response.data.accessToken;  // 서버에서 새로운 accessToken 받기
-            localStorage.setItem('token', accessToken);  // accessToken을 로컬 스토리지에 저장
-            console.log('새로운 accessToken이 로컬 스토리지에 저장되었습니다.');
-        } catch (error) {
-            console.error('토큰 갱신 실패:', error);
-        }
-    };
 
     const fetchProducts = async (pageNumber) => {
         const endpoint = searchType === 'productName' ? '/api/products' : '/api/products/byCategory'; // 검색 타입에 따라 다른 엔드포인트 호출
@@ -219,7 +197,7 @@ const ProductAdmin = () => {
     return (
         <div className="page-content"> {/* 콘텐츠에 margin-top 적용 */}
             <div className="container mt-5">
-                <h1 className="display-4 mb-4">상품 관리 </h1>
+                <h1 className="display-4 mb-4">상품 관리</h1>
                 <button onClick={handleCreateProduct} className="btn btn-primary mb-3">상품 등록</button>
 
                 <div className="form-group mb-3">
