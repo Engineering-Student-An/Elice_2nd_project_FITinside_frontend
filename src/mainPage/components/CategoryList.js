@@ -75,7 +75,7 @@ const CategoryList = ({ userRole }) => {
 
     useEffect(() => {
         // 서버에서 카테고리 목록 가져오기
-        axios.get('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/categories', {
+        axios.get('http://localhost:8080/api/categories', {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}` // 토큰 없이도 접근이 가능하게 하려면 토큰을 제거할 수 있습니다.
             }

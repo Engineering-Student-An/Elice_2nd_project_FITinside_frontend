@@ -15,7 +15,7 @@ const AddressList = () => {
     const fetchAddresses = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/addresses', {
+            const response = await axios.get('http://localhost:8080/api/addresses', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -133,7 +133,7 @@ const AddressList = () => {
 
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/addresses/${addressId}`, {
+            await axios.delete(`http://localhost:8080/api/addresses/${addressId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
