@@ -16,6 +16,8 @@ const Cart = () => {
     const [currentProduct, setCurrentProduct] = useState(null);
     const [totalDiscount, setTotalDiscount] = useState(0);
     const [appliedCoupons, setAppliedCoupons] = useState([]); // 여러 쿠폰 상태 추가
+    const [outOfStockCount, setOutOfStockCount] = useState(0); // 재고가 0인 상품 수 추가
+
 
     useEffect(() => {
         setCart(getCart());
@@ -37,6 +39,13 @@ const Cart = () => {
             fetchAllProducts();
         }
     }, [cart]);
+
+    useEffect(() => {
+        // 재고가 0인 상품 수 계산
+        const countOutOfStockItems = cart.filter(item => productDetails[item.id]?.stock === 0).length;
+        setOutOfStockCount(countOutOfStockItems);
+    }, [cart, productDetails]);
+
 
     const handleRemoveFromCart = (id) => {
         // 장바구니에서 상품 제거
@@ -286,7 +295,7 @@ const Cart = () => {
                         <div>
                             <button className="btn btn-light text-dark me-2" style={{border: '1px solid #ced4da'}}
                                     onClick={handleSelectAll}>
-                                {selectedItems.size === cart.length ? '전체선택 해제' : '전체선택'}
+                                {selectedItems.size + outOfStockCount === cart.length ? '전체선택 해제' : '전체선택'}
                             </button>
                             <button className="btn btn-light text-dark me-2" style={{border: '1px solid #ced4da'}}
                                     onClick={handleRemoveSelected} disabled={selectedItems.size === 0}>
@@ -335,8 +344,16 @@ const Cart = () => {
                                         {productDetails[item.id] ? (
                                             <div key={item.id}>
                                                 <div className="d-flex justify-content-start">
-                                                    <img style={{width: '100px', height: '100px', marginRight: '10px'}}
-                                                         src={productDetails[item.id].productImgUrls[0]}/>
+                                                    <img
+                                                        style={{width: '100px', height: '100px', marginRight: '10px'}}
+                                                        src={
+                                                            productDetails[item.id].productImgUrls.length > 0
+                                                                ? productDetails[item.id].productImgUrls[0]
+                                                                : 'https://dummyimage.com/100x100' // 더미 이미지의 URL로 변경하세요
+                                                        }
+                                                        alt="상품 이미지"
+                                                    />
+
                                                     <div>
                                                         <p style={{margin: `0`}}>{productDetails[item.id].manufacturer}</p>
                                                         <p style={{fontWeight: 'bold'}}>
