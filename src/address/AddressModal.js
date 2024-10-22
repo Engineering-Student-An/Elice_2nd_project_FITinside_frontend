@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import sendRefreshTokenAndStoreAccessToken from '../auth/RefreshAccessToken';
+import './addressModal.css';
 
-const AddressModal = ({ isOpen, onClose, onSelect }) => {
+const AddressModal = ({ isOpen, onClose, onSelect, onEdit, selectedAddressId }) => {
     const [addresses, setAddresses] = useState([]);
 
     useEffect(() => {
@@ -35,10 +36,20 @@ const AddressModal = ({ isOpen, onClose, onSelect }) => {
         fetchAddresses();
     }, [isOpen]);
 
+    // 콘솔 로그로 selectedAddressId 값 확인
+    console.log("Selected Address ID:", selectedAddressId);
+
     if (!isOpen) return null;
 
     const handleSelect = (address) => {
+        console.log('모달에서 선택한 주소 정보: ', address);
         onSelect(address); // 선택한 주소를 상위 컴포넌트로 전달
+        onClose(); // 모달 닫기
+    };
+
+    const handleEdit = (address) => {
+        console.log('수정할 주소 정보: ', address);
+        onEdit(address); // 선택한 주소 데이터를 수정하기 위해 상위 컴포넌트로 전달
         onClose(); // 모달 닫기
     };
 
@@ -52,10 +63,20 @@ const AddressModal = ({ isOpen, onClose, onSelect }) => {
                     <div className="modal-body">
                         <ul className="list-group">
                             {addresses.map((address) => (
-                                <li key={address.addressId} className="list-group-item">
+                                <li
+                                    key={address.addressId}
+                                    className={`list-group-item ${address.addressId === selectedAddressId ? 'selected-address' : ''}`}
+                                    // onClick={() => handleSelect(address)}
+                                >
                                     <div className="d-flex justify-content-between align-items-center">
                                         <strong>{address.deliveryReceiver}</strong>
-                                        <button className="btn btn-sm btn-outline-primary" onClick={() => handleSelect(address)}>선택</button>
+                                        <div>
+                                            <button className="btn btn-sm btn-outline-secondary"
+                                                    style={{ marginRight: '8px' }}
+                                                    onClick={() => handleEdit(address)}
+                                            >수정</button>
+                                            <button className="btn btn-sm btn-outline-primary" onClick={() => handleSelect(address)}>선택</button>
+                                        </div>
                                     </div>
                                     <p className="mb-1">{address.deliveryPhone}</p>
                                     <p className="mb-1">{address.postalCode}</p>
