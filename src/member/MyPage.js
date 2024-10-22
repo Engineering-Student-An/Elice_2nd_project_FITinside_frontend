@@ -18,7 +18,7 @@ const MyPage = () => {
             try {
                 const token = localStorage.getItem('token'); // 로컬 스토리지에서 토큰 가져오기
 
-                const response = await axios.get(URL + '/api/user/me', {
+                const response = await axios.get('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/user/me', {
                     headers: {
                         Authorization: `Bearer ${token}`, // Authorization 헤더에 토큰 추가
                     },
