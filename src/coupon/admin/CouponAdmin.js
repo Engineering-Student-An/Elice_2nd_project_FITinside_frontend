@@ -170,9 +170,9 @@ const CouponAdmin = () => {
         <div className="container" style={{marginTop: '86px'}}>
             <div style={{width: '100%', position: 'fixed', backgroundColor: 'white', zIndex: '99', paddingTop: '20px', top:'86px'}}>
                 <h2>쿠폰 관리</h2>
-                <div className="d-flex flex-row justify-content-between mt-3" style={{width: '90%'}}>
+                <div className="d-flex flex-row justify-content-start mt-3" style={{width: '90%'}}>
                     <div>
-                        <button className="btn btn-light text-dark mb-4"
+                        <button className="btn btn-light text-dark mb-4 me-3"
                                 style={{border: '1px solid #ced4da'}}
                                 onClick={handleCreateCoupon}>
                             쿠폰 추가
