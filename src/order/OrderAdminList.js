@@ -32,7 +32,7 @@ const OrderAdminList = () => {
 
             console.log('Params sent to api: ', params);
 
-            const response = await axios.get('http://localhost:8080/api/admin/orders', {
+            const response = await axios.get('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/admin/orders', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 },
@@ -61,7 +61,7 @@ const OrderAdminList = () => {
 
                 console.log('Params sent to api: ', params);
 
-                const response = await axios.get('http://localhost:8080/api/admin/orders', {
+                const response = await axios.get('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/admin/orders', {
                     headers: {
                         Authorization: `Bearer ${token}`
                     },
@@ -115,7 +115,7 @@ const OrderAdminList = () => {
             const token = localStorage.getItem('token');
             const requestData = { status: newStatus };
 
-            const response = await axios.patch(`http://localhost:8080/api/admin/orders/${orderId}/status`, requestData, {
+            const response = await axios.patch(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/admin/orders/${orderId}/status`, requestData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

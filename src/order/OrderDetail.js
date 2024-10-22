@@ -41,7 +41,7 @@ const OrderDetail = () => {
         const fetchOrderDetail = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get(`http://localhost:8080/api/orders/${orderId}`, {
+                const response = await axios.get(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/orders/${orderId}`, {
                     headers: {
                         Authorization: `Bearer ${token}` // 토큰을 인증 헤더에 추가
                     }

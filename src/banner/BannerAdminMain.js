@@ -17,7 +17,7 @@ const BannerAdminMain = () => {
 
     const fetchBanners = () => {
         // 배너 목록 가져오기 (Authorization 헤더 추가)
-        axios.get('http://localhost:8080/api/banners', {
+        axios.get('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/banners', {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }

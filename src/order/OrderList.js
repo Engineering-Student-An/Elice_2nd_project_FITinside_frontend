@@ -33,7 +33,7 @@ const OrderList = () => {
     const fetchOrders = async (page, searchTerm = '') => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8080/api/orders?page=${page}&productName=${searchTerm}`, {
+            const response = await axios.get(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/orders?page=${page}&productName=${searchTerm}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -52,7 +52,7 @@ const OrderList = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                const response = await axios.get(`http://localhost:8080/api/orders?page=${page}&productName=${searchTerm}`, {
+                const response = await axios.get(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/orders?page=${page}&productName=${searchTerm}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }

@@ -22,7 +22,7 @@ const CouponEmailModal = ({ isOpen, onRequestClose, coupon }) => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.get(`http://localhost:8080/api/admin/coupons/${id}/members`, {
+            const response = await axios.get(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/admin/coupons/${id}/members`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },

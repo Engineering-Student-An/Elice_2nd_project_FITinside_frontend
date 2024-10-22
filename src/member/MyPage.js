@@ -16,7 +16,7 @@ const MyPage = () => {
             try {
                 const token = localStorage.getItem('token'); // 로컬 스토리지에서 토큰 가져오기
 
-                const response = await axios.get('http://localhost:8080/api/user/me', {
+                const response = await axios.get('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/user/me', {
                     headers: {
                         Authorization: `Bearer ${token}`, // Authorization 헤더에 토큰 추가
                     },
@@ -63,7 +63,7 @@ const MyPage = () => {
 
             const token = localStorage.getItem('token');
             await axios.put(
-                'http://localhost:8080/api/user/username', // 이름 수정 API 엔드포인트
+                'https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/user/username', // 이름 수정 API 엔드포인트
                 { userName: newName },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -94,7 +94,7 @@ const MyPage = () => {
 
             const token = localStorage.getItem('token');
             await axios.put(
-                'http://localhost:8080/api/user/phone', // 전화번호 수정 API 엔드포인트
+                'https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/user/phone', // 전화번호 수정 API 엔드포인트
                 { phone: newPhone },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

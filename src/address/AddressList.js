@@ -15,7 +15,7 @@ const AddressList = () => {
     const fetchAddresses = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:8080/api/addresses', {
+            const response = await axios.get('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/addresses', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -26,7 +26,7 @@ const AddressList = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                const response = await axios.get('http://localhost:8080/api/addresses', {
+                const response = await axios.get('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/addresses', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -81,7 +81,7 @@ const AddressList = () => {
         if (isAdding) {
             // 배송지 추가 로직
             try {
-                const response = await axios.post('http://localhost:8080/api/addresses', dataToSend, {
+                const response = await axios.post('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/addresses', dataToSend, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }

@@ -13,7 +13,7 @@ const ProductSection = () => {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/products/${productId}`);
+                const response = await axios.get(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/products/${productId}`);
                 setProduct(response.data);
                 setSelectedImage(response.data.productImgUrls ? response.data.productImgUrls[0] : '');
             } catch (error) {

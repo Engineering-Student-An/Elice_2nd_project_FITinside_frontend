@@ -6,7 +6,7 @@ const sendRefreshTokenAndStoreAccessToken = async () => {
     try {
         // refreshToken을 /api/auth/token으로 JSON 형식으로 전송
         const response = await axios.post(
-            'http://localhost:8080/api/auth/token',
+            'https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/auth/token',
             { }, // refreshToken을 요청 바디에 포함
             {
                 headers: {
