@@ -46,19 +46,25 @@ const Cart = () => {
         setOutOfStockCount(countOutOfStockItems);
     }, [cart, productDetails]);
 
-
     const handleRemoveFromCart = (id) => {
         // 장바구니에서 상품 제거
         removeFromCart(id);
         setCart(getCart());
 
         // 선택된 아이템에서 제거
-        selectedItems.delete(id);
-        setSelectedItems(new Set(selectedItems));
+        const updatedSelectedItems = new Set(selectedItems);
+        updatedSelectedItems.delete(id);
+        setSelectedItems(updatedSelectedItems);
 
         // 해당 상품에 적용된 쿠폰 제거
-        setAppliedCoupons(prevCoupons => prevCoupons.filter(c => c.productId !== id));
+        const couponsToRemove = appliedCoupons.filter(c => c.productId === id);
+        couponsToRemove.forEach(coupon => handleRemoveCoupon(coupon)); // 쿠폰 제거 로직 재활용
+
+        // 적용된 쿠폰 상태 업데이트
+        const updatedAppliedCoupons = appliedCoupons.filter(c => c.productId !== id);
+        setAppliedCoupons(updatedAppliedCoupons);
     };
+
 
 
     const handleClearCart = () => {
@@ -78,7 +84,14 @@ const Cart = () => {
 
         // 모든 상품이 선택되어 있는 경우 선택 해제
         if (selectedItems.size === availableIds.length) {
+            // 선택 해제 시, 선택된 모든 상품의 쿠폰 제거
+            availableIds.forEach(id => {
+                const couponsToRemove = appliedCoupons.filter(coupon => coupon.productId === id);
+                couponsToRemove.forEach(coupon => handleRemoveCoupon(coupon));
+            });
+
             setSelectedItems(new Set());
+            setAppliedCoupons([]); // 모든 쿠폰 제거
         } else {
             // 재고가 있는 모든 상품을 선택
             const allIds = new Set(availableIds);
@@ -88,11 +101,30 @@ const Cart = () => {
 
 
     const handleRemoveSelected = () => {
-        selectedItems.forEach(id => {
+        const selectedIds = Array.from(selectedItems);
+
+        // 선택된 아이템의 쿠폰을 제외하고 나머지 쿠폰만 유지
+        const updatedAppliedCoupons = appliedCoupons.filter(coupon => {
+            return !selectedIds.includes(coupon.productId);
+        });
+
+        // 선택된 아이템에서 제거할 쿠폰 목록 생성
+        const couponsToRemove = appliedCoupons.filter(coupon => selectedIds.includes(coupon.productId));
+
+        // 선택된 아이템을 장바구니에서 제거
+        selectedIds.forEach(id => {
             removeFromCart(id);
         });
+
+        // 장바구니 상태 업데이트
         setCart(getCart());
         setSelectedItems(new Set());
+
+        // 쿠폰 제거 로직 재활용하여 적용된 쿠폰 업데이트
+        couponsToRemove.forEach(coupon => handleRemoveCoupon(coupon));
+
+        // 적용된 쿠폰 상태 업데이트
+        setAppliedCoupons(updatedAppliedCoupons); // 상태 업데이트
     };
 
     const handleQuantityChange = async (id, newQuantity) => {
@@ -102,7 +134,6 @@ const Cart = () => {
             setCart(getCart());
         }
     };
-
 
     const cartCount = useCartCount();
 
@@ -135,6 +166,14 @@ const Cart = () => {
     };
 
     const handleShowCouponModal = (item) => {
+        const token = localStorage.getItem('token'); // 로컬 스토리지에서 토큰 가져오기
+
+        if (!token) {
+            // 토큰이 없으면 로그인 페이지로 리다이렉트
+            window.location.href = '/login'; // 로그인 페이지 경로로 변경
+            return;
+        }
+
         fetchAvailableCoupons(item.id);
         setCurrentProduct(item);
         setShowCouponModal(true);
@@ -147,7 +186,7 @@ const Cart = () => {
 
     const handleApplyCoupon = (coupon) => {
         const currentPrice = productDetails[currentProduct.id]?.price || 0; // 현재 상품 가격
-        const discountAmount = coupon.type === 'AMOUNT' ? coupon.value : (currentPrice * coupon.percentage) / 100; // 현재 쿠폰 할인 금액
+        const discountAmount = coupon.type === 'AMOUNT' ? coupon.value : Math.floor((currentPrice * coupon.percentage) / 100); // 현재 쿠폰 할인 금액
 
         // 동일한 쿠폰이 다른 상품에 적용되어 있는지 확인
         const duplicateCoupon = appliedCoupons.find(c => c.couponMemberId === coupon.couponMemberId && c.productId !== currentProduct.id);
@@ -182,9 +221,15 @@ const Cart = () => {
 
         // 총 할인 금액 재계산
         const newTotalDiscount = updatedCoupons.reduce((total, c) => {
-            const price = productDetails[c.productId]?.price || 0;
-            const discount = c.type === 'AMOUNT' ? c.value : (price * c.percentage) / 100;
-            return total + discount;
+            const price = productDetails[c.productId]?.price || 0; // 상품 가격
+            const discount = c.type === 'AMOUNT'
+                ? c.value
+                : Math.floor((price * c.percentage) / 100); // 퍼센트 할인일 경우 소수점 버림 처리
+
+            // 할인 금액이 상품 가격을 초과하는 경우, 상품 가격으로 제한
+            const finalDiscount = Math.min(discount, price);
+
+            return total + finalDiscount; // 총 할인에 더함
         }, 0);
 
         setTotalDiscount(newTotalDiscount); // 재계산된 할인 금액 설정
@@ -200,7 +245,7 @@ const Cart = () => {
         // 총 할인 금액 재계산
         const newTotalDiscount = updatedCoupons.reduce((total, c) => {
             const price = productDetails[c.productId]?.price || 0;
-            const discount = c.type === 'AMOUNT' ? c.value : (price * c.percentage) / 100;
+            const discount = c.type === 'AMOUNT' ? c.value : Math.floor((price * c.percentage) / 100);
             return total + discount;
         }, 0);
         setTotalDiscount(newTotalDiscount);
@@ -248,7 +293,7 @@ const Cart = () => {
                 // 할인 금액 계산
                 const itemPrice = productDetail.price;  // 상품 기존 1개 값
                 const discountAmount = appliedCoupon ?
-                    (appliedCoupon.type === 'AMOUNT' ? appliedCoupon.value : (itemPrice * appliedCoupon.percentage) / 100)
+                    (appliedCoupon.type === 'AMOUNT' ? appliedCoupon.value : Math.floor((itemPrice * appliedCoupon.percentage) / 100))
                     : 0;
 
                 const originalTotalPrice = itemPrice * item.quantity;
@@ -286,10 +331,17 @@ const Cart = () => {
 
     return (
         <div className="cart-container">
-            <div style={{width: '100%', position: 'fixed', backgroundColor: 'white', zIndex: '99', paddingTop:'20px'}}>
+            <div style={{
+                width: '100%',
+                position: 'fixed',
+                backgroundColor: 'white',
+                zIndex: '99',
+                paddingTop: '40px',
+                top: '86px'
+            }}>
                 <h2>쇼핑백</h2>
             </div>
-            <div className="both-container">
+            <div className="both-container-c">
                 <div className="left-container">
                     <div className="d-flex justify-content-between">
                         <div>
@@ -331,14 +383,25 @@ const Cart = () => {
                                             onChange={() => {
                                                 const newSelectedItems = new Set(selectedItems);
                                                 if (newSelectedItems.has(item.id)) {
+                                                    // 선택 해제
                                                     newSelectedItems.delete(item.id);
+
+                                                    // 해당 상품의 적용된 쿠폰 제거
+                                                    const couponsToRemove = appliedCoupons.filter(coupon => coupon.productId === item.id);
+                                                    couponsToRemove.forEach(coupon => handleRemoveCoupon(coupon));
+
+                                                    // 적용된 쿠폰 상태 업데이트
+                                                    const updatedAppliedCoupons = appliedCoupons.filter(coupon => coupon.productId !== item.id);
+                                                    setAppliedCoupons(updatedAppliedCoupons);
                                                 } else {
+                                                    // 선택
                                                     newSelectedItems.add(item.id);
                                                 }
                                                 setSelectedItems(newSelectedItems);
                                             }}
                                             disabled={productDetails[item.id] && productDetails[item.id].stock === 0} // 재고가 0일 때 체크박스 비활성화
                                         />
+
                                     </td>
                                     <td>
                                         {productDetails[item.id] ? (
@@ -393,7 +456,6 @@ const Cart = () => {
 
                                                 {/* 현재 적용된 쿠폰 및 할인 금액 표시 */}
                                                 {appliedCoupons.filter(coupon => coupon.productId === item.id).map((coupon, index) => {
-                                                    const discountAmount = coupon.type === 'AMOUNT' ? coupon.value : (productDetails[item.id].price * coupon.percentage) / 100;
                                                     return (
                                                         <div
                                                             className="d-flex justify-content-start align-items-center">
@@ -407,7 +469,10 @@ const Cart = () => {
                                                             <p key={index}
                                                                style={{margin: '0', color: '#629a72'}}>
                                                                 적용된
-                                                                쿠폰: {coupon.name} (-{discountAmount.toLocaleString()} 원)
+                                                                쿠폰: {coupon.name}
+                                                                {coupon.type === 'AMOUNT'
+                                                                    ? `(${coupon.value.toLocaleString()} 원 할인 쿠폰)`
+                                                                    : `(${coupon.percentage}% 할인 쿠폰)`}
                                                             </p>
 
                                                         </div>
@@ -512,11 +577,24 @@ const Cart = () => {
                             <div style={{display: 'flex', justifyContent: 'space-between', margin: '10px 0'}}>
                                 <div className="applied-coupon-container">
                                     <strong>적용된 쿠폰</strong>
-                                    {appliedCoupons.map((coupon, index) => (
-                                        <p key={index} style={{color: '#629a72', margin: 0}}>
-                                            {coupon.name} {coupon.type === 'AMOUNT' ? `(-${coupon.value.toLocaleString()} 원)` : `(${coupon.percentage}% 할인)`}
-                                        </p>
-                                    ))}
+                                    {appliedCoupons.map((coupon, index) => {
+                                        const price = productDetails[coupon.productId]?.price || 0; // 상품 가격
+                                        const discount = coupon.type === 'AMOUNT' ? coupon.value : Math.floor((price * coupon.percentage) / 100); // 쿠폰 할인 금액
+                                        const finalDiscount = Math.min(discount, price); // 할인 금액이 상품 가격을 초과하지 않도록 제한
+
+                                        return (
+                                            <div>
+                                                <p key={index} style={{color: '#629a72', margin: 0}}>
+                                                    {coupon.name} {coupon.type === 'AMOUNT'
+                                                    ? `(${coupon.value.toLocaleString()}원 할인 쿠폰)`
+                                                    : `(${coupon.percentage}% 할인 쿠폰)`}
+                                                    &nbsp;⇒ {finalDiscount.toLocaleString()} 원 할인
+                                                </p>
+                                                <span></span>
+                                            </div>
+                                        );
+                                    })}
+
                                 </div>
                             </div>
                         )}
