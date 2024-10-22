@@ -42,6 +42,14 @@ const Signup = () => {
         }
     };
 
+    // 전화번호 유효성 검사
+    const handlePhoneChange = (e) => {
+        const regex = /^[0-9\b]+$/; // 숫자만 허용하는 정규 표현식
+        if (e.target.value === '' || regex.test(e.target.value)) {
+            setPhone(e.target.value); // 유효할 경우 상태 업데이트
+        }
+    };
+
     return (
         <div className="d-flex justify-content-center align-items-center vh-100">
             <div className="card p-4" style={{width: '35rem', height: 'fit-content'}}>
@@ -108,9 +116,15 @@ const Signup = () => {
                             id="phone"
                             className="form-control"
                             value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
+                            onChange={handlePhoneChange} // onChange 핸들러
+                            pattern="[0-9]{10,11}" // 전화번호는 10~11자리 숫자
                             required
                         />
+                        {phone && !/^[0-9]{10,11}$/.test(phone) && (
+                            <div className="text-danger">
+                                전화번호는 10자리 또는 11자리 숫자여야 합니다.
+                            </div>
+                        )}
                     </div>
                     {error && <p className="text-danger">{error}</p>}
                     {success && <p className="text-success">{success}</p>}
