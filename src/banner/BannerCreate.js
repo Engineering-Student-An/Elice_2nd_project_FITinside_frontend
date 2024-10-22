@@ -126,7 +126,7 @@ const BannerCreate = () => {
         }
 
         try {
-            await axios.post('http://localhost:8080/api/admin/banners', formData, {
+            await axios.post('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/admin/banners', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`

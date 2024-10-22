@@ -266,7 +266,7 @@ const CategoryAdminMain = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/categories', {
+            const response = await axios.get('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/categories', {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
@@ -326,7 +326,7 @@ const CategoryAdminMain = () => {
         if (!confirmDelete) return;
 
         try {
-            await axios.delete(`http://localhost:8080/api/admin/categories/${categoryId}`, {
+            await axios.delete(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/admin/categories/${categoryId}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
