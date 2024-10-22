@@ -95,6 +95,12 @@ const ProductCreate = () => {
             setManufacturerError('');
         }
 
+        // 가격은 음수가 되지 않도록 처리
+        if (name === 'price' && value < 0) {
+            alert('가격은 음수일 수 없습니다.');
+            return;
+        }
+
         setFormData({ ...formData, [name]: value });
     };
 

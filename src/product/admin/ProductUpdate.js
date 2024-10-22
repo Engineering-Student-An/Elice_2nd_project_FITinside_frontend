@@ -159,6 +159,12 @@ const ProductUpdate = () => {
             setManufacturerError("");
         }
 
+        // 가격은 음수가 될 수 없음
+        if (name === "price" && value < 0) {
+            alert("가격은 음수가 될 수 없습니다.");
+            return;
+        }
+
         setProduct((prevProduct) => ({
             ...prevProduct,
             [name]: value,
