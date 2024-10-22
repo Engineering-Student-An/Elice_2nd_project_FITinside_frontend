@@ -4,6 +4,7 @@ import axios from 'axios';
 import DeliveryForm from './DeliveryForm';
 import AddressModal from '../address/AddressModal';
 import './orderDetail.css';
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
 
 const statusOptions = [
     { value: 'ORDERED', label: '주문 완료' },
@@ -55,9 +56,30 @@ const OrderDetail = () => {
                     deliveryReceiver: response.data.deliveryReceiver,
                     deliveryPhone: response.data.deliveryPhone,
                 });
-            } catch (err) {
-                console.error('주문 상세 정보 불러오기 실패:', err.response ? err.response.data : err.message);
-                setError('주문 정보를 불러오는 중 오류가 발생했습니다.');
+            } catch (error) {
+                try {
+                    await sendRefreshTokenAndStoreAccessToken();
+
+                    const token = localStorage.getItem('token');
+                    const response = await axios.get(`http://localhost:8080/api/orders/${orderId}`, {
+                        headers: {
+                            Authorization: `Bearer ${token}` // 토큰을 인증 헤더에 추가
+                        }
+                    });
+
+                    setOrderDetail(response.data);
+                    setDeliveryData({
+                        postalCode: response.data.postalCode,
+                        deliveryAddress: response.data.deliveryAddress,
+                        detailedAddress: response.data.detailedAddress,
+                        deliveryMemo: response.data.deliveryMemo,
+                        deliveryReceiver: response.data.deliveryReceiver,
+                        deliveryPhone: response.data.deliveryPhone,
+                    });
+                } catch (err) {
+                    console.error('주문 상세 정보 불러오기 실패:', err.response ? err.response.data : err.message);
+                    setError('주문 정보를 불러오는 중 오류가 발생했습니다.');
+                }
             }
         };
 
@@ -117,9 +139,32 @@ const OrderDetail = () => {
             }); // 업데이트된 데이터를 deliveryData에 반영
             alert('배송지 변경이 완료되었습니다.');
             setIsEditing(false); // 수정 완료 후 편집 모드 종료
-        } catch (err) {
-            console.error('주문 수정 실패:', err.response ? err.response.data : err.message);
-            alert('배송 정보를 입력해주세요.');
+        } catch (error) {
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+
+                const token = localStorage.getItem('token');
+                const response = await axios.patch(`http://localhost:8080/api/orders/${orderId}`, updatedData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                setOrderDetail(response.data);
+                setDeliveryData({
+                    postalCode: response.data.postalCode,
+                    deliveryAddress: response.data.deliveryAddress,
+                    detailedAddress: response.data.detailedAddress,
+                    deliveryMemo : response.data.deliveryMemo,
+                    deliveryReceiver: response.data.deliveryReceiver,
+                    deliveryPhone: response.data.deliveryPhone,
+                }); // 업데이트된 데이터를 deliveryData에 반영
+                alert('배송지 변경이 완료되었습니다.');
+                setIsEditing(false); // 수정 완료 후 편집 모드 종료
+            } catch (err) {
+                console.error('주문 수정 실패:', err.response ? err.response.data : err.message);
+                alert('배송 정보를 입력해주세요.');
+            }
         }
     };
 
@@ -156,9 +201,30 @@ const OrderDetail = () => {
 
             setOrderDetail(response.data);
             alert('주문이 취소되었습니다.');
-        } catch (err) {
-            console.error('주문 취소 실패:', err.response ? err.response.data : err.message);
-            alert('주문 취소에 실패했습니다. 다시 시도해주세요.');
+        } catch (error) {
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+
+                const token = localStorage.getItem('token');
+                await axios.delete(`http://localhost:8080/api/orders/${orderId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                // 주문 취소 후 다시 주문 상세 정보를 가져와서 갱신
+                const response = await axios.get(`http://localhost:8080/api/orders/${orderId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                setOrderDetail(response.data);
+                alert('주문이 취소되었습니다.');
+            } catch (err) {
+                console.error('주문 취소 실패:', err.response ? err.response.data : err.message);
+                alert('주문 취소에 실패했습니다. 다시 시도해주세요.');
+            }
         }
     };
 
