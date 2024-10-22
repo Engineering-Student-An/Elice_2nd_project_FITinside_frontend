@@ -156,16 +156,17 @@ const ProductList = () => {
                                             <div>
                                                 {product.oldPrice && (
                                                     <span className="text-muted text-decoration-line-through">
-                                                        ${product.oldPrice}
+                                                        {product.oldPrice.toLocaleString()}원
                                                     </span>
                                                 )}
-                                                <span> ${product.price}</span>
+                                                <span> {product.price.toLocaleString()}원</span>
                                             </div>
+
                                         </div>
                                     </div>
                                     {/* Product actions */}
                                     <div className="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                        <div className="text-center">
+                                    <div className="text-center">
                                             <Link className="btn btn-outline-dark mt-auto" to={`/product/${product.id}`}>
                                                 View Details
                                             </Link>
