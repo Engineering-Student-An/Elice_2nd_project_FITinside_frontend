@@ -89,12 +89,10 @@ const CouponList = () => {
 
     const handleCouponSubmit = async (code) => {
         try {
-            const response = await axios.post('http://localhost:8080/api/coupons', {
-                code: code // 쿠폰 코드를 JSON 형식으로 전송
-            }, {
+            const response = await axios.post('http://localhost:8080/api/coupons', code, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'text/plain'
                 },
             });
 
@@ -106,27 +104,17 @@ const CouponList = () => {
                     coupon.code === code ? { ...coupon, active: false } : coupon
                 )
             );
+            // 다운로드 후 페이지 새로고침
+            window.location.reload();
         } catch (error) {
-            if (error.response) {
-                if (error.response.status === 409) {
-                    alert('이미 쿠폰을 다운로드했습니다!'); // 409 상태 코드 처리
-                    throw new Error('이미 쿠폰을 다운로드했습니다!'); // 409 상태 코드 처리
-                } else {
-                    alert('쿠폰 다운로드에 실패했습니다!'); // 실패 시 에러 메시지
-                    throw new Error('쿠폰 다운로드에 실패했습니다!'); // 실패 시 에러 메시지
-                }
-            }
-
             try {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 // 토큰 갱신 후 다시 요청
-                const response = await axios.post('http://localhost:8080/api/coupons', {
-                    code: code // 쿠폰 코드를 JSON 형식으로 전송
-                }, {
+                const response = await axios.post('http://localhost:8080/api/coupons', code, {
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`, // 갱신된 토큰 사용
-                        'Content-Type': 'application/json'
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'text/plain'
                     },
                 });
 
@@ -138,8 +126,17 @@ const CouponList = () => {
                         coupon.code === code ? { ...coupon, active: false } : coupon
                     )
                 );
+
+                // 다운로드 후 페이지 새로고침
+                window.location.reload();
             } catch (e) {
-                console.error(e.message);
+                if (error.response && error.response.status === 409) {
+                    alert('이미 쿠폰을 다운로드했습니다!'); // 409 상태 코드 처리
+                    throw new Error('이미 쿠폰을 다운로드했습니다!'); // 409 상태 코드 처리
+                } else {
+                    alert('쿠폰 다운로드에 실패했습니다!'); // 실패 시 에러 메시지
+                    throw new Error('쿠폰 다운로드에 실패했습니다!'); // 실패 시 에러 메시지
+                }
             }
         }
     };

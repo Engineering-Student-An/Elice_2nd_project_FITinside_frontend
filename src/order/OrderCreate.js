@@ -4,6 +4,7 @@ import AddressModal from '../address/AddressModal';
 import axios from 'axios';
 import '../cart/cart.css';
 import './orderCreate.css';
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
 
 const OrderCreate = () => {
     const [orderItems, setOrderItems] = useState([]); // 장바구니와 상품 정보
@@ -46,8 +47,19 @@ const OrderCreate = () => {
                         }
                     });
                     details[item.productId] = response.data; // 상품 상세 정보를 저장
-                } catch (error) {
-                    console.error('상품 조회 실패', error);
+                } catch(err) {
+                    try {
+                        await sendRefreshTokenAndStoreAccessToken();
+
+                        const response = await axios.get(`http://localhost:8080/api/products/${item.productId}`, {
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                            }
+                        });
+                        details[item.productId] = response.data; // 상품 상세 정보를 저장
+                    } catch (error) {
+                        console.error('상품 조회 실패', error);
+                    }
                 }
             }
             setProductDetails(details); // 상태 업데이트
@@ -78,10 +90,37 @@ const OrderCreate = () => {
                     deliveryFormRef.current.setIsDefaultAddress(false);
                     deliveryFormRef.current.setIsReadOnly(false);
                 }
-            } catch (error) {
-                console.error('기본 배송지 조회 실패', error);
-                setHasDefaultAddress(false);
-                deliveryFormRef.current.setIsDefaultAddress(false);
+            } catch (err) {
+                try {
+                    await sendRefreshTokenAndStoreAccessToken();
+
+                    const response = await axios.get('http://localhost:8080/api/addresses/default', {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    });
+
+                    if (response.data) {
+                        // 기본 배송지가 있는 경우 폼에 출력하고 readOnly 상태로
+                        deliveryFormRef.current.setFormData(response.data);
+                        setHasDefaultAddress(true);
+                        setSelectedAddressId(response.data.addressId); // 기본 배송지 ID 설정
+                        console.log("기본 배송지 ID 설정:", response.data.addressId); // 기본 배송지 ID 확인
+                        setDefaultAddress("Y"); // 기본 배송지 상태 설정
+                        deliveryFormRef.current.setIsDefaultAddress(true); // 기본 배송지임을 설정
+                        deliveryFormRef.current.setIsReadOnly(true);
+                    } else {
+                        // 기본 배송지가 없는 경우
+                        console.log("기본 배송지 없음");
+                        setHasDefaultAddress(false);
+                        deliveryFormRef.current.setIsDefaultAddress(false);
+                        deliveryFormRef.current.setIsReadOnly(false);
+                    }
+                } catch (error) {
+                    console.error('기본 배송지 조회 실패', error);
+                    setHasDefaultAddress(false);
+                    deliveryFormRef.current.setIsDefaultAddress(false);
+                }
             }
         };
 
@@ -94,8 +133,19 @@ const OrderCreate = () => {
                     }
                 });
                 setAddressCount(response.data.length); // 저장된 배송지 개수 업데이트
-            } catch (error) {
-                console.error('배송지 목록 조회 실패', error);
+            } catch (err) {
+                try {
+                    await sendRefreshTokenAndStoreAccessToken();
+
+                    const response = await axios.get('http://localhost:8080/api/addresses', {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    });
+                    setAddressCount(response.data.length); // 저장된 배송지 개수 업데이트
+                } catch (error) {
+                    console.error('배송지 목록 조회 실패', error);
+                }
             }
         };
 
@@ -201,13 +251,26 @@ const OrderCreate = () => {
             });
             console.log("배송지 추가 완료: ", addressResponse.data);
             return addressResponse.data; // 성공적으로 추가된 주소 데이터를 반환
-        } catch (addressError) {
-            if (addressError.response) {
-                alert(addressError.response.data.message); // 중복된 주소, 저장 개수 초과 등 처리
-            } else {
-                alert("배송지 추가 중 오류가 발생했습니다.");
+        } catch (error) {
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+
+                const token = localStorage.getItem('token');
+                const addressResponse = await axios.post('http://localhost:8080/api/addresses', deliveryData, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                console.log("배송지 추가 완료: ", addressResponse.data);
+                return addressResponse.data; // 성공적으로 추가된 주소 데이터를 반환
+            } catch (addressError) {
+                if (addressError.response) {
+                    alert(addressError.response.data.message); // 중복된 주소, 저장 개수 초과 등 처리
+                } else {
+                    alert("배송지 추가 중 오류가 발생했습니다.");
+                }
+                return null; // 오류 발생 시 null을 반환
             }
-            return null; // 오류 발생 시 null을 반환
         }
     };
 
@@ -222,10 +285,23 @@ const OrderCreate = () => {
             });
             console.log("배송지 수정 완료: ", response.data);
             return response.data;
-        } catch (error) {
-            console.error("배송지 수정 실패: ", error);
-            alert("배송지 수정 중 오류가 발생했습니다.");
-            return null; // 오류 발생 시 null을 반환
+        } catch (err) {
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+
+                const token = localStorage.getItem('token');
+                const response = await axios.patch(`http://localhost:8080/api/addresses/${selectedAddressId}`, deliveryData, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                console.log("배송지 수정 완료: ", response.data);
+                return response.data;
+            } catch (error) {
+                console.error("배송지 수정 실패: ", error);
+                alert("배송지 수정 중 오류가 발생했습니다.");
+                return null; // 오류 발생 시 null을 반환
+            }
         }
     };
 
@@ -261,9 +337,43 @@ const OrderCreate = () => {
 
             // localStorage.removeItem('deliveryFormData');
             window.location.href = `/orders/${response.data.orderId}`;
-        } catch (error) {
-            console.error('주문 생성 실패 ', error);
-            alert('주문을 처리하는 중 오류가 발생했습니다.');
+        } catch (err) {
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+
+                const token = localStorage.getItem('token');
+                const response = await axios.post('http://localhost:8080/api/order', {
+                    ...deliveryData, // 배송지 데이터 추가
+                    orderItems,
+                    deliveryFee,
+                }, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                alert('주문이 완료되었습니다.');
+
+                localStorage.removeItem('orderData');
+                localStorage.removeItem('shippingCost');
+
+                // localCart에서 주문된 상품 삭제
+                const storedLocalCart = JSON.parse(localStorage.getItem('localCart')) || [];
+                const updatedLocalCart = storedLocalCart.filter(item =>
+                    !orderItems.some(orderItem => orderItem.productId === item.id)
+                );
+                localStorage.setItem('localCart', JSON.stringify(updatedLocalCart)); // 주문되지 않은 상품은 유지
+
+                // dbCart에서 주문된 상품 삭제
+                const storedDbCart = JSON.parse(localStorage.getItem('dbCart')) || [];
+                const updatedDbCart = storedDbCart.filter(item =>
+                    !orderItems.some(orderItem => orderItem.productId === item.id)
+                );
+                localStorage.setItem('dbCart', JSON.stringify(updatedDbCart)); // 주문되지 않은 상품은 유지
+
+                // localStorage.removeItem('deliveryFormData');
+                window.location.href = `/orders/${response.data.orderId}`;
+            } catch (error) {
+                console.error('주문 생성 실패 ', error);
+                alert('주문을 처리하는 중 오류가 발생했습니다.');
+            }
         }
     };
 
@@ -291,7 +401,11 @@ const OrderCreate = () => {
                                         {productDetails[item.productId] && productDetails[item.productId].productImgUrls && (
                                             <img
                                                 style={{ width: '100px', height: '100px', marginRight: '10px' }}
-                                                src={productDetails[item.productId].productImgUrls[0]}
+                                                src={
+                                                productDetails[item.productId].productImgUrls.length > 0 ?
+                                                    productDetails[item.productId].productImgUrls[0]
+                                                    : 'https://dummyimage.com/100x100'
+                                            }
                                                 alt={item.productName}
                                             />
                                         )}

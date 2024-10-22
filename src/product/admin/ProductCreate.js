@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ProductCreate.css';
+import axios from 'axios';
 
 const ProductCreate = () => {
     const [formData, setFormData] = useState({
@@ -25,21 +26,6 @@ const ProductCreate = () => {
     const navigate = useNavigate();
 
     // 카테고리 목록을 서버에서 가져오는 useEffect
-    // useEffect(() => {
-    //     const fetchCategories = async () => {
-    //         try {
-    //             const response = await fetch('http://localhost:8080/api/categories');
-    //             const data = await response.json();
-    //             const filteredCategories = data.filter(category => category.parentId !== null);
-    //             setCategories(filteredCategories);
-    //         } catch (error) {
-    //             console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
-    //         }
-    //     };
-    //
-    //     fetchCategories();
-    // }, []);
-
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -63,6 +49,27 @@ const ProductCreate = () => {
         fetchCategories();
     }, []);
 
+    const sendRefreshTokenAndStoreAccessToken = async () => {
+        try {
+            // refreshToken을 /api/auth/token으로 전송
+            const response = await axios.post(
+                'http://localhost:8080/api/auth/token',
+                {}, // 요청 바디는 비워둠 (refreshToken은 쿠키에 저장)
+                {
+                    headers: {
+                        'Content-Type': 'application/json', // 요청 헤더 설정
+                    },
+                    withCredentials: true, // 쿠키 기반 인증 사용
+                }
+            );
+
+            const accessToken = response.data.accessToken; // 서버에서 새로운 accessToken 받기
+            localStorage.setItem('token', accessToken); // accessToken을 로컬 스토리지에 저장
+            console.log('새로운 accessToken이 로컬 스토리지에 저장되었습니다.');
+        } catch (error) {
+            console.error('토큰 갱신 실패:', error);
+        }
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -88,77 +95,51 @@ const ProductCreate = () => {
             setManufacturerError('');
         }
 
+        // 가격은 음수가 되지 않도록 처리
+        if (name === 'price' && value < 0) {
+            alert('가격은 음수일 수 없습니다.');
+            return;
+        }
+
         setFormData({ ...formData, [name]: value });
     };
 
     const handleImageChange = (e) => {
         const selectedFiles = Array.from(e.target.files);
-        setImages(selectedFiles);
+        const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+        // 파일 형식 검증
+        const validFiles = selectedFiles.filter(file => validImageTypes.includes(file.type));
+        if (validFiles.length !== selectedFiles.length) {
+            alert('허용되지 않은 이미지 형식이 포함되어 있습니다. jpg, png, gif, webp 형식의 파일만 업로드할 수 있습니다.');
+            return; // 잘못된 파일 형식이 있는 경우 업로드 중단
+        }
+
+        setImages(validFiles);  // 유효한 파일만 저장
 
         // 미리보기 이미지 생성
-        const previewUrls = selectedFiles.map(file => URL.createObjectURL(file));
+        const previewUrls = validFiles.map(file => URL.createObjectURL(file));
         setPreviewImages(previewUrls);
     };
 
     // 상품 설명 이미지 핸들러
     const handleDescImageChange = (e) => {
         const selectedDescFiles = Array.from(e.target.files);
-        setDescImages(selectedDescFiles);
+        const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+        // 파일 형식 검증
+        const validDescFiles = selectedDescFiles.filter(file => validImageTypes.includes(file.type));
+        if (validDescFiles.length !== selectedDescFiles.length) {
+            alert('허용되지 않은 이미지 형식이 포함되어 있습니다. jpg, png, gif, webp 형식의 파일만 업로드할 수 있습니다.');
+            return; // 잘못된 파일 형식이 있는 경우 업로드 중단
+        }
+
+        setDescImages(validDescFiles);  // 유효한 파일만 저장
 
         // 미리보기 설명 이미지 생성
-        const previewDescUrls = selectedDescFiles.map(file => URL.createObjectURL(file));
+        const previewDescUrls = validDescFiles.map(file => URL.createObjectURL(file));
         setPreviewDescImages(previewDescUrls);
     };
-
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-    //
-    //     // 유효성 검사
-    //     if (formData.productName.length > 100) {
-    //         setProductNameError('상품명은 최대 100자까지 입력할 수 있습니다.');
-    //         return;
-    //     }
-    //     if (formData.info.length > 500) {
-    //         setInfoError('상품 설명은 최대 500자까지 입력할 수 있습니다.');
-    //         return;
-    //     }
-    //     if (formData.manufacturer.length > 100) {
-    //         setManufacturerError('제조사는 최대 100자까지 입력할 수 있습니다.');
-    //         return;
-    //     }
-    //
-    //     const data = new FormData();
-    //     data.append('categoryName', formData.categoryName);
-    //     data.append('productName', formData.productName);
-    //     data.append('price', formData.price);
-    //     data.append('info', formData.info);
-    //     data.append('manufacturer', formData.manufacturer);
-    //     data.append('stock', formData.stock);
-    //
-    //     // 상품 이미지를 FormData에 추가
-    //     images.forEach((image) => {
-    //         data.append('productImgUrls', image);
-    //     });
-    //
-    //     // 상품 설명 이미지를 FormData에 추가
-    //     descImages.forEach((image) => {
-    //         data.append('productDescImgUrls', image);
-    //     });
-    //
-    //     try {
-    //         const response = await fetch('http://localhost:8080/api/admin/products', {
-    //             method: 'POST',
-    //             body: data
-    //         });
-    //         if (!response.ok) {
-    //             throw new Error('상품 등록에 실패했습니다.');
-    //         }
-    //         console.log('상품이 성공적으로 등록되었습니다.');
-    //         navigate('/admin/products');
-    //     } catch (error) {
-    //         console.error('에러 발생:', error);
-    //     }
-    // };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -206,15 +187,38 @@ const ProductCreate = () => {
             });
 
             if (!response.ok) {
-                throw new Error('상품 등록에 실패했습니다.');
+                if (response.status === 401) { // 토큰 만료 시
+                    await sendRefreshTokenAndStoreAccessToken(); // 토큰 갱신 시도
+                    const newToken = localStorage.getItem('token'); // 갱신된 토큰 가져오기
+                    // 갱신된 토큰으로 다시 요청
+                    const retryResponse = await fetch('http://localhost:8080/api/admin/products', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${newToken}`,  // 갱신된 토큰으로 Authorization 헤더 설정
+                        },
+                        body: data
+                    });
+
+                    if (!retryResponse.ok) {
+                        throw new Error('상품 등록에 실패했습니다.');
+                        alert('상품 등록에 실패했습니다. 다시 시도해주세요.');
+                    }
+
+                    console.log('상품이 성공적으로 등록되었습니다.');
+                    navigate('/admin/products');
+                } else {
+                    throw new Error('상품 등록에 실패했습니다.');
+                    alert('상품 등록에 실패했습니다. 다시 시도해주세요.');
+                }
+            } else {
+                console.log('상품이 성공적으로 등록되었습니다.');
+                navigate('/admin/products');
             }
-            console.log('상품이 성공적으로 등록되었습니다.');
-            navigate('/admin/products');
         } catch (error) {
             console.error('에러 발생:', error);
+            alert('상품 등록에 실패했습니다. 다시 시도해주세요.');
         }
     };
-
 
     return (
         <div className="container mt-5">
@@ -317,6 +321,7 @@ const ProductCreate = () => {
                             onChange={handleImageChange}
                             className="form-control"
                             multiple
+                            accept="image/jpeg, image/png, image/gif, image/webp"
                         />
                     </div>
                 </div>
@@ -350,6 +355,7 @@ const ProductCreate = () => {
                             onChange={handleDescImageChange}
                             className="form-control"
                             multiple
+                            accept="image/jpeg, image/png, image/gif, image/webp"
                         />
                     </div>
                 </div>

@@ -33,78 +33,103 @@ const ProductUpdate = () => {
     const [loading, setLoading] = useState(true); // 로딩 상태
     const [categories, setCategories] = useState([]); // 카테고리 목록 상태
 
-    // 상품 정보 불러오기
-    // useEffect(() => {
-    //     const fetchProduct = async () => {
-    //         try {
-    //             const response = await axios.get(
-    //                 `http://localhost:8080/api/products/${id}`
-    //             );
-    //             setProduct(response.data); // 기존 상품 정보 설정
-    //             setLoading(false);
-    //         } catch (err) {
-    //             console.error("상품 정보를 불러오는 중 오류 발생:", err);
-    //             setError("상품 정보를 불러오는 중 오류가 발생했습니다.");
-    //             setLoading(false);
-    //         }
-    //     };
-    //     fetchProduct();
-    // }, [id]);
-    useEffect(() => {
-        const fetchProduct = async () => {
-            try {
-                const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-                const response = await axios.get(`http://localhost:8080/api/products/${id}`, {
+    // 토큰 갱신 함수
+    const sendRefreshTokenAndStoreAccessToken = async () => {
+        try {
+            const response = await axios.post(
+                'http://localhost:8080/api/auth/token',
+                {},
+                {
                     headers: {
-                        'Authorization': `Bearer ${token}`  // Authorization 헤더 추가
-                    }
-                });
-                setProduct(response.data); // 기존 상품 정보 설정
-                setLoading(false);
-            } catch (err) {
-                console.error("상품 정보를 불러오는 중 오류 발생:", err);
+                        'Content-Type': 'application/json',
+                    },
+                    withCredentials: true, // 쿠키 기반 인증 사용
+                }
+            );
+
+            const accessToken = response.data.accessToken;
+            localStorage.setItem('token', accessToken); // accessToken을 로컬 스토리지에 저장
+            console.log('새로운 accessToken이 로컬 스토리지에 저장되었습니다.');
+        } catch (error) {
+            console.error('토큰 갱신 실패:', error);
+        }
+    };
+
+    // 상품 정보 불러오기
+    const fetchProduct = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get(`http://localhost:8080/api/products/${id}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            setProduct(response.data);
+            setLoading(false);
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                await sendRefreshTokenAndStoreAccessToken(); // 토큰 갱신
+                const newToken = localStorage.getItem('token'); // 갱신된 토큰 사용
+                try {
+                    const retryResponse = await axios.get(`http://localhost:8080/api/products/${id}`, {
+                        headers: {
+                            'Authorization': `Bearer ${newToken}`,
+                        },
+                    });
+                    setProduct(retryResponse.data); // 성공 시 데이터 저장
+                    setLoading(false);
+                } catch (err) {
+                    setError("상품 정보를 불러오는 중 오류가 발생했습니다.");
+                    setLoading(false);
+                }
+            } else {
                 setError("상품 정보를 불러오는 중 오류가 발생했습니다.");
                 setLoading(false);
             }
-        };
+        }
+    };
+
+    useEffect(() => {
         fetchProduct();
     }, [id]);
 
-
-    // 카테고리 목록을 불러와 필터링
-    // useEffect(() => {
-    //     const fetchCategories = async () => {
-    //         try {
-    //             const response = await axios.get("http://localhost:8080/api/categories");
-    //             const filteredCategories = response.data.filter(
-    //                 (category) => category.parentId !== null
-    //             );
-    //             setCategories(filteredCategories);
-    //         } catch (err) {
-    //             console.error("카테고리 목록을 불러오는 중 오류 발생:", err);
-    //             setError("카테고리 목록을 불러오는 중 오류가 발생했습니다.");
-    //         }
-    //     };
-    //     fetchCategories();
-    // }, []);
-    useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-                const response = await axios.get('http://localhost:8080/api/categories', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`  // Authorization 헤더 추가
-                    }
-                });
-                const filteredCategories = response.data.filter(
-                    (category) => category.parentId !== null
-                );
-                setCategories(filteredCategories);
-            } catch (err) {
-                console.error("카테고리 목록을 불러오는 중 오류 발생:", err);
+    // 카테고리 목록을 불러오기
+    const fetchCategories = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get('http://localhost:8080/api/categories', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            });
+            const filteredCategories = response.data.filter(
+                (category) => category.parentId !== null
+            );
+            setCategories(filteredCategories);
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                await sendRefreshTokenAndStoreAccessToken();
+                const newToken = localStorage.getItem('token');
+                try {
+                    const retryResponse = await axios.get('http://localhost:8080/api/categories', {
+                        headers: {
+                            'Authorization': `Bearer ${newToken}`,
+                        }
+                    });
+                    const filteredCategories = retryResponse.data.filter(
+                        (category) => category.parentId !== null
+                    );
+                    setCategories(filteredCategories);
+                } catch (err) {
+                    setError("카테고리 목록을 불러오는 중 오류가 발생했습니다.");
+                }
+            } else {
                 setError("카테고리 목록을 불러오는 중 오류가 발생했습니다.");
             }
-        };
+        }
+    };
+
+    useEffect(() => {
         fetchCategories();
     }, []);
 
@@ -134,6 +159,12 @@ const ProductUpdate = () => {
             setManufacturerError("");
         }
 
+        // 가격은 음수가 될 수 없음
+        if (name === "price" && value < 0) {
+            alert("가격은 음수가 될 수 없습니다.");
+            return;
+        }
+
         setProduct((prevProduct) => ({
             ...prevProduct,
             [name]: value,
@@ -143,16 +174,42 @@ const ProductUpdate = () => {
     // 이미지 파일 선택 처리 및 미리보기
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
-        setNewImages(files);
-        setPreviewImages(files.map((file) => URL.createObjectURL(file))); // 미리보기 이미지 생성
+        const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+        // 파일 형식 검증
+        const validFiles = files.filter(file => validImageTypes.includes(file.type));
+        if (validFiles.length !== files.length) {
+            alert('허용되지 않은 이미지 형식이 포함되어 있습니다. jpg, png, gif, webp 형식의 파일만 업로드할 수 있습니다.');
+            return; // 잘못된 파일 형식이 있는 경우 업로드 중단
+        }
+
+        setNewImages(validFiles);  // 유효한 파일만 저장
+
+        // 미리보기 이미지 생성
+        const previewUrls = validFiles.map((file) => URL.createObjectURL(file));
+        setPreviewImages(previewUrls);
     };
+
 
     // 설명 이미지 파일 선택 처리 및 미리보기
     const handleDescFileChange = (e) => {
         const files = Array.from(e.target.files);
-        setNewDescImages(files);
-        setDescPreviewImages(files.map((file) => URL.createObjectURL(file))); // 미리보기 이미지 생성
+        const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+        // 파일 형식 검증
+        const validFiles = files.filter(file => validImageTypes.includes(file.type));
+        if (validFiles.length !== files.length) {
+            alert('허용되지 않은 이미지 형식이 포함되어 있습니다. jpg, png, gif, webp 형식의 파일만 업로드할 수 있습니다.');
+            return; // 잘못된 파일 형식이 있는 경우 업로드 중단
+        }
+
+        setNewDescImages(validFiles);  // 유효한 파일만 저장
+
+        // 미리보기 설명 이미지 생성
+        const previewDescUrls = validFiles.map((file) => URL.createObjectURL(file));
+        setDescPreviewImages(previewDescUrls);
     };
+
 
     // 삭제할 이미지 선택 처리
     const handleImageDelete = (url) => {
@@ -175,131 +232,62 @@ const ProductUpdate = () => {
     };
 
     // 상품 이미지 삭제 요청
-    // const deleteProductImages = async () => {
-    //     try {
-    //         if (imageUrlsToDelete.length > 0) {
-    //             await axios.delete(
-    //                 `http://localhost:8080/api/admin/products/${id}/images`,
-    //                 {
-    //                     params: { imageUrlsToDelete },
-    //                     paramsSerializer: (params) => {
-    //                         return qs.stringify(params, { arrayFormat: "repeat" });
-    //                     },
-    //                 }
-    //             );
-    //         }
-    //
-    //         if (descImageUrlsToDelete.length > 0) {
-    //             await axios.delete(
-    //                 `http://localhost:8080/api/admin/products/${id}/description-images`,
-    //                 {
-    //                     params: { descImageUrlsToDelete },
-    //                     paramsSerializer: (params) => {
-    //                         return qs.stringify(params, { arrayFormat: "repeat" });
-    //                     },
-    //                 }
-    //             );
-    //         }
-    //     } catch (err) {
-    //         console.error("이미지 삭제 중 오류 발생:", err);
-    //         setError("이미지 삭제에 실패했습니다.");
-    //     }
-    // };
-
     const deleteProductImages = async () => {
         try {
-            const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-
+            const token = localStorage.getItem('token');
             if (imageUrlsToDelete.length > 0) {
-                await axios.delete(
-                    `http://localhost:8080/api/admin/products/${id}/images`,
-                    {
-                        params: { imageUrlsToDelete },
-                        headers: {
-                            'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가
-                        },
-                        paramsSerializer: (params) => {
-                            return qs.stringify(params, { arrayFormat: "repeat" });
-                        },
-                    }
-                );
+                await axios.delete(`http://localhost:8080/api/admin/products/${id}/images`, {
+                    params: { imageUrlsToDelete },
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    paramsSerializer: (params) => qs.stringify(params, { arrayFormat: "repeat" }),
+                });
             }
 
             if (descImageUrlsToDelete.length > 0) {
-                await axios.delete(
-                    `http://localhost:8080/api/admin/products/${id}/description-images`,
-                    {
-                        params: { descImageUrlsToDelete },
-                        headers: {
-                            'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가
-                        },
-                        paramsSerializer: (params) => {
-                            return qs.stringify(params, { arrayFormat: "repeat" });
-                        },
-                    }
-                );
+                await axios.delete(`http://localhost:8080/api/admin/products/${id}/description-images`, {
+                    params: { descImageUrlsToDelete },
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    paramsSerializer: (params) => qs.stringify(params, { arrayFormat: "repeat" }),
+                });
             }
-        } catch (err) {
-            console.error("이미지 삭제 중 오류 발생:", err);
-            setError("이미지 삭제에 실패했습니다.");
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                await sendRefreshTokenAndStoreAccessToken();
+                const newToken = localStorage.getItem('token');
+                try {
+                    if (imageUrlsToDelete.length > 0) {
+                        await axios.delete(`http://localhost:8080/api/admin/products/${id}/images`, {
+                            params: { imageUrlsToDelete },
+                            headers: {
+                                'Authorization': `Bearer ${newToken}`,
+                            },
+                            paramsSerializer: (params) => qs.stringify(params, { arrayFormat: "repeat" }),
+                        });
+                    }
+                    if (descImageUrlsToDelete.length > 0) {
+                        await axios.delete(`http://localhost:8080/api/admin/products/${id}/description-images`, {
+                            params: { descImageUrlsToDelete },
+                            headers: {
+                                'Authorization': `Bearer ${newToken}`,
+                            },
+                            paramsSerializer: (params) => qs.stringify(params, { arrayFormat: "repeat" }),
+                        });
+                    }
+                } catch (err) {
+                    setError("이미지 삭제에 실패했습니다.");
+                }
+            } else {
+                setError("이미지 삭제에 실패했습니다.");
+            }
         }
     };
 
 
     // 상품 수정 요청 처리
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-    //
-    //     // 유효성 검사
-    //     if (product.productName.length > 100) {
-    //         setProductNameError("상품명은 최대 100자까지 입력할 수 있습니다.");
-    //         return;
-    //     }
-    //     if (product.info.length > 500) {
-    //         setInfoError("상품 설명은 최대 500자까지 입력할 수 있습니다.");
-    //         return;
-    //     }
-    //     if (product.manufacturer.length > 100) {
-    //         setManufacturerError("제조사는 최대 100자까지 입력할 수 있습니다.");
-    //         return;
-    //     }
-    //
-    //     const formData = new FormData();
-    //     formData.append("categoryName", product.categoryName);
-    //     formData.append("productName", product.productName);
-    //     formData.append("price", product.price);
-    //     formData.append("info", product.info);
-    //     formData.append("stock", product.stock);
-    //     formData.append("manufacturer", product.manufacturer);
-    //
-    //     // 새로운 이미지 파일 추가
-    //     newImages.forEach((image) => {
-    //         formData.append("productImgUrls", image);
-    //     });
-    //
-    //     // 새로운 설명 이미지 파일 추가
-    //     newDescImages.forEach((image) => {
-    //         formData.append("productDescImgUrls", image);
-    //     });
-    //
-    //     try {
-    //         // 상품 업데이트
-    //         await axios.put(`http://localhost:8080/api/admin/products/${id}`, formData, {
-    //             headers: {
-    //                 "Content-Type": "multipart/form-data",
-    //             },
-    //         });
-    //
-    //         // 이미지 삭제 처리
-    //         await deleteProductImages();
-    //
-    //         navigate("/admin/products");
-    //     } catch (err) {
-    //         console.error("상품 수정 중 오류 발생:", err);
-    //         setError("상품 수정에 실패했습니다.");
-    //     }
-    // };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -350,9 +338,25 @@ const ProductUpdate = () => {
             await deleteProductImages();
 
             navigate("/admin/products");
-        } catch (err) {
-            console.error("상품 수정 중 오류 발생:", err);
-            setError("상품 수정에 실패했습니다.");
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                await sendRefreshTokenAndStoreAccessToken();
+                const newToken = localStorage.getItem('token');
+                try {
+                    await axios.put(`http://localhost:8080/api/admin/products/${id}`, formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            'Authorization': `Bearer ${newToken}`,
+                        },
+                    });
+                    await deleteProductImages();
+                    navigate("/admin/products");
+                } catch (err) {
+                    setError("상품 수정에 실패했습니다.");
+                }
+            } else {
+                setError("상품 수정에 실패했습니다.");
+            }
         }
     };
 

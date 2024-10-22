@@ -114,6 +114,12 @@ const BannerCreate = () => {
         formData.append('displayOrder', displayOrder);
         formData.append('image', image);
 
+        // displayOrder와 mainDisplayOrder가 1 이상의 값인지 확인
+        if (displayOrder < 1) {
+            alert('표시 순서는 1 이상의 값이어야 합니다.');
+            return;
+        }
+
         // targetUrl이 입력되었을 때만 추가
         if (targetUrl) {
             formData.append('targetUrl', targetUrl);

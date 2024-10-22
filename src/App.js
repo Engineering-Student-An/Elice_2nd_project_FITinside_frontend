@@ -13,7 +13,7 @@ import { OrderCreate, OrderDetail, OrderList, OrderAdminList } from "./order";
 import { CouponAdmin, CouponList, WelcomeCouponList } from "./coupon";
 import AdminPage from "./AdminPage";
 import { CategoryAdminMain, CategoryCreate, CategoryUpdate } from "./category";
-import { ProductAdmin, ProductCreate, ProductUpdate, ProductDelete } from './product/admin';
+import { ProductAdmin, ProductCreate, ProductUpdate } from './product/admin';
 import { AddressList } from "./address";
 import { BannerAdminMain, BannerCreate, BannerUpdate } from "./banner";
 import ProtectedRoute from "./ProtectedRoute";
@@ -64,7 +64,6 @@ const App = () => {
                         <Route path="/admin/products" element={<ProtectedAdminRoute><ProductAdmin /></ProtectedAdminRoute>} /> {/* 관리자 상품 관리 화면 */}
                         <Route path="/admin/products/create" element={<ProtectedAdminRoute><ProductCreate /></ProtectedAdminRoute>} />
                         <Route path="/admin/products/update/:id" element={<ProtectedAdminRoute><ProductUpdate /></ProtectedAdminRoute>} />
-                        <Route path="/admin/products/delete" element={<ProtectedAdminRoute><ProductDelete /></ProtectedAdminRoute>} />
 
                         <Route path="/addresses" element={<ProtectedRoute><AddressList /></ProtectedRoute>} /> {/*배송지 목록 화면*/}
                     </Routes>

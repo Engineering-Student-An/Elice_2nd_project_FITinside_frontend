@@ -208,6 +208,12 @@ const BannerUpdate = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        // displayOrder와 mainDisplayOrder가 1 이상의 값인지 확인
+        if (displayOrder < 1) {
+            alert('표시 순서는 1 이상의 값이어야 합니다.');
+            return;
+        }
+
         const formData = new FormData();
         formData.append('title', title);
         formData.append('displayOrder', displayOrder ? Number(displayOrder) : null);

@@ -21,12 +21,15 @@ const AddressModal = ({ isOpen, onClose, onSelect, onEdit, selectedAddressId }) 
                 try {
                     // 토큰 갱신 후 다시 데이터 불러오기
                     await sendRefreshTokenAndStoreAccessToken();
-                    const retryResponse = await axios.get('http://localhost:8080/api/addresses', {
-                        headers: {
-                            'Authorization': `Bearer ${localStorage.getItem('token')}`
-                        },
-                    });
-                    setAddresses(retryResponse.data);
+
+                    if (isOpen) {
+                        const response = await axios.get('http://localhost:8080/api/addresses', {
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                            }
+                        });
+                        setAddresses(response.data);
+                    }
                 } catch (error) {
                     console.error('배송지 조회 실패', error);
                 }
