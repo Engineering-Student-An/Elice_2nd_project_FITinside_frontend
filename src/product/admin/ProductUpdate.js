@@ -33,47 +33,103 @@ const ProductUpdate = () => {
     const [loading, setLoading] = useState(true); // 로딩 상태
     const [categories, setCategories] = useState([]); // 카테고리 목록 상태
 
-    // 상품 정보 불러오기
-    useEffect(() => {
-        const fetchProduct = async () => {
-            try {
-                const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-                const response = await axios.get(`http://localhost:8080/api/products/${id}`, {
+    // 토큰 갱신 함수
+    const sendRefreshTokenAndStoreAccessToken = async () => {
+        try {
+            const response = await axios.post(
+                'http://localhost:8080/api/auth/token',
+                {},
+                {
                     headers: {
-                        'Authorization': `Bearer ${token}`  // Authorization 헤더 추가
-                    }
-                });
-                setProduct(response.data); // 기존 상품 정보 설정
-                setLoading(false);
-            } catch (err) {
-                console.error("상품 정보를 불러오는 중 오류 발생:", err);
+                        'Content-Type': 'application/json',
+                    },
+                    withCredentials: true, // 쿠키 기반 인증 사용
+                }
+            );
+
+            const accessToken = response.data.accessToken;
+            localStorage.setItem('token', accessToken); // accessToken을 로컬 스토리지에 저장
+            console.log('새로운 accessToken이 로컬 스토리지에 저장되었습니다.');
+        } catch (error) {
+            console.error('토큰 갱신 실패:', error);
+        }
+    };
+
+    // 상품 정보 불러오기
+    const fetchProduct = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get(`http://localhost:8080/api/products/${id}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            setProduct(response.data);
+            setLoading(false);
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                await sendRefreshTokenAndStoreAccessToken(); // 토큰 갱신
+                const newToken = localStorage.getItem('token'); // 갱신된 토큰 사용
+                try {
+                    const retryResponse = await axios.get(`http://localhost:8080/api/products/${id}`, {
+                        headers: {
+                            'Authorization': `Bearer ${newToken}`,
+                        },
+                    });
+                    setProduct(retryResponse.data); // 성공 시 데이터 저장
+                    setLoading(false);
+                } catch (err) {
+                    setError("상품 정보를 불러오는 중 오류가 발생했습니다.");
+                    setLoading(false);
+                }
+            } else {
                 setError("상품 정보를 불러오는 중 오류가 발생했습니다.");
                 setLoading(false);
             }
-        };
+        }
+    };
+
+    useEffect(() => {
         fetchProduct();
     }, [id]);
 
-
-    // 카테고리 목록을 불러와 필터링
-    useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-                const response = await axios.get('http://localhost:8080/api/categories', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`  // Authorization 헤더 추가
-                    }
-                });
-                const filteredCategories = response.data.filter(
-                    (category) => category.parentId !== null
-                );
-                setCategories(filteredCategories);
-            } catch (err) {
-                console.error("카테고리 목록을 불러오는 중 오류 발생:", err);
+    // 카테고리 목록을 불러오기
+    const fetchCategories = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get('http://localhost:8080/api/categories', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            });
+            const filteredCategories = response.data.filter(
+                (category) => category.parentId !== null
+            );
+            setCategories(filteredCategories);
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                await sendRefreshTokenAndStoreAccessToken();
+                const newToken = localStorage.getItem('token');
+                try {
+                    const retryResponse = await axios.get('http://localhost:8080/api/categories', {
+                        headers: {
+                            'Authorization': `Bearer ${newToken}`,
+                        }
+                    });
+                    const filteredCategories = retryResponse.data.filter(
+                        (category) => category.parentId !== null
+                    );
+                    setCategories(filteredCategories);
+                } catch (err) {
+                    setError("카테고리 목록을 불러오는 중 오류가 발생했습니다.");
+                }
+            } else {
                 setError("카테고리 목록을 불러오는 중 오류가 발생했습니다.");
             }
-        };
+        }
+    };
+
+    useEffect(() => {
         fetchCategories();
     }, []);
 
@@ -146,40 +202,55 @@ const ProductUpdate = () => {
     // 상품 이미지 삭제 요청
     const deleteProductImages = async () => {
         try {
-            const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-
+            const token = localStorage.getItem('token');
             if (imageUrlsToDelete.length > 0) {
-                await axios.delete(
-                    `http://localhost:8080/api/admin/products/${id}/images`,
-                    {
-                        params: { imageUrlsToDelete },
-                        headers: {
-                            'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가
-                        },
-                        paramsSerializer: (params) => {
-                            return qs.stringify(params, { arrayFormat: "repeat" });
-                        },
-                    }
-                );
+                await axios.delete(`http://localhost:8080/api/admin/products/${id}/images`, {
+                    params: { imageUrlsToDelete },
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    paramsSerializer: (params) => qs.stringify(params, { arrayFormat: "repeat" }),
+                });
             }
 
             if (descImageUrlsToDelete.length > 0) {
-                await axios.delete(
-                    `http://localhost:8080/api/admin/products/${id}/description-images`,
-                    {
-                        params: { descImageUrlsToDelete },
-                        headers: {
-                            'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가
-                        },
-                        paramsSerializer: (params) => {
-                            return qs.stringify(params, { arrayFormat: "repeat" });
-                        },
-                    }
-                );
+                await axios.delete(`http://localhost:8080/api/admin/products/${id}/description-images`, {
+                    params: { descImageUrlsToDelete },
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    paramsSerializer: (params) => qs.stringify(params, { arrayFormat: "repeat" }),
+                });
             }
-        } catch (err) {
-            console.error("이미지 삭제 중 오류 발생:", err);
-            setError("이미지 삭제에 실패했습니다.");
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                await sendRefreshTokenAndStoreAccessToken();
+                const newToken = localStorage.getItem('token');
+                try {
+                    if (imageUrlsToDelete.length > 0) {
+                        await axios.delete(`http://localhost:8080/api/admin/products/${id}/images`, {
+                            params: { imageUrlsToDelete },
+                            headers: {
+                                'Authorization': `Bearer ${newToken}`,
+                            },
+                            paramsSerializer: (params) => qs.stringify(params, { arrayFormat: "repeat" }),
+                        });
+                    }
+                    if (descImageUrlsToDelete.length > 0) {
+                        await axios.delete(`http://localhost:8080/api/admin/products/${id}/description-images`, {
+                            params: { descImageUrlsToDelete },
+                            headers: {
+                                'Authorization': `Bearer ${newToken}`,
+                            },
+                            paramsSerializer: (params) => qs.stringify(params, { arrayFormat: "repeat" }),
+                        });
+                    }
+                } catch (err) {
+                    setError("이미지 삭제에 실패했습니다.");
+                }
+            } else {
+                setError("이미지 삭제에 실패했습니다.");
+            }
         }
     };
 
@@ -235,9 +306,25 @@ const ProductUpdate = () => {
             await deleteProductImages();
 
             navigate("/admin/products");
-        } catch (err) {
-            console.error("상품 수정 중 오류 발생:", err);
-            setError("상품 수정에 실패했습니다.");
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                await sendRefreshTokenAndStoreAccessToken();
+                const newToken = localStorage.getItem('token');
+                try {
+                    await axios.put(`http://localhost:8080/api/admin/products/${id}`, formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            'Authorization': `Bearer ${newToken}`,
+                        },
+                    });
+                    await deleteProductImages();
+                    navigate("/admin/products");
+                } catch (err) {
+                    setError("상품 수정에 실패했습니다.");
+                }
+            } else {
+                setError("상품 수정에 실패했습니다.");
+            }
         }
     };
 
@@ -261,7 +348,7 @@ const ProductUpdate = () => {
                         className="form-control"
                         name="categoryName"
                         value={product.categoryName}
-                        onChange={handleInputChange}
+                        onChange={(e) => setProduct({ ...product, categoryName: e.target.value })}
                         required
                     >
                         <option value="">카테고리 선택</option>
@@ -281,7 +368,7 @@ const ProductUpdate = () => {
                         className={`form-control ${productNameError ? "is-invalid" : ""}`}
                         name="productName"
                         value={product.productName}
-                        onChange={handleInputChange}
+                        onChange={(e) => setProduct({ ...product, productName: e.target.value })}
                         required
                     />
                     {productNameError && <div className="invalid-feedback">{productNameError}</div>}
@@ -307,7 +394,7 @@ const ProductUpdate = () => {
                         className={`form-control ${infoError ? "is-invalid" : ""}`}
                         name="info"
                         value={product.info}
-                        onChange={handleInputChange}
+                        onChange={(e) => setProduct({ ...product, info: e.target.value })}
                         required
                     ></textarea>
                     {infoError && <div className="invalid-feedback">{infoError}</div>}
@@ -346,7 +433,7 @@ const ProductUpdate = () => {
                         type="file"
                         className="form-control"
                         name="productImgUrls"
-                        onChange={handleFileChange}
+                        onChange={(e) => setNewImages(Array.from(e.target.files))}
                         multiple
                     />
                     <div>
@@ -371,7 +458,7 @@ const ProductUpdate = () => {
                         type="file"
                         className="form-control"
                         name="productDescImgUrls"
-                        onChange={handleDescFileChange}
+                        onChange={(e) => setNewDescImages(Array.from(e.target.files))}
                         multiple
                     />
                     <div>
