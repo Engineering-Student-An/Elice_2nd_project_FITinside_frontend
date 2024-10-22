@@ -12,11 +12,11 @@
     color: white;
 }
 
-.both-container {
+.both-container-c {
     display: flex; /* Flexbox 레이아웃 사용 */
     justify-content: space-between; /* 양쪽 끝으로 배치 */
-    margin: 70px 20px; /* 필요에 따라 여백 추가 */
-    padding-top: 120px;
+    margin: 40px 20px; /* 필요에 따라 여백 추가 */
+    padding-top: 70px;
 }
 
 
