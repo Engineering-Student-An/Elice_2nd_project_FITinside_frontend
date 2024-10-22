@@ -237,8 +237,8 @@ const AdBanner = ({ userRole }) => {
                             >
                                 <img
                                     src={ad.imageUrl}
-                                    className="d-block w-100"
                                     alt={ad.title}
+                                    className="ad-banner"
                                 />
                             </div>
                         ))
