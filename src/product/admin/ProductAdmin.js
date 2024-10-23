@@ -220,7 +220,7 @@ const ProductAdmin = () => {
                     </select>
                 </div>
 
-                <table className="table table-bordered">
+                <table className="table table-striped table-bordered">
                     <thead>
                     <tr>
                         <th>수정</th>
@@ -235,6 +235,7 @@ const ProductAdmin = () => {
                         <th>품절 여부</th>
                         <th>생성일</th>
                         <th>수정일</th>
+                        <th>바로가기</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -267,15 +268,22 @@ const ProductAdmin = () => {
                                 <td>{product.soldOut ? '품절' : '판매 중'}</td>
                                 <td>{new Date(product.createdAt).toLocaleString()}</td>
                                 <td>{new Date(product.updatedAt).toLocaleString()}</td>
+                                <td>
+                                    <a className="btn btn-primary btn-small" href={`/product/${product.id}`}
+                                       target="_blank" rel="noopener noreferrer">
+                                        바로가기
+                                    </a>
+                                </td>
                             </tr>
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="12" className="text-center">상품이 없습니다.</td>
+                            <td colSpan="13" className="text-center">상품이 없습니다.</td>
                         </tr>
                     )}
                     </tbody>
                 </table>
+
 
                 <div className="d-flex justify-content-center">
                     <button
