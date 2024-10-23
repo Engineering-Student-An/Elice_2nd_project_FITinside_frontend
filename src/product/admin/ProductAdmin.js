@@ -10,7 +10,7 @@ const ProductAdmin = () => {
     const [page, setPage] = useState(0); // 현재 페이지 번호
     const [totalPages, setTotalPages] = useState(1); // 총 페이지 수
     const [pageSize] = useState(10); // 페이지당 상품 수
-    const [dummyImage] = useState('https://dummyimage.com/100x100'); // dummy 이미지 URL 설정
+    const [dummyImage] = useState('https://fitinside.s3.ap-northeast-2.amazonaws.com/0862ae4d-dfitinsideimg.png'); // dummy 이미지 URL 설정
 
     // 정렬 기준 및 정렬 방향 상태
     const [sortField, setSortField] = useState('createdAt'); // 기본 정렬 필드: 생성일
