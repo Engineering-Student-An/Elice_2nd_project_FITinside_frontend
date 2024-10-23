@@ -242,19 +242,14 @@ const ProductAdmin = () => {
                         products.map((product) => (
                             <tr key={product.id}>
                                 <td>
-                                    <button
-                                        onClick={() => handleUpdateProduct(product.id)}
-                                        className="btn btn-warning"
-                                    >
-                                        ✏️
+                                    <button className="btn btn-secondary"
+                                            onClick={() => handleUpdateProduct(product.id)}>
+                                        수정
                                     </button>
                                 </td>
                                 <td>
-                                    <button
-                                        onClick={() => handleDeleteClick(product.id)}
-                                        className="btn btn-danger"
-                                    >
-                                        ❌
+                                    <button className="btn btn-danger" onClick={() => handleDeleteClick(product.id)}>
+                                        삭제
                                     </button>
                                 </td>
                                 <td>{product.categoryName}</td>
@@ -263,7 +258,8 @@ const ProductAdmin = () => {
                                 <td>{product.productName}</td>
                                 <td>
                                     {product.productImgUrls && product.productImgUrls.length > 0
-                                        ? <img src={product.productImgUrls[0]} alt={`Product ${product.id}`} width="50"/>
+                                        ?
+                                        <img src={product.productImgUrls[0]} alt={`Product ${product.id}`} width="50"/>
                                         : <img src={dummyImage} alt="Dummy Product" width="50"/>}
                                 </td>
                                 <td>{product.price}</td>
