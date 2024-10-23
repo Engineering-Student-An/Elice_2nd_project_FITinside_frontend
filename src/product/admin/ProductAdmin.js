@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import sendRefreshTokenAndStoreAccessToken from '../../auth/RefreshAccessToken'; // 경로 수정
-import './ProductAdmin.css';  // CSS 파일 임포트
+import styles from './ProductAdmin.module.css';  // CSS Modules로 변경
 
 const ProductAdmin = () => {
     const [products, setProducts] = useState([]);
@@ -195,7 +195,7 @@ const ProductAdmin = () => {
     };
 
     return (
-        <div className="page-content"> {/* 콘텐츠에 margin-top 적용 */}
+        <div className={styles['page-content']}> {/* CSS Modules 적용 */}
             <div className="container mt-5">
                 <h1 className="display-4 mb-4">상품 관리</h1>
                 <button onClick={handleCreateProduct} className="btn btn-primary mb-3">상품 등록</button>
@@ -234,7 +234,7 @@ const ProductAdmin = () => {
                     </select>
                 </div>
 
-                <table className="table table-striped table-bordered">
+                <table className={`${styles['table-c']} table-striped table-bordered`}> {/* CSS Modules로 클래스 변경 */}
                     <thead>
                     <tr>
                         <th>수정</th>
@@ -285,7 +285,7 @@ const ProductAdmin = () => {
                                 <td>
                                     <a className="btn btn-primary btn-small" href={`/product/${product.id}`}
                                        target="_blank" rel="noopener noreferrer">
-                                        바로가기
+                                        상품
                                     </a>
                                 </td>
                             </tr>
