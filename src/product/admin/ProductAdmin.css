@@ -33,6 +33,13 @@ table td img {
     width: auto; /* 이미지 비율 유지 */
 }
 
+.table img {
+    width: 50px; /* 이미지의 너비를 고정 */
+    height: 50px; /* 이미지의 높이를 고정 */
+    object-fit: cover; /* 이미지가 넘치지 않도록 고정된 영역 안에 꽉 채움 */
+}
+
+
 /* 바로가기 버튼 스타일 */
 .btn-small {
     padding: 4px 8px; /* 버튼 내부 여백을 줄임 */

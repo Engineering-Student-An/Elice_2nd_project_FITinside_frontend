@@ -126,9 +126,13 @@ const ProductUpdate = () => {
             setManufacturerError("");
         }
 
-        // 가격은 음수가 될 수 없음
-        if (name === "price" && value < 0) {
-            alert("가격은 음수가 될 수 없습니다.");
+        // 가격 및 재고수는 0 이상 2147483647 이하로 제한
+        if (name === "price" && (isNaN(value) || value < 0 || value > 2147483647)) {
+            alert("가격은 0에서 2147483647 사이의 값을 입력하세요.");
+            return;
+        }
+        if (name === "stock" && (isNaN(value) || value < 0 || value > 2147483647)) {
+            alert("재고수는 0에서 2147483647 사이의 값을 입력하세요.");
             return;
         }
 
