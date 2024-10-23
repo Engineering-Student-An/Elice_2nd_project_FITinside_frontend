@@ -180,14 +180,14 @@ const ProductList = () => {
                             {/* 맨앞으로 가기 버튼 */}
                             <li className={`page-item ${page === 0 ? 'disabled' : ''}`}>
                                 <button className="page-link" onClick={() => setPage(0)} aria-label="First">
-                                    <span aria-hidden="true">&laquo;&laquo;</span>
+                                    <span aria-hidden="true">&#8249;&#8249;</span>
                                 </button>
                             </li>
 
                             {/* Previous 페이지 그룹 버튼 */}
                             <li className={`page-item ${page === 0 ? 'disabled' : ''}`}>
                                 <button className="page-link" onClick={() => setPage((prev) => Math.max(prev - 1, 0))} aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
+                                    <span aria-hidden="true">&#8249;</span>
                                 </button>
                             </li>
 
@@ -203,14 +203,14 @@ const ProductList = () => {
                             {/* Next 페이지 그룹 버튼 */}
                             <li className={`page-item ${page === totalPages - 1 ? 'disabled' : ''}`}>
                                 <button className="page-link" onClick={() => setPage((prev) => Math.min(prev + 1, totalPages - 1))} aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
+                                    <span aria-hidden="true">&#8250;</span>
                                 </button>
                             </li>
 
                             {/* 맨뒤로 가기 버튼 */}
                             <li className={`page-item ${page === totalPages - 1 ? 'disabled' : ''}`}>
                                 <button className="page-link" onClick={() => setPage(totalPages - 1)} aria-label="Last">
-                                    <span aria-hidden="true">&raquo;&raquo;</span>
+                                    <span aria-hidden="true">&#8250;&#8250;</span>
                                 </button>
                             </li>
                         </ul>
