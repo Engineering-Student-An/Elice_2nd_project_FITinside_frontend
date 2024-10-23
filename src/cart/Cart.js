@@ -412,7 +412,7 @@ const Cart = () => {
                                                         src={
                                                             productDetails[item.id].productImgUrls.length > 0
                                                                 ? productDetails[item.id].productImgUrls[0]
-                                                                : 'https://dummyimage.com/100x100' // 더미 이미지의 URL로 변경하세요
+                                                                : "/img/logo100x100.png"
                                                         }
                                                         alt="상품 이미지"
                                                     />

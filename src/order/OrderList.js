@@ -73,7 +73,31 @@ const OrderList = () => {
         }
     };
 
-    const handlePageChange = (pageNumber) => {
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const handleFirstPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(1);
+        }
+    };
+
+    const handleLastPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(totalPages);
+        }
+    };
+
+    const handlePageClick = (pageNumber) => {
         setCurrentPage(pageNumber);
     };
 
@@ -148,7 +172,7 @@ const OrderList = () => {
                             {/*{order.productImgUrl && (*/}
                                 <img
                                     src={
-                                    order.productImgUrl ? order.productImgUrl : 'https://dummyimage.com/100x100'
+                                    order.productImgUrl ? order.productImgUrl : "/img/logo100x100.png"
                                 }
                                     alt="주문 상품 대표 이미지"
                                     className="order-img"
@@ -174,30 +198,37 @@ const OrderList = () => {
             <div className="pagination justify-content-center">
                 <ul className="pagination">
                     <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                        <button
-                            className="page-link"
-                            onClick={() => handlePageChange(currentPage - 1)}
-                            aria-label="Previous"
-                        >
+                        <button className="page-link" onClick={handleFirstPage}
+                                aria-label="First">
                             <span aria-hidden="true">&laquo;</span>
                         </button>
                     </li>
-                    {Array.from({ length: totalPages }, (_, index) => (
-                        <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
-                            <button
-                                className="page-link"
-                                onClick={() => handlePageChange(index + 1)}
-                            >
-                                {index + 1}
-                            </button>
-                        </li>
-                    ))}
+                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                        <button className="page-link" onClick={handlePreviousPage}>
+                            <span aria-hidden="true">&#8249;</span>
+                        </button>
+                    </li>
+
+                    {Array.from({ length: 5 }, (_, index) => {
+                        const pageNum = currentPage - 2 + index;
+                        if (pageNum < 1 || pageNum > totalPages) return null;
+                        return (
+                            <li key={pageNum} className={`page-item ${currentPage === pageNum ? 'active' : ''}`}>
+                                <button className="page-link" onClick={() => handlePageClick(pageNum)}>
+                                    {pageNum}
+                                </button>
+                            </li>
+                            );
+                        })}
+
                     <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                        <button
-                            className="page-link"
-                            onClick={() => handlePageChange(currentPage + 1)}
-                            aria-label="Next"
-                        >
+                        <button className="page-link" onClick={handleNextPage}>
+                            <span aria-hidden="true">&#8250;</span>
+                        </button>
+                    </li>
+                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                        <button className="page-link" onClick={handleLastPage}
+                                disabled={currentPage === totalPages}>
                             <span aria-hidden="true">&raquo;</span>
                         </button>
                     </li>

@@ -134,7 +134,8 @@ const OrderAdminList = () => {
                 delete updatedChanges[orderId];
                 return updatedChanges;
             });
-            window.location.reload();
+            // window.location.reload();
+            fetchAdminOrders(currentPage);
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
@@ -161,7 +162,8 @@ const OrderAdminList = () => {
                     delete updatedChanges[orderId];
                     return updatedChanges;
                 });
-                window.location.reload();
+                // window.location.reload();
+                fetchAdminOrders(currentPage);
             } catch (err) {
                 console.error('주문 상태 변경 실패:', err.response ? err.response.data : err.message);
                 alert('주문 상태 변경에 실패했습니다. 다시 시도해주세요.');
@@ -205,7 +207,31 @@ const OrderAdminList = () => {
         }
     };
 
-    const handlePageChange = (pageNumber) => {
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const handleFirstPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(1);
+        }
+    };
+
+    const handleLastPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(totalPages);
+        }
+    };
+
+    const handlePageClick = (pageNumber) => {
         setCurrentPage(pageNumber);
     };
 
@@ -284,18 +310,40 @@ const OrderAdminList = () => {
             <table className="order-admin-table">
                 <thead>
                 <tr>
+                    <th>수정</th>
+                    <th>삭제</th>
+                    <th>주문 상태</th>
                     <th>주문 날짜</th>
                     <th>이메일</th>
                     <th>총 가격</th>
                     <th>결제 금액</th>
                     <th>쿠폰 할인</th>
-                    <th>주문 상태</th>
-                    <th>액션</th>
                 </tr>
                 </thead>
                 <tbody>
                 {orders.map((order) => (
                     <tr key={order.orderId}>
+                        <td>
+                            {/*<button className="action-button" onClick={() => handleSaveStatusChange(order.orderId)}>수정</button>*/}
+                            <button className="btn btn-secondary" onClick={() => handleSaveStatusChange(order.orderId)}>수정</button>
+                            {/*<button className="action-button delete-button" onClick={() => handleDeleteOrder(order.orderId)}>삭제</button>*/}
+                        </td><td>
+                            {/*<button className="btn btn-secondary" onClick={() => handleSaveStatusChange(order.orderId)}>수정</button>*/}
+                            {/*<button className="action-button delete-button" onClick={() => handleDeleteOrder(order.orderId)}>삭제</button>*/}
+                            <button className="btn btn-danger" onClick={() => handleDeleteOrder(order.orderId)}>삭제</button>
+                        </td>
+                        <td>
+                            <select
+                                value={pendingStatusChanges[order.orderId] || order.orderStatus}
+                                onChange={(e) => handleStatusChange(order.orderId, e.target.value)}
+                            >
+                                {statusOptions.map((option) => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </td>
                         <td>{new Date(order.createdAt).toLocaleString()}</td>
                         <td>{order.email}</td>
                         <td>{(order.totalPrice).toLocaleString()}원</td>
@@ -311,37 +359,49 @@ const OrderAdminList = () => {
                                 <div>-</div>
                             )}
                         </td>
-                        <td>
-                            <select
-                                value={pendingStatusChanges[order.orderId] || order.orderStatus}
-                                onChange={(e) => handleStatusChange(order.orderId, e.target.value)}
-                            >
-                                {statusOptions.map((option) => (
-                                    <option key={option.value} value={option.value}>
-                                        {option.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </td>
-                        <td>
-                            <button className="action-button" onClick={() => handleSaveStatusChange(order.orderId)}>수정</button>
-                            <button className="action-button delete-button" onClick={() => handleDeleteOrder(order.orderId)}>삭제</button>
-                        </td>
                     </tr>
                 ))}
                 </tbody>
             </table>
 
-            <div className="pagination">
-                {Array.from({ length: totalPages }, (_, index) => (
-                    <button
-                        key={index}
-                        className={`pagination-button ${currentPage === index + 1 ? 'active' : ''}`}
-                        onClick={() => handlePageChange(index + 1)}
-                    >
-                        {index + 1}
-                    </button>
-                ))}
+            <div className="pagination justify-content-center">
+                <ul className="pagination">
+                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                        <button className="page-link" onClick={handleFirstPage}
+                                aria-label="First">
+                            <span aria-hidden="true">&laquo;</span>
+                        </button>
+                    </li>
+                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                        <button className="page-link" onClick={handlePreviousPage}>
+                            <span aria-hidden="true">&#8249;</span>
+                        </button>
+                    </li>
+
+                    {Array.from({ length: 5 }, (_, index) => {
+                        const pageNum = currentPage - 2 + index;
+                        if (pageNum < 1 || pageNum > totalPages) return null;
+                        return (
+                            <li key={pageNum} className={`page-item ${currentPage === pageNum ? 'active' : ''}`}>
+                                <button className="page-link" onClick={() => handlePageClick(pageNum)}>
+                                    {pageNum}
+                                </button>
+                            </li>
+                        );
+                    })}
+
+                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                        <button className="page-link" onClick={handleNextPage}>
+                            <span aria-hidden="true">&#8250;</span>
+                        </button>
+                    </li>
+                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                        <button className="page-link" onClick={handleLastPage}
+                                disabled={currentPage === totalPages}>
+                            <span aria-hidden="true">&raquo;</span>
+                        </button>
+                    </li>
+                </ul>
             </div>
         </div>
     );

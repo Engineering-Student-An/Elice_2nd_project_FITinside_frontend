@@ -64,30 +64,33 @@ const AddressModal = ({ isOpen, onClose, onSelect, onEdit, selectedAddressId }) 
                         <h5 className="modal-title">저장된 배송지 목록</h5>
                     </div>
                     <div className="modal-body">
-                        <ul className="list-group">
-                            {addresses.map((address) => (
-                                <li
-                                    key={address.addressId}
-                                    className={`list-group-item ${address.addressId === selectedAddressId ? 'selected-address' : ''}`}
-                                    // onClick={() => handleSelect(address)}
-                                >
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <strong>{address.deliveryReceiver}</strong>
-                                        <div>
-                                            <button className="btn btn-sm btn-outline-secondary"
-                                                    style={{ marginRight: '8px' }}
-                                                    onClick={() => handleEdit(address)}
-                                            >수정</button>
-                                            <button className="btn btn-sm btn-outline-primary" onClick={() => handleSelect(address)}>선택</button>
+                        {addresses.length > 0 ? (
+                            <ul className="list-group">
+                                {addresses.map((address) => (
+                                    <li
+                                        key={address.addressId}
+                                        className={`list-group-item ${address.addressId === selectedAddressId ? 'selected-address' : ''}`}
+                                    >
+                                        <div className="d-flex justify-content-between align-items-center">
+                                            <strong>{address.deliveryReceiver}</strong>
+                                            <div>
+                                                <button className="btn btn-sm btn-outline-secondary"
+                                                        style={{ marginRight: '8px' }}
+                                                        onClick={() => handleEdit(address)}
+                                                >수정</button>
+                                                <button className="btn btn-sm btn-outline-primary" onClick={() => handleSelect(address)}>선택</button>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <p className="mb-1">{address.deliveryPhone}</p>
-                                    <p className="mb-1">{address.postalCode}</p>
-                                    <p className="mb-1">{address.deliveryAddress}, {address.detailedAddress}</p>
-                                    {address.deliveryMemo && <p className="text-muted small mb-0">{address.deliveryMemo}</p>}
-                                </li>
-                            ))}
-                        </ul>
+                                        <p className="mb-1">{address.deliveryPhone}</p>
+                                        <p className="mb-1">{address.postalCode}</p>
+                                        <p className="mb-1">{address.deliveryAddress}, {address.detailedAddress}</p>
+                                        {address.deliveryMemo && <p className="text-muted small mb-0">{address.deliveryMemo}</p>}
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="text-center text-muted">등록된 배송지가 없습니다.</p>
+                        )}
                     </div>
                     <div className="modal-footer">
                         <button type="button" className="btn btn-secondary" onClick={onClose}>닫기</button>
