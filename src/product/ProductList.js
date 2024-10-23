@@ -16,7 +16,7 @@ const ProductList = () => {
     const [totalPages, setTotalPages] = useState(1); // 전체 페이지 수 상태
     const [searchKeyword, setSearchKeyword] = useState(''); // 엔터로 입력할 검색어
 
-    const dummyImage = 'https://fitinside.s3.ap-northeast-2.amazonaws.com/0862ae4d-dfitinsideimg.png'; // dummy 이미지 URL 설정
+    const dummyImage = '/img/logo100x100.png'; // dummy 이미지 URL 설정
 
     // 카테고리 이름을 가져오는 함수
     const fetchCategoryName = async () => {
