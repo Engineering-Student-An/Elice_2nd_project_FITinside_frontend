@@ -9,7 +9,7 @@ const ProductList = () => {
     const [products, setProducts] = useState([]); // 초기 값을 빈 배열로 설정
     const [error, setError] = useState(null);
     const [page, setPage] = useState(0); // 현재 페이지 상태
-    const [size, setSize] = useState(9); // 페이지당 아이템 수
+    const [size, setSize] = useState(12); // 페이지당 아이템 수
     const [sortField, setSortField] = useState('createdAt'); // 정렬 필드
     const [sortDir, setSortDir] = useState('desc'); // 정렬 방향
     const [keyword, setKeyword] = useState(''); // 검색어
@@ -52,6 +52,19 @@ const ProductList = () => {
         }
     };
 
+    // 페이지네이션 로직 함수 (페이지네이션 숫자를 5개로 제한)
+    const getPaginationNumbers = () => {
+        const maxPageButtons = 5; // 한 번에 보여줄 페이지 버튼 수
+        let startPage = Math.max(0, page - Math.floor(maxPageButtons / 2)); // 시작 페이지 번호
+        let endPage = Math.min(totalPages, startPage + maxPageButtons); // 끝 페이지 번호
+
+        if (endPage - startPage < maxPageButtons) {
+            startPage = Math.max(0, endPage - maxPageButtons);
+        }
+
+        return Array.from({ length: endPage - startPage }, (_, index) => startPage + index);
+    };
+
     // 카테고리 이름과 상품 목록을 가져오는 useEffect 훅
     useEffect(() => {
         fetchCategoryName(); // 카테고리 이름 가져오기
@@ -61,6 +74,7 @@ const ProductList = () => {
     // 페이지 클릭 핸들러
     const handlePageClick = (pageNumber) => {
         setPage(pageNumber);
+        window.scrollTo(0, 0); // 페이지 클릭 시 최상단으로 스크롤
     };
 
     // 검색어 입력 필드에서 엔터키 눌렀을 때 동작
@@ -165,49 +179,37 @@ const ProductList = () => {
                         <ul className="pagination justify-content-center">
                             {/* 맨앞으로 가기 버튼 */}
                             <li className={`page-item ${page === 0 ? 'disabled' : ''}`}>
-                                <button
-                                    className="page-link"
-                                    onClick={() => setPage(0)}
-                                    aria-label="First">
+                                <button className="page-link" onClick={() => setPage(0)} aria-label="First">
                                     <span aria-hidden="true">&laquo;&laquo;</span>
                                 </button>
                             </li>
 
                             {/* Previous 페이지 그룹 버튼 */}
                             <li className={`page-item ${page === 0 ? 'disabled' : ''}`}>
-                                <button
-                                    className="page-link"
-                                    onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
-                                    aria-label="Previous">
+                                <button className="page-link" onClick={() => setPage((prev) => Math.max(prev - 1, 0))} aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                 </button>
                             </li>
 
                             {/* 페이지 번호 버튼 */}
-                            {Array.from({ length: totalPages }, (_, index) => (
-                                <li key={index} className={`page-item ${page === index ? 'active' : ''}`}>
-                                    <button className="page-link" onClick={() => handlePageClick(index)}>
-                                        {index + 1}
+                            {getPaginationNumbers().map((pageNumber) => (
+                                <li key={pageNumber} className={`page-item ${page === pageNumber ? 'active' : ''}`}>
+                                    <button className="page-link" onClick={() => handlePageClick(pageNumber)}>
+                                        {pageNumber + 1}
                                     </button>
                                 </li>
                             ))}
 
                             {/* Next 페이지 그룹 버튼 */}
                             <li className={`page-item ${page === totalPages - 1 ? 'disabled' : ''}`}>
-                                <button
-                                    className="page-link"
-                                    onClick={() => setPage((prev) => Math.min(prev + 1, totalPages - 1))}
-                                    aria-label="Next">
+                                <button className="page-link" onClick={() => setPage((prev) => Math.min(prev + 1, totalPages - 1))} aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                 </button>
                             </li>
 
                             {/* 맨뒤로 가기 버튼 */}
                             <li className={`page-item ${page === totalPages - 1 ? 'disabled' : ''}`}>
-                                <button
-                                    className="page-link"
-                                    onClick={() => setPage(totalPages - 1)}
-                                    aria-label="Last">
+                                <button className="page-link" onClick={() => setPage(totalPages - 1)} aria-label="Last">
                                     <span aria-hidden="true">&raquo;&raquo;</span>
                                 </button>
                             </li>
