@@ -31,7 +31,6 @@ const ProductUpdate = () => {
     const [infoError, setInfoError] = useState("");
     const [manufacturerError, setManufacturerError] = useState("");
     const [error, setError] = useState(""); // 기타 에러 상태
-    const [loading, setLoading] = useState(true); // 로딩 상태
     const [categories, setCategories] = useState([]); // 카테고리 목록 상태
 
     // 상품 정보 불러오기
@@ -45,7 +44,6 @@ const ProductUpdate = () => {
                     }
                 });
                 setProduct(response.data); // 기존 상품 정보 설정
-                setLoading(false);
             } catch (err) {
                 try {
                     await sendRefreshTokenAndStoreAccessToken();
@@ -357,15 +355,6 @@ const ProductUpdate = () => {
         }
     };
 
-
-    if (loading) {
-        return <p>로딩 중...</p>;
-    }
-
-    if (error) {
-        return <p className="text-danger">{error}</p>;
-    }
-
     return (
         <div className="container mt-5">
             <h1 className="display-4 mb-4">상품 수정 </h1>
@@ -464,6 +453,7 @@ const ProductUpdate = () => {
                         name="productImgUrls"
                         onChange={handleFileChange}
                         multiple
+                        accept="image/jpeg, image/png, image/gif, image/webp"
                     />
                     <div>
                         {previewImages.map((src, index) => (
@@ -489,6 +479,7 @@ const ProductUpdate = () => {
                         name="productDescImgUrls"
                         onChange={handleDescFileChange}
                         multiple
+                        accept="image/jpeg, image/png, image/gif, image/webp"
                     />
                     <div>
                         {descPreviewImages.map((src, index) => (
