@@ -30,7 +30,6 @@ const ProductUpdate = () => {
     const [infoError, setInfoError] = useState("");
     const [manufacturerError, setManufacturerError] = useState("");
     const [error, setError] = useState(""); // 기타 에러 상태
-    const [loading, setLoading] = useState(true); // 로딩 상태
     const [categories, setCategories] = useState([]); // 카테고리 목록 상태
 
     // 상품 정보 불러오기
@@ -44,11 +43,9 @@ const ProductUpdate = () => {
                     }
                 });
                 setProduct(response.data); // 기존 상품 정보 설정
-                setLoading(false);
             } catch (err) {
                 console.error("상품 정보를 불러오는 중 오류 발생:", err);
                 setError("상품 정보를 불러오는 중 오류가 발생했습니다.");
-                setLoading(false);
             }
         };
         fetchProduct();
@@ -272,16 +269,7 @@ const ProductUpdate = () => {
             setError("상품 수정에 실패했습니다.");
         }
     };
-
-
-    if (loading) {
-        return <p>로딩 중...</p>;
-    }
-
-    if (error) {
-        return <p className="text-danger">{error}</p>;
-    }
-
+    
     return (
         <div className="container mt-5">
             <h1 className="display-4 mb-4">상품 수정 </h1>

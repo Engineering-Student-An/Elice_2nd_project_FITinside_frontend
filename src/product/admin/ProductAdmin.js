@@ -6,7 +6,6 @@ import './ProductAdmin.css';  // CSS 파일 임포트
 
 const ProductAdmin = () => {
     const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [page, setPage] = useState(0); // 현재 페이지 번호
     const [totalPages, setTotalPages] = useState(1); // 총 페이지 수
@@ -32,7 +31,6 @@ const ProductAdmin = () => {
         const endpoint = searchType === 'productName' ? '/api/products' : '/api/products/byCategory'; // 검색 타입에 따라 다른 엔드포인트 호출
 
         try {
-            setLoading(true); // 로딩 시작
             const token = localStorage.getItem('token');
 
             const response = await axios.get(`http://localhost:8080${endpoint}`, {
@@ -58,7 +56,6 @@ const ProductAdmin = () => {
                 setProducts([]); // 데이터가 비정상인 경우 빈 배열 설정
                 setTotalPages(1);
             }
-            setLoading(false); // 로딩 종료
         } catch (error) {
             if (error.response && error.response.status === 401) {
                 // 401 에러 발생 시 토큰 갱신 시도
@@ -89,16 +86,13 @@ const ProductAdmin = () => {
                         setProducts([]);
                         setTotalPages(1);
                     }
-                    setLoading(false); // 로딩 종료
                 } catch (refreshError) {
                     console.error('토큰 갱신 및 재요청 중 오류 발생:', refreshError);
                     setError('상품 목록을 불러오는 중 오류가 발생했습니다.');
-                    setLoading(false);
                 }
             } else {
                 console.error('상품 목록을 불러오는 중 오류 발생:', error);
                 setError('상품 목록을 불러오는 중 오류가 발생했습니다.');
-                setLoading(false);
             }
         }
     };
@@ -185,14 +179,6 @@ const ProductAdmin = () => {
     const handleSearchTypeChange = (e) => {
         setSearchType(e.target.value);
     };
-
-    if (loading) {
-        return <p>로딩 중...</p>;
-    }
-
-    if (error) {
-        return <p>{error}</p>;
-    }
 
     return (
         <div className="page-content"> {/* 콘텐츠에 margin-top 적용 */}

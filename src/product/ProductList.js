@@ -7,7 +7,6 @@ const ProductList = () => {
     const { categoryId } = useParams(); // URL에서 categoryId를 가져옴
     const [categoryName, setCategoryName] = useState(''); // 카테고리 이름 상태
     const [products, setProducts] = useState([]); // 초기 값을 빈 배열로 설정
-    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [page, setPage] = useState(0); // 현재 페이지 상태
     const [size, setSize] = useState(9); // 페이지당 아이템 수
@@ -15,7 +14,6 @@ const ProductList = () => {
     const [sortDir, setSortDir] = useState('desc'); // 정렬 방향
     const [keyword, setKeyword] = useState(''); // 검색어
     const [totalPages, setTotalPages] = useState(1); // 전체 페이지 수 상태
-    const pagesPerGroup = 5; // 한 번에 표시할 페이지 번호 개수
     const [searchKeyword, setSearchKeyword] = useState(''); // 엔터로 입력할 검색어
 
     const dummyImage = 'https://dummyimage.com/100x100'; // dummy 이미지 URL 설정
@@ -33,7 +31,6 @@ const ProductList = () => {
     // 상품 목록을 백엔드에서 가져오는 함수
     const fetchProducts = async () => {
         try {
-            setLoading(true);
             const response = await axios.get(`http://localhost:8080/api/products/category/${categoryId}`, {
                 params: {
                     page,
@@ -52,8 +49,6 @@ const ProductList = () => {
             setTotalPages(totalPages);
         } catch (err) {
             setError('상품 목록을 불러오는 데 실패했습니다.');
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -74,18 +69,6 @@ const ProductList = () => {
             setSearchKeyword(keyword); // 엔터키를 눌렀을 때만 키워드를 검색어로 설정
         }
     };
-
-    if (loading) {
-        return <p>Loading...</p>;
-    }
-
-    if (error) {
-        return <p>{error}</p>;
-    }
-
-    if (!Array.isArray(products)) {
-        return <p>상품 목록이 없습니다.</p>;
-    }
 
     return (
         <>
@@ -166,7 +149,7 @@ const ProductList = () => {
                                     </div>
                                     {/* Product actions */}
                                     <div className="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                    <div className="text-center">
+                                        <div className="text-center">
                                             <Link className="btn btn-outline-dark mt-auto" to={`/product/${product.id}`}>
                                                 View Details
                                             </Link>
