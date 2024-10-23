@@ -403,7 +403,7 @@ const ProductUpdate = () => {
                         />
                     </div>
 
-                    {/* 상품 설명 입력 (글자 수 제한 에러 메시지 추가) */}
+                    {/* 상품 설명 입력 (글자 수 제한 에러 메시지 추가, 필수 입력 아님) */}
                     <div className="form-group">
                         <label>상품 상세 설명</label>
                         <textarea
@@ -411,7 +411,6 @@ const ProductUpdate = () => {
                             name="info"
                             value={product.info}
                             onChange={handleInputChange}
-                            required
                         ></textarea>
                         {infoError && <div className="invalid-feedback">{infoError}</div>}
                     </div>
