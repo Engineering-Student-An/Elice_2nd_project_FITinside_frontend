@@ -116,7 +116,7 @@ const BannerCreate = () => {
 
         // displayOrder와 mainDisplayOrder가 1 이상의 값인지 확인
         if (displayOrder < 1) {
-            alert('표시 순서는 1 이상의 값이어야 합니다.');
+            alert('정렬 순서는 1 이상의 값이어야 합니다.');
             return;
         }
 
@@ -151,7 +151,7 @@ const BannerCreate = () => {
 
     return (
         <div className="container mt-5">
-            <h1 className="mb-4">새 광고 생성</h1>
+            <h1 className="mb-4">새 배너 생성</h1>
             <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                     <label className="form-label">제목</label>
@@ -164,7 +164,7 @@ const BannerCreate = () => {
                     />
                 </div>
                 <div className="mb-3">
-                    <label className="form-label">표시 순서</label>
+                    <label className="form-label">정렬 순서</label>
                     <input
                         type="number"
                         className="form-control"

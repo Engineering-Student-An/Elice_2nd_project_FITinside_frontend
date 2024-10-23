@@ -157,7 +157,7 @@ const BannerUpdate = () => {
 
     // 배너 정보 가져오기
     useEffect(() => {
-        axios.get(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/banners/${id}`, {
+        axios.get(`http://localhost:8080/api/banners/${id}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -174,7 +174,7 @@ const BannerUpdate = () => {
             .catch(async error => {
                 try {
                     await sendRefreshTokenAndStoreAccessToken();
-                    axios.get(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/banners/${id}`, {
+                    axios.get(`http://localhost:8080/api/banners/${id}`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
@@ -205,12 +205,12 @@ const BannerUpdate = () => {
         setPreviewImage(URL.createObjectURL(file)); // 파일이 선택되면 미리보기 이미지 업데이트
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         // displayOrder와 mainDisplayOrder가 1 이상의 값인지 확인
         if (displayOrder < 1) {
-            alert('표시 순서는 1 이상의 값이어야 합니다.');
+            alert('정렬 순서는 1 이상의 값이어야 합니다.');
             return;
         }
 
@@ -227,33 +227,41 @@ const BannerUpdate = () => {
 
         formData.append('targetUrl', targetUrl); // URL 필드 추가
 
-        axios.put(`https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/admin/banners/${id}`, formData, {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Content-Type': 'multipart/form-data'
-            }
-        })
-            .then(response => {
-                console.log('Banner updated:', response.data);
-                alert('배너가 성공적으로 수정되었습니다.');
-                navigate('/admin/banners');
+        try {
+            axios.put(`http://localhost:8080/api/admin/banners/${id}`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'multipart/form-data'
+                }
             })
-            .catch(error => {
+                .then(response => {
+                    console.log('Banner updated:', response.data);
+                    alert('배너가 성공적으로 수정되었습니다.');
+                    navigate('/admin/banners');
+                })
+        } catch (error) {
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+                axios.put(`http://localhost:8080/api/admin/banners/${id}`, formData, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'multipart/form-data'
+                    }
+                })
+                    .then(response => {
+                        console.log('Banner updated:', response.data);
+                        alert('배너가 성공적으로 수정되었습니다.');
+                        navigate('/admin/banners');
+                    })
+            } catch (error) {
                 console.error('Error updating banner:', error);
                 alert('배너 수정 중 오류가 발생했습니다.');
                 if (error.response && error.response.status === 401) {
                     alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
                 }
-            });
+            }
+        }
     };
-
-    if (loading) {
-        return <p>로딩 중...</p>;
-    }
-
-    if (error) {
-        return <p>{error}</p>;
-    }
 
     return (
         <div className="container mt-5">
@@ -270,7 +278,7 @@ const BannerUpdate = () => {
                     />
                 </div>
                 <div className="mb-3">
-                    <label className="form-label">표시 순서:</label>
+                    <label className="form-label">정렬 순서:</label>
                     <input
                         type="number"
                         className="form-control"

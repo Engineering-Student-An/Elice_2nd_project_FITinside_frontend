@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ProductCreate.css';
 import axios from 'axios';
+import sendRefreshTokenAndStoreAccessToken from "../../auth/RefreshAccessToken";
 
 const ProductCreate = () => {
     const [formData, setFormData] = useState({
@@ -42,7 +43,24 @@ const ProductCreate = () => {
                 const filteredCategories = data.filter(category => category.parentId !== null);
                 setCategories(filteredCategories);
             } catch (error) {
-                console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
+                try {
+                    await sendRefreshTokenAndStoreAccessToken();
+
+                    const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
+                    const response = await fetch('http://localhost:8080/api/categories', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`  // Authorization 헤더 추가
+                        }
+                    });
+                    if (!response.ok) {
+                        throw new Error('카테고리 목록을 가져오는 데 실패했습니다.');
+                    }
+                    const data = await response.json();
+                    const filteredCategories = data.filter(category => category.parentId !== null);
+                    setCategories(filteredCategories);
+                } catch (error) {
+                    console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
+                }
             }
         };
 
@@ -171,7 +189,26 @@ const ProductCreate = () => {
             console.log('상품이 성공적으로 등록되었습니다.');
             navigate('/admin/products');
         } catch (error) {
-            console.error('에러 발생:', error);
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+
+                const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
+                const response = await fetch('http://localhost:8080/api/admin/products', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가
+                    },
+                    body: data
+                });
+
+                if (!response.ok) {
+                    throw new Error('상품 등록에 실패했습니다.');
+                }
+                console.log('상품이 성공적으로 등록되었습니다.');
+                navigate('/admin/products');
+            } catch (error) {
+                console.error('에러 발생:', error);
+            }
         }
     };
 
