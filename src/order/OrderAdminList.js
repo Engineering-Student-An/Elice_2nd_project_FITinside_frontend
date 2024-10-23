@@ -134,7 +134,8 @@ const OrderAdminList = () => {
                 delete updatedChanges[orderId];
                 return updatedChanges;
             });
-            window.location.reload();
+            // window.location.reload();
+            fetchAdminOrders(currentPage);
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
@@ -161,7 +162,8 @@ const OrderAdminList = () => {
                     delete updatedChanges[orderId];
                     return updatedChanges;
                 });
-                window.location.reload();
+                // window.location.reload();
+                fetchAdminOrders(currentPage);
             } catch (err) {
                 console.error('주문 상태 변경 실패:', err.response ? err.response.data : err.message);
                 alert('주문 상태 변경에 실패했습니다. 다시 시도해주세요.');
@@ -308,18 +310,40 @@ const OrderAdminList = () => {
             <table className="order-admin-table">
                 <thead>
                 <tr>
+                    <th>수정</th>
+                    <th>삭제</th>
+                    <th>주문 상태</th>
                     <th>주문 날짜</th>
                     <th>이메일</th>
                     <th>총 가격</th>
                     <th>결제 금액</th>
                     <th>쿠폰 할인</th>
-                    <th>주문 상태</th>
-                    <th>액션</th>
                 </tr>
                 </thead>
                 <tbody>
                 {orders.map((order) => (
                     <tr key={order.orderId}>
+                        <td>
+                            {/*<button className="action-button" onClick={() => handleSaveStatusChange(order.orderId)}>수정</button>*/}
+                            <button className="btn btn-secondary" onClick={() => handleSaveStatusChange(order.orderId)}>수정</button>
+                            {/*<button className="action-button delete-button" onClick={() => handleDeleteOrder(order.orderId)}>삭제</button>*/}
+                        </td><td>
+                            {/*<button className="btn btn-secondary" onClick={() => handleSaveStatusChange(order.orderId)}>수정</button>*/}
+                            {/*<button className="action-button delete-button" onClick={() => handleDeleteOrder(order.orderId)}>삭제</button>*/}
+                            <button className="btn btn-danger" onClick={() => handleDeleteOrder(order.orderId)}>삭제</button>
+                        </td>
+                        <td>
+                            <select
+                                value={pendingStatusChanges[order.orderId] || order.orderStatus}
+                                onChange={(e) => handleStatusChange(order.orderId, e.target.value)}
+                            >
+                                {statusOptions.map((option) => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </td>
                         <td>{new Date(order.createdAt).toLocaleString()}</td>
                         <td>{order.email}</td>
                         <td>{(order.totalPrice).toLocaleString()}원</td>
@@ -334,22 +358,6 @@ const OrderAdminList = () => {
                             ) : (
                                 <div>-</div>
                             )}
-                        </td>
-                        <td>
-                            <select
-                                value={pendingStatusChanges[order.orderId] || order.orderStatus}
-                                onChange={(e) => handleStatusChange(order.orderId, e.target.value)}
-                            >
-                                {statusOptions.map((option) => (
-                                    <option key={option.value} value={option.value}>
-                                        {option.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </td>
-                        <td>
-                            <button className="action-button" onClick={() => handleSaveStatusChange(order.orderId)}>수정</button>
-                            <button className="action-button delete-button" onClick={() => handleDeleteOrder(order.orderId)}>삭제</button>
                         </td>
                     </tr>
                 ))}
