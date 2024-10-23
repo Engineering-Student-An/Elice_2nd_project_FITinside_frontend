@@ -401,7 +401,7 @@ const ProductUpdate = () => {
 
                     {/* 상품 설명 입력 (글자 수 제한 에러 메시지 추가) */}
                     <div className="form-group">
-                        <label>상품 설명</label>
+                        <label>상품 상세 설명</label>
                         <textarea
                             className={`form-control ${infoError ? "is-invalid" : ""}`}
                             name="info"
@@ -412,9 +412,9 @@ const ProductUpdate = () => {
                         {infoError && <div className="invalid-feedback">{infoError}</div>}
                     </div>
 
-                    {/* 재고 입력 */}
+                    {/* 재고수 입력 */}
                     <div className="form-group">
-                        <label>재고</label>
+                        <label>재고수</label>
                         <input
                             type="number"
                             className="form-control"
@@ -454,10 +454,14 @@ const ProductUpdate = () => {
                                 <img key={index} src={src} alt="미리보기" width="100" />
                             ))}
                             {product.productImgUrls.map((url) => (
-                                <div key={url}>
-                                    <img src={url} alt="상품 이미지" width="100" />
-                                    <button type="button" onClick={() => handleImageDelete(url)}>
-                                        삭제
+                                <div key={url} className="d-inline-block m-2">
+                                    <img src={url} alt="상품 이미지" width="100" className="mr-2"/>
+                                    <button
+                                        type="button"
+                                        className="btn btn-danger btn-sm"
+                                        onClick={() => handleImageDelete(url)}
+                                    >
+                                        <i className="fas fa-trash-alt"></i> 삭제
                                     </button>
                                 </div>
                             ))}
@@ -480,12 +484,17 @@ const ProductUpdate = () => {
                                 <img key={index} src={src} alt="미리보기" width="100" />
                             ))}
                             {product.productDescImgUrls.map((url) => (
-                                <div key={url}>
-                                    <img src={url} alt="설명 이미지" width="100" />
-                                    <button type="button" onClick={() => handleDescImageDelete(url)}>
-                                        삭제
+                                <div key={url} className="d-inline-block m-2">
+                                    <img src={url} alt="설명 이미지" width="100" className="mr-2"/>
+                                    <button
+                                        type="button"
+                                        className="btn btn-danger btn-sm"
+                                        onClick={() => handleDescImageDelete(url)}
+                                    >
+                                        <i className="fas fa-trash-alt"></i> 삭제
                                     </button>
                                 </div>
+
                             ))}
                         </div>
                     </div>

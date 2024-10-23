@@ -265,7 +265,7 @@ const ProductCreate = () => {
                     </div>
                 </div>
                 <div className="form-group row">
-                    <label className="col-sm-2 col-form-label">상세 정보</label>
+                    <label className="col-sm-2 col-form-label">상품 상세 설명</label>
                     <div className="col-sm-5">
                         <textarea
                             name="info"
@@ -292,7 +292,7 @@ const ProductCreate = () => {
                     </div>
                 </div>
                 <div className="form-group row">
-                    <label className="col-sm-2 col-form-label">재고 수</label>
+                    <label className="col-sm-2 col-form-label">재고수</label>
                     <div className="col-sm-3">
                         <input
                             type="number"
