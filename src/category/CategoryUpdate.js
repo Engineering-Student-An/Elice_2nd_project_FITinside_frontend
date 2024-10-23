@@ -610,14 +610,6 @@ const CategoryUpdate = () => {
             });
     };
 
-    if (loading) {
-        return <p>로딩 중...</p>;
-    }
-
-    if (error) {
-        return <p>{error}</p>;
-    }
-
     return (
         <div className="container mt-5">
             <h2 className="mb-4">카테고리 수정</h2>

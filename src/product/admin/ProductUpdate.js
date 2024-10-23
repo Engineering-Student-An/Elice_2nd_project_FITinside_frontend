@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import qs from "qs";
+import sendRefreshTokenAndStoreAccessToken from "../../auth/RefreshAccessToken";
 
 const ProductUpdate = () => {
     const { id } = useParams(); // URL에서 상품 ID를 가져옴
@@ -30,6 +31,7 @@ const ProductUpdate = () => {
     const [infoError, setInfoError] = useState("");
     const [manufacturerError, setManufacturerError] = useState("");
     const [error, setError] = useState(""); // 기타 에러 상태
+    const [loading, setLoading] = useState(true); // 로딩 상태
     const [categories, setCategories] = useState([]); // 카테고리 목록 상태
 
     // 상품 정보 불러오기
@@ -43,9 +45,24 @@ const ProductUpdate = () => {
                     }
                 });
                 setProduct(response.data); // 기존 상품 정보 설정
+                setLoading(false);
             } catch (err) {
-                console.error("상품 정보를 불러오는 중 오류 발생:", err);
-                setError("상품 정보를 불러오는 중 오류가 발생했습니다.");
+                try {
+                    await sendRefreshTokenAndStoreAccessToken();
+
+                    const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
+                    const response = await axios.get(`http://localhost:8080/api/products/${id}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`  // Authorization 헤더 추가
+                        }
+                    });
+                    setProduct(response.data); // 기존 상품 정보 설정
+                    setLoading(false);
+                } catch (error) {
+                    console.error("상품 정보를 불러오는 중 오류 발생:", err);
+                    setError("상품 정보를 불러오는 중 오류가 발생했습니다.");
+                    setLoading(false);
+                }
             }
         };
         fetchProduct();
@@ -67,8 +84,23 @@ const ProductUpdate = () => {
                 );
                 setCategories(filteredCategories);
             } catch (err) {
-                console.error("카테고리 목록을 불러오는 중 오류 발생:", err);
-                setError("카테고리 목록을 불러오는 중 오류가 발생했습니다.");
+                try {
+                    await sendRefreshTokenAndStoreAccessToken();
+
+                    const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
+                    const response = await axios.get('http://localhost:8080/api/categories', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`  // Authorization 헤더 추가
+                        }
+                    });
+                    const filteredCategories = response.data.filter(
+                        (category) => category.parentId !== null
+                    );
+                    setCategories(filteredCategories);
+                } catch (error) {
+                    console.error("카테고리 목록을 불러오는 중 오류 발생:", err);
+                    setError("카테고리 목록을 불러오는 중 오류가 발생했습니다.");
+                }
             }
         };
         fetchCategories();
@@ -207,8 +239,44 @@ const ProductUpdate = () => {
                 );
             }
         } catch (err) {
-            console.error("이미지 삭제 중 오류 발생:", err);
-            setError("이미지 삭제에 실패했습니다.");
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+
+                const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
+
+                if (imageUrlsToDelete.length > 0) {
+                    await axios.delete(
+                        `http://localhost:8080/api/admin/products/${id}/images`,
+                        {
+                            params: { imageUrlsToDelete },
+                            headers: {
+                                'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가
+                            },
+                            paramsSerializer: (params) => {
+                                return qs.stringify(params, { arrayFormat: "repeat" });
+                            },
+                        }
+                    );
+                }
+
+                if (descImageUrlsToDelete.length > 0) {
+                    await axios.delete(
+                        `http://localhost:8080/api/admin/products/${id}/description-images`,
+                        {
+                            params: { descImageUrlsToDelete },
+                            headers: {
+                                'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가
+                            },
+                            paramsSerializer: (params) => {
+                                return qs.stringify(params, { arrayFormat: "repeat" });
+                            },
+                        }
+                    );
+                }
+            } catch (error) {
+                console.error("이미지 삭제 중 오류 발생:", err);
+                setError("이미지 삭제에 실패했습니다.");
+            }
         }
     };
 
@@ -265,11 +333,39 @@ const ProductUpdate = () => {
 
             navigate("/admin/products");
         } catch (err) {
-            console.error("상품 수정 중 오류 발생:", err);
-            setError("상품 수정에 실패했습니다.");
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+
+                const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
+
+                // 상품 업데이트 요청
+                await axios.put(`http://localhost:8080/api/admin/products/${id}`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가
+                    },
+                });
+
+                // 이미지 삭제 처리
+                await deleteProductImages();
+
+                navigate("/admin/products");
+            } catch (error) {
+                console.error("상품 수정 중 오류 발생:", err);
+                setError("상품 수정에 실패했습니다.");
+            }
         }
     };
-    
+
+
+    if (loading) {
+        return <p>로딩 중...</p>;
+    }
+
+    if (error) {
+        return <p className="text-danger">{error}</p>;
+    }
+
     return (
         <div className="container mt-5">
             <h1 className="display-4 mb-4">상품 수정 </h1>
@@ -368,7 +464,6 @@ const ProductUpdate = () => {
                         name="productImgUrls"
                         onChange={handleFileChange}
                         multiple
-                        accept="image/jpeg, image/png, image/gif, image/webp"
                     />
                     <div>
                         {previewImages.map((src, index) => (
@@ -394,7 +489,6 @@ const ProductUpdate = () => {
                         name="productDescImgUrls"
                         onChange={handleDescFileChange}
                         multiple
-                        accept="image/jpeg, image/png, image/gif, image/webp"
                     />
                     <div>
                         {descPreviewImages.map((src, index) => (
