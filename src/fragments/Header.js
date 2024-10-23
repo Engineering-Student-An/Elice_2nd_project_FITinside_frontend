@@ -103,9 +103,9 @@ const Header = () => {
                                 onMouseEnter={() => handleMouseEnter(parent.id)}
                                 onMouseLeave={handleMouseLeave}
                             >
-                                <a className="nav-link dropdown-toggle" href="/" role="button" aria-expanded="false">
+                                <span className="nav-link dropdown-toggle" href="/" role="button" aria-expanded="false">
                                     {parent.name}
-                                </a>
+                                </span>
                                 <ul className={`dropdown-menu ${dropdownOpen === parent.id ? 'show' : ''}`}>
                                     {getChildCategories(parent.id).map(child => (
                                         <li key={child.id}>
