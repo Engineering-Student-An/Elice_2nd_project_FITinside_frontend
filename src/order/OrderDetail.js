@@ -267,7 +267,7 @@ const OrderDetail = () => {
                                     <img
                                         style={{ width: '100px', height: '100px', marginRight: '10px' }}
                                         src={
-                                        product.productImgUrl ? product.productImgUrl : 'https://dummyimage.com/100x100'
+                                        product.productImgUrl ? product.productImgUrl : "/img/logo100x100.png"
                                     }
                                         alt={product.orderProductName}
                                     />
