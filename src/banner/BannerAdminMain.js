@@ -99,10 +99,10 @@ const BannerAdminMain = () => {
 
     return (
         <div className="container" style={{marginTop: '90px'}}>
-            <h1 className="mb-4">광고 관리</h1>
+            <h1 className="mb-4">배너 관리</h1>
 
             {/* Bootstrap 스타일 버튼 */}
-            <button className="btn btn-primary mb-3" onClick={handleCreateBanner}>광고 생성하기</button>
+            <button className="btn btn-primary mb-3" onClick={handleCreateBanner}>배너 생성하기</button>
 
             {/* 에러 메시지 표시 */}
             {error && <div className="alert alert-danger">{error}</div>}
