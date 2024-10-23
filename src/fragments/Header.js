@@ -150,6 +150,10 @@ const Header = () => {
                         {userRole === 'ROLE_ADMIN' && isLoggedIn && (
                             <div>
                                 <a className="btn btn-outline-dark me-3" href="/admin">ADMIN</a>
+                            </div>
+                        )}
+                        {isLoggedIn && (
+                            <div>
                                 <a className="btn btn-outline-dark" href="/me">
                                     MY
                                 </a>
