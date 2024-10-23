@@ -225,18 +225,16 @@ const ProductAdmin = () => {
                     <tr>
                         <th>수정</th>
                         <th>삭제</th>
-                        <th>카테고리 이름</th>
+                        <th>카테고리</th>
+                        <th>제조사</th>
                         <th>상품 아이디</th>
                         <th>상품 이름</th>
                         <th>상품 이미지</th>
-                        <th>상품 가격</th>
-                        <th>상품 정보</th>
-                        <th>상품 재고</th>
-                        <th>제조사</th>
+                        <th>가격</th>
+                        <th>재고수</th>
+                        <th>품절 여부</th>
                         <th>생성일</th>
                         <th>수정일</th>
-                        <th>상품 설명 이미지</th>
-                        <th>품절 여부</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -260,34 +258,24 @@ const ProductAdmin = () => {
                                     </button>
                                 </td>
                                 <td>{product.categoryName}</td>
+                                <td>{product.manufacturer}</td>
                                 <td>{product.id}</td>
                                 <td>{product.productName}</td>
                                 <td>
                                     {product.productImgUrls && product.productImgUrls.length > 0
-                                        ? product.productImgUrls.map((url, index) => (
-                                            <img key={index} src={url} alt={`Product ${product.id}`} width="50"/>
-                                        ))
+                                        ? <img src={product.productImgUrls[0]} alt={`Product ${product.id}`} width="50"/>
                                         : <img src={dummyImage} alt="Dummy Product" width="50"/>}
                                 </td>
                                 <td>{product.price}</td>
-                                <td>{product.info}</td>
                                 <td>{product.stock}</td>
-                                <td>{product.manufacturer}</td>
+                                <td>{product.soldOut ? '품절' : '판매 중'}</td>
                                 <td>{new Date(product.createdAt).toLocaleString()}</td>
                                 <td>{new Date(product.updatedAt).toLocaleString()}</td>
-                                <td>
-                                    {product.productDescImgUrls && product.productDescImgUrls.length > 0
-                                        ? product.productDescImgUrls.map((url, index) => (
-                                            <img key={index} src={url} alt={`Desc Image ${product.id}`} width="50"/>
-                                        ))
-                                        : <img src={dummyImage} alt="Dummy Desc Image" width="50"/>}
-                                </td>
-                                <td>{product.soldOut ? '품절' : '판매 중'}</td>
                             </tr>
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="14" className="text-center">상품이 없습니다.</td>
+                            <td colSpan="12" className="text-center">상품이 없습니다.</td>
                         </tr>
                     )}
                     </tbody>
