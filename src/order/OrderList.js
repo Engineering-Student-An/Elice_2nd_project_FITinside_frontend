@@ -172,7 +172,7 @@ const OrderList = () => {
                             {/*{order.productImgUrl && (*/}
                                 <img
                                     src={
-                                    order.productImgUrl ? order.productImgUrl : 'https://dummyimage.com/100x100'
+                                    order.productImgUrl ? order.productImgUrl : "/img/logo100x100.png"
                                 }
                                     alt="주문 상품 대표 이미지"
                                     className="order-img"
