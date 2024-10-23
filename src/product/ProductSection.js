@@ -8,7 +8,7 @@ const ProductSection = () => {
     const [product, setProduct] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [selectedImage, setSelectedImage] = useState('');
-    const [dummyImage] = useState('https://fitinside.s3.ap-northeast-2.amazonaws.com/0862ae4d-dfitinsideimg.png'); // dummy 이미지 URL 설정
+    const [dummyImage] = useState('/img/logo100x100.png'); // dummy 이미지 URL 설정
     const navigate = useNavigate();
 
     useEffect(() => {
