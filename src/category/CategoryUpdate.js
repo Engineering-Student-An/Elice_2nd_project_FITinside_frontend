@@ -625,7 +625,7 @@ const CategoryUpdate = () => {
                     />
                 </div>
                 <div className="mb-3">
-                    <label className="form-label">표시 순서:</label>
+                    <label className="form-label">정렬 순서(displayOrder):</label>
                     <input
                         type="number"
                         className="form-control"
@@ -634,7 +634,7 @@ const CategoryUpdate = () => {
                     />
                 </div>
                 <div className="mb-3">
-                    <label className="form-label">메인 카테고리 정렬 순서:</label>
+                    <label className="form-label">메인 카테고리 정렬 순서(mainDisplayOrder):</label>
                     <input
                         type="number"
                         className="form-control"
