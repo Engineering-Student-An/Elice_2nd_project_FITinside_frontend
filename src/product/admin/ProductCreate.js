@@ -47,7 +47,7 @@ const ProductCreate = () => {
                     await sendRefreshTokenAndStoreAccessToken();
 
                     const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-                    const response = await fetch('http://localhost:8080/api/categories', {
+                    const response = await fetch('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/categories', {
                         headers: {
                             'Authorization': `Bearer ${token}`  // Authorization 헤더 추가
                         }
@@ -193,7 +193,7 @@ const ProductCreate = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-                const response = await fetch('http://localhost:8080/api/admin/products', {
+                const response = await fetch('https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/admin/products', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가
