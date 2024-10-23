@@ -368,6 +368,7 @@ const ProductUpdate = () => {
                         name="productImgUrls"
                         onChange={handleFileChange}
                         multiple
+                        accept="image/jpeg, image/png, image/gif, image/webp"
                     />
                     <div>
                         {previewImages.map((src, index) => (
@@ -393,6 +394,7 @@ const ProductUpdate = () => {
                         name="productDescImgUrls"
                         onChange={handleDescFileChange}
                         multiple
+                        accept="image/jpeg, image/png, image/gif, image/webp"
                     />
                     <div>
                         {descPreviewImages.map((src, index) => (
