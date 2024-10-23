@@ -263,8 +263,8 @@ const ProductAdmin = () => {
                                         <img src={product.productImgUrls[0]} alt={`Product ${product.id}`} width="50"/>
                                         : <img src={dummyImage} alt="Dummy Product" width="50"/>}
                                 </td>
-                                <td>{product.price}</td>
-                                <td>{product.stock}</td>
+                                <td>{Number(product.price).toLocaleString()}원</td>
+                                <td>{Number(product.stock).toLocaleString()}개</td>
                                 <td>{product.soldOut ? '품절' : '판매 중'}</td>
                                 <td>{new Date(product.createdAt).toLocaleString()}</td>
                                 <td>{new Date(product.updatedAt).toLocaleString()}</td>
