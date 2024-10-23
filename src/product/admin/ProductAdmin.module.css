@@ -46,6 +46,22 @@
     height: auto; /* 버튼 높이를 내용에 맞게 조정 */
 }
 
+/* 품절 여부 칸 크기 줄이기 */
+.table-c th:nth-child(9), .table-c td:nth-child(9) {
+    width: 80px; /* 품절 여부 칸 너비 설정 */
+}
+
+/* 상품 이름 칸 크기 늘리기 */
+.table-c th:nth-child(6), .table-c td:nth-child(6) {
+    width: 150px; /* 상품 이름 칸 너비 설정 */
+}
+
+/* 제조사 칸 크기 늘리기 */
+.table-c th:nth-child(4), .table-c td:nth-child(4) {
+    width: 100px; /* 제조사 칸 너비 설정 */
+}
+
+
 /* 바로가기 버튼 스타일 */
 .btn-small {
     padding: 4px 8px; /* 버튼 내부 여백을 줄임 */
