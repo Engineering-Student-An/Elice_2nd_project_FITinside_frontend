@@ -64,6 +64,7 @@ const MyPage = () => {
         setIsEditingPhone(true); // 전화번호 수정 모드 활성화
     };
 
+    //username 변경
     const handleSaveName = async () => {
         try {
             // 기존 이름과 입력한 이름이 같으면 서버 요청 없이 수정 모드 종료
@@ -95,7 +96,7 @@ const MyPage = () => {
         navigate('/addresses'); // 주문 목록 페이지로 이동
     };
 
-
+    // 전화번호 변경
     const handleSavePhone = async () => {
         try {
             if (userInfo.phone === newPhone) {
@@ -106,7 +107,10 @@ const MyPage = () => {
             const token = localStorage.getItem('token');
             await axios.put(
                 'https://zaswdsrcjxykrnsf.tunnel-pt.elice.io/api/user/phone', // 전화번호 수정 API 엔드포인트
-                { phone: newPhone },
+                {
+                    email: userInfo.email,
+                    phone: newPhone
+                },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             setUserInfo((prevInfo) => ({ ...prevInfo, phone: newPhone })); // 상태 업데이트
