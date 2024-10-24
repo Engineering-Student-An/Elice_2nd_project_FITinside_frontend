@@ -120,10 +120,10 @@ const ProductSection = () => {
                     <div className="col-md-6">
                         <h1 className="display-5 fw-bolder">{product.productName}</h1>
                         <div className="fs-5 mb-3">
-                            <span>{product.price.toLocaleString()}원</span>
+                            <span> {product.price.toLocaleString()}원</span>
                         </div>
                         <div className="fs-6 mb-3">
-                            <strong> 제조사 </strong> {product.manufacturer}
+                            <strong> </strong> {product.manufacturer}
                         </div>
                         {/* 품절 여부 표시 */}
                         {product.soldOut && (

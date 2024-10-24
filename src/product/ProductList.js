@@ -149,16 +149,17 @@ const ProductList = () => {
                                         <div className="text-center">
                                             {/* Product name */}
                                             <h5 className="fw-bolder">{product.productName}</h5>
+                                            {/* Product manufacturer */}
+                                            <p className="text-muted"> {product.manufacturer}</p>
                                             {/* Product price */}
                                             <div>
                                                 {product.oldPrice && (
                                                     <span className="text-muted text-decoration-line-through">
-                                                        {product.oldPrice.toLocaleString()}원
-                                                    </span>
+                    {product.oldPrice.toLocaleString()}원
+                </span>
                                                 )}
                                                 <span> {product.price.toLocaleString()}원</span>
                                             </div>
-
                                         </div>
                                     </div>
                                     {/* Product actions */}
