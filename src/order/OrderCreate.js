@@ -404,7 +404,7 @@ const OrderCreate = () => {
                                                 src={
                                                 productDetails[item.productId].productImgUrls.length > 0 ?
                                                     productDetails[item.productId].productImgUrls[0]
-                                                    : 'https://dummyimage.com/100x100'
+                                                    : "/img/logo100x100.png"
                                             }
                                                 alt={item.productName}
                                             />

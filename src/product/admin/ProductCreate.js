@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ProductCreate.css';
 import axios from 'axios';
+import sendRefreshTokenAndStoreAccessToken from "../../auth/RefreshAccessToken";
 
 const ProductCreate = () => {
     const [formData, setFormData] = useState({
@@ -42,14 +43,31 @@ const ProductCreate = () => {
                 const filteredCategories = data.filter(category => category.parentId !== null);
                 setCategories(filteredCategories);
             } catch (error) {
-                console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
+                try {
+                    await sendRefreshTokenAndStoreAccessToken();
+
+                    const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
+                    const response = await fetch('http://localhost:8080/api/categories', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`  // Authorization 헤더 추가
+                        }
+                    });
+                    if (!response.ok) {
+                        throw new Error('카테고리 목록을 가져오는 데 실패했습니다.');
+                    }
+                    const data = await response.json();
+                    const filteredCategories = data.filter(category => category.parentId !== null);
+                    setCategories(filteredCategories);
+                } catch (error) {
+                    console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
+                }
             }
         };
 
         fetchCategories();
     }, []);
 
-
+    // 입력 값 변경 처리 및 유효성 검사
     const handleChange = (e) => {
         const { name, value } = e.target;
 
@@ -74,9 +92,13 @@ const ProductCreate = () => {
             setManufacturerError('');
         }
 
-        // 가격은 음수가 되지 않도록 처리
-        if (name === 'price' && value < 0) {
-            alert('가격은 음수일 수 없습니다.');
+        // 가격 및 재고수는 0 이상 2147483647 이하로 제한
+        if (name === 'price' && (isNaN(value) || value < 0 || value > 2147483647)) {
+            alert('가격은 0에서 2147483647 사이의 값을 입력하세요.');
+            return;
+        }
+        if (name === 'stock' && (isNaN(value) || value < 0 || value > 2147483647)) {
+            alert('재고수는 0에서 2147483647 사이의 값을 입력하세요.');
             return;
         }
 
@@ -90,7 +112,7 @@ const ProductCreate = () => {
         // 파일 형식 검증
         const validFiles = selectedFiles.filter(file => validImageTypes.includes(file.type));
         if (validFiles.length !== selectedFiles.length) {
-            alert('허용되지 않은 이미지 형식이 포함되어 있습니다. jpg, png, gif, webp 형식의 파일만 업로드할 수 있습니다.');
+            alert('허용되지 않은 이미지 형식이 포함되어 있습니다. jpg, png 형식의 파일만 업로드할 수 있습니다.');
             return; // 잘못된 파일 형식이 있는 경우 업로드 중단
         }
 
@@ -109,7 +131,7 @@ const ProductCreate = () => {
         // 파일 형식 검증
         const validDescFiles = selectedDescFiles.filter(file => validImageTypes.includes(file.type));
         if (validDescFiles.length !== selectedDescFiles.length) {
-            alert('허용되지 않은 이미지 형식이 포함되어 있습니다. jpg, png, gif, webp 형식의 파일만 업로드할 수 있습니다.');
+            alert('허용되지 않은 이미지 형식이 포함되어 있습니다. jpg, png 형식의 파일만 업로드할 수 있습니다.');
             return; // 잘못된 파일 형식이 있는 경우 업로드 중단
         }
 
@@ -171,7 +193,26 @@ const ProductCreate = () => {
             console.log('상품이 성공적으로 등록되었습니다.');
             navigate('/admin/products');
         } catch (error) {
-            console.error('에러 발생:', error);
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+
+                const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
+                const response = await fetch('http://localhost:8080/api/admin/products', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가
+                    },
+                    body: data
+                });
+
+                if (!response.ok) {
+                    throw new Error('상품 등록에 실패했습니다.');
+                }
+                console.log('상품이 성공적으로 등록되었습니다.');
+                navigate('/admin/products');
+            } catch (error) {
+                console.error('에러 발생:', error);
+            }
         }
     };
 
@@ -228,7 +269,7 @@ const ProductCreate = () => {
                     </div>
                 </div>
                 <div className="form-group row">
-                    <label className="col-sm-2 col-form-label">상세 정보</label>
+                    <label className="col-sm-2 col-form-label">상품 상세 설명</label>
                     <div className="col-sm-5">
                         <textarea
                             name="info"
@@ -236,7 +277,6 @@ const ProductCreate = () => {
                             onChange={handleChange}
                             rows="2"
                             className={`form-control ${infoError ? "is-invalid" : ""}`}
-                            required
                         />
                         {infoError && <div className="invalid-feedback">{infoError}</div>}
                     </div>
@@ -255,7 +295,7 @@ const ProductCreate = () => {
                     </div>
                 </div>
                 <div className="form-group row">
-                    <label className="col-sm-2 col-form-label">재고 수</label>
+                    <label className="col-sm-2 col-form-label">재고수</label>
                     <div className="col-sm-3">
                         <input
                             type="number"

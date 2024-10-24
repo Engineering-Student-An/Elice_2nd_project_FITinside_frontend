@@ -1,5 +1,5 @@
-import React from "react";
-import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import React, {useEffect} from "react";
+import {BrowserRouter as Router, Route, Routes, useLocation} from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
@@ -20,10 +20,20 @@ import ProtectedRoute from "./ProtectedRoute";
 import ProtectedAdminRoute from "./ProtectedAdminRoute";
 import AccessDeniedPage from "./AccessDeniedPage";
 
+// 스크롤을 최상단으로 옮김
+const ScrollToTop = () => {
+    const { pathname } = useLocation();
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [pathname]);
+
+    return null;
+};
 
 const App = () => {
     return (
         <Router>
+            <ScrollToTop />
             <div id="root">
                 <Header />
                 <main className="flex-grow-1">

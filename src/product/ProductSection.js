@@ -8,6 +8,7 @@ const ProductSection = () => {
     const [product, setProduct] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [selectedImage, setSelectedImage] = useState('');
+    const [dummyImage] = useState('/img/logo100x100.png'); // dummy 이미지 URL 설정
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -15,14 +16,14 @@ const ProductSection = () => {
             try {
                 const response = await axios.get(`http://localhost:8080/api/products/${productId}`);
                 setProduct(response.data);
-                setSelectedImage(response.data.productImgUrls ? response.data.productImgUrls[0] : '');
+                setSelectedImage(response.data.productImgUrls ? response.data.productImgUrls[0] : dummyImage);
             } catch (error) {
                 console.error("Error fetching product data:", error);
             }
         };
 
         fetchProduct();
-    }, [productId]);
+    }, [productId, dummyImage]);
 
     const handleAddToCart = async () => {
         if (product && !product.soldOut) {
@@ -55,7 +56,7 @@ const ProductSection = () => {
 
     const productImages = product.productImgUrls?.length > 0
         ? product.productImgUrls
-        : ['https://dummyimage.com/450x300/dee2e6/6c757d.jpg'];
+        : [dummyImage]; // dummy 이미지 사용
 
     const productDescImages = product.productDescImgUrls?.length > 0
         ? product.productDescImgUrls
@@ -85,7 +86,7 @@ const ProductSection = () => {
                             id="productCarousel"
                             className="carousel slide"
                             data-bs-ride="carousel"
-                            style={{ width: '100%', height: '400px', overflow: 'hidden' }}
+                            style={{ width: '100%', height: '720px', overflow: 'hidden' }}
                         >
                             <div className="carousel-inner" style={{ width: '100%', height: '100%' }}>
                                 {productImages.map((image, index) => (
@@ -98,7 +99,7 @@ const ProductSection = () => {
                                             className="d-block w-100 h-100"
                                             src={image}
                                             alt={`Product image ${index + 1}`}
-                                            style={{ objectFit: 'cover' }}
+                                            style={{ objectFit: 'cover', width: '600px', height: '720px'}}
                                         />
                                     </div>
                                 ))}

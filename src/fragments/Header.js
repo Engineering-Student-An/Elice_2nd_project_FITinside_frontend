@@ -86,14 +86,15 @@ const Header = () => {
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
-            <div className="container px-4 px-lg-1">
+            <div className="container-fluid px-4 px-lg-4 bg-light">
                 <a className="navbar-brand" href="/"><img src="/img/fitinside_logo_transparent.png" alt="로고"/> </a>
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span className="navbar-toggler-icon"></span>
                 </button>
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                        <li className="nav-item"><a className="nav-link active" aria-current="page" href="/">Home</a>
+                        <li className="nav-item">
+                            <a className="nav-link active" aria-current="page" href="/">Home</a>
                         </li>
 
                         {parentCategories.map(parent => (
@@ -103,9 +104,9 @@ const Header = () => {
                                 onMouseEnter={() => handleMouseEnter(parent.id)}
                                 onMouseLeave={handleMouseLeave}
                             >
-                                <a className="nav-link dropdown-toggle" href="/" role="button" aria-expanded="false">
+                                <span className="nav-link dropdown-toggle" href="/" role="button" aria-expanded="false">
                                     {parent.name}
-                                </a>
+                                </span>
                                 <ul className={`dropdown-menu ${dropdownOpen === parent.id ? 'show' : ''}`}>
                                     {getChildCategories(parent.id).map(child => (
                                         <li key={child.id}>
@@ -118,38 +119,15 @@ const Header = () => {
                             </li>
                         ))}
 
-
-                        {/*<li className="nav-item"><a className="nav-link" href="#!">About</a></li>*/}
-
-                        {/*<li className="nav-item dropdown">*/}
-                        {/*    <a className="nav-link dropdown-toggle" id="navbarDropdown" href="/" role="button"*/}
-                        {/*       data-bs-toggle="dropdown" aria-expanded="false">여성</a>*/}
-                        {/*    <ul className="dropdown-menu" aria-labelledby="navbarDropdown">*/}
-                        {/*        <li><a className="dropdown-item" href="/">카테고리1</a></li>*/}
-                        {/*        <li><a className="dropdown-item" href="/">카테고리2</a></li>*/}
-                        {/*        <li><a className="dropdown-item" href="/">카테고리3</a></li>*/}
-                        {/*        /!*<li>*!/*/}
-                        {/*        /!*    <hr className="dropdown-divider"/>*!/*/}
-                        {/*        /!*</li>*!/*/}
-                        {/*    </ul>*/}
-                        {/*</li>*/}
-
-                        {/*<li className="nav-item dropdown">*/}
-                        {/*    <a className="nav-link dropdown-toggle" id="navbarDropdown" href="/" role="button"*/}
-                        {/*       data-bs-toggle="dropdown" aria-expanded="false">남성</a>*/}
-                        {/*    <ul className="dropdown-menu" aria-labelledby="navbarDropdown">*/}
-                        {/*        <li><a className="dropdown-item" href="/">카테고리1</a></li>*/}
-                        {/*        <li><a className="dropdown-item" href="/">카테고리2</a></li>*/}
-                        {/*        <li><a className="dropdown-item" href="/">카테고리3</a></li>*/}
-                        {/*    </ul>*/}
-                        {/*</li>*/}
-
-
                     </ul>
                     <div className="d-flex m-3">
                         {userRole === 'ROLE_ADMIN' && isLoggedIn && (
                             <div>
                                 <a className="btn btn-outline-dark me-3" href="/admin">ADMIN</a>
+                            </div>
+                        )}
+                        {isLoggedIn && (
+                            <div>
                                 <a className="btn btn-outline-dark" href="/me">
                                     MY
                                 </a>

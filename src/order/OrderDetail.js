@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import {Link, useParams} from 'react-router-dom';
 import axios from 'axios';
 import DeliveryForm from './DeliveryForm';
 import AddressModal from '../address/AddressModal';
@@ -267,13 +267,19 @@ const OrderDetail = () => {
                                     <img
                                         style={{ width: '100px', height: '100px', marginRight: '10px' }}
                                         src={
-                                        product.productImgUrl ? product.productImgUrl : 'https://dummyimage.com/100x100'
+                                        product.productImgUrl ? product.productImgUrl : "/img/logo100x100.png"
                                     }
                                         alt={product.orderProductName}
                                     />
                                 {/*)}*/}
                                 <div>
-                                    <p>{product.orderProductName}</p>
+                                    {/*<p>{product.orderProductName}</p>*/}
+                                    {/* 상품명 클릭 시 상품 상세 페이지로 이동 */}
+                                    <p>
+                                        <Link to={`/products/${product.productId}`} style={{ textDecoration: 'none', color: 'black' }}>
+                                            {product.orderProductName}
+                                        </Link>
+                                    </p>
                                 </div>
                             </div>
                         </td>
