@@ -119,8 +119,11 @@ const ProductSection = () => {
                     {/* 제품 정보 섹션 */}
                     <div className="col-md-6">
                         <h1 className="display-5 fw-bolder">{product.productName}</h1>
-                        <div className="fs-5 mb-5">
-                            <span>{product.price.toLocaleString()}원</span>
+                        <div className="fs-5 mb-3">
+                            <span> {product.price.toLocaleString()}원</span>
+                        </div>
+                        <div className="fs-6 mb-3">
+                            <strong> </strong> {product.manufacturer}
                         </div>
                         {/* 품절 여부 표시 */}
                         {product.soldOut && (
@@ -146,6 +149,7 @@ const ProductSection = () => {
                             </div>
                         )}
                     </div>
+
                 </div>
                 {/* 탭 구성 섹션 */}
                 <div className="mt-5">
@@ -153,11 +157,6 @@ const ProductSection = () => {
                         <li className="nav-item" role="presentation">
                             <button className="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
                                 상품 정보
-                            </button>
-                        </li>
-                        <li className="nav-item" role="presentation">
-                            <button className="nav-link" id="qna-tab" data-bs-toggle="tab" data-bs-target="#qna" type="button" role="tab" aria-controls="qna" aria-selected="false">
-                                상품 Q&A
                             </button>
                         </li>
                     </ul>
@@ -177,16 +176,13 @@ const ProductSection = () => {
                                     ))
                                 }
                             </div>
-
-                        </div>
-                        <div className="tab-pane fade" id="qna" role="tabpanel" aria-labelledby="qna-tab">
-                            <p>여기에서 상품에 대한 Q&A를 볼 수 있습니다.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
     );
+
 };
 
 export default ProductSection;
