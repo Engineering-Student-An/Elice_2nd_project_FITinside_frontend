@@ -276,7 +276,12 @@ const OrderDetail = () => {
                                     {/*<p>{product.orderProductName}</p>*/}
                                     {/* 상품명 클릭 시 상품 상세 페이지로 이동 */}
                                     <p>
-                                        <Link to={`/products/${product.productId}`} style={{ textDecoration: 'none', color: 'black' }}>
+                                        <Link
+                                            to={`/product/${product.productId}`}
+                                            style={{ textDecoration: 'none', color: 'black' }}
+                                            onMouseEnter={(e) => (e.target.style.color = 'blue')}
+                                            onMouseLeave={(e) => (e.target.style.color = 'black')}
+                                        >
                                             {product.orderProductName}
                                         </Link>
                                     </p>
