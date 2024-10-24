@@ -106,7 +106,10 @@ const MyPage = () => {
             const token = localStorage.getItem('token');
             await axios.put(
                 'http://localhost:8080/api/user/phone', // 전화번호 수정 API 엔드포인트
-                { phone: newPhone },
+                {
+                    email: userInfo.email,
+                    phone: newPhone
+                },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             setUserInfo((prevInfo) => ({ ...prevInfo, phone: newPhone })); // 상태 업데이트
