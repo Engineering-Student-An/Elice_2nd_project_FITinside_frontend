@@ -159,11 +159,6 @@ const ProductSection = () => {
                                 상품 정보
                             </button>
                         </li>
-                        <li className="nav-item" role="presentation">
-                            <button className="nav-link" id="qna-tab" data-bs-toggle="tab" data-bs-target="#qna" type="button" role="tab" aria-controls="qna" aria-selected="false">
-                                상품 Q&A
-                            </button>
-                        </li>
                     </ul>
                     <div className="tab-content" id="productDetailsTabsContent">
                         <div className="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
@@ -181,16 +176,13 @@ const ProductSection = () => {
                                     ))
                                 }
                             </div>
-
-                        </div>
-                        <div className="tab-pane fade" id="qna" role="tabpanel" aria-labelledby="qna-tab">
-                            <p>여기에서 상품에 대한 Q&A를 볼 수 있습니다.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
     );
+
 };
 
 export default ProductSection;
