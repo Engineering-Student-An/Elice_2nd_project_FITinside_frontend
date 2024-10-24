@@ -344,7 +344,7 @@ const OrderAdminList = () => {
                                 ))}
                             </select>
                         </td>
-                        <td>{new Date(order.createdAt).toLocaleString()}</td>
+                        <td>{new Date(order.createdAt).toLocaleString(`ko-KR`)}</td>
                         <td>{order.email}</td>
                         <td>{(order.totalPrice).toLocaleString()}원</td>
                         <td>{(order.discountedTotalPrice).toLocaleString()}원</td>

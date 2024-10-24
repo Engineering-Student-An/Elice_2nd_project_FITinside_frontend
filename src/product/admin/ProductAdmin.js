@@ -280,8 +280,8 @@ const ProductAdmin = () => {
                                 <td>{Number(product.price).toLocaleString()}원</td>
                                 <td>{Number(product.stock).toLocaleString()}개</td>
                                 <td>{product.soldOut ? '품절' : '판매 중'}</td>
-                                <td>{new Date(product.createdAt).toLocaleString()}</td>
-                                <td>{new Date(product.updatedAt).toLocaleString()}</td>
+                                <td>{new Date(product.createdAt).toLocaleString(`ko-KR`)}</td>
+                                <td>{new Date(product.updatedAt).toLocaleString(`ko-KR`)}</td>
                                 <td>
                                     <a className="btn btn-primary btn-small" href={`/product/${product.id}`}
                                        target="_blank" rel="noopener noreferrer">

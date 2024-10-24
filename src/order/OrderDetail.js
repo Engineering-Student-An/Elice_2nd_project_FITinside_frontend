@@ -240,7 +240,7 @@ const OrderDetail = () => {
         <div className="order-detail-container">
             <div className="order-title">주문상세내역</div>
             <div className="order-date-info">
-                {new Date(orderDetail.createdAt).toLocaleDateString()}에 주문하신 상세 내역입니다.
+                {new Date(orderDetail.createdAt).toLocaleDateString(`ko-KR`)}에 주문하신 상세 내역입니다.
             </div>
 
             <h3 className="order-section-header">주문상품정보</h3>

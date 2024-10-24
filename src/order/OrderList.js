@@ -182,7 +182,7 @@ const OrderList = () => {
                                 <p className="card-text"><strong>주문 상품:</strong> {order.productNames.join(', ')}</p>
                                 <p className="card-text"><strong>총 가격:</strong> {(order.totalPrice).toLocaleString()}원</p>
                                 <p className="card-text"><strong>결제 금액:</strong> {(order.discountedTotalPrice).toLocaleString()}원</p>
-                                <p className="card-text"><strong>주문 날짜:</strong> {new Date(order.createdAt).toLocaleDateString()}</p>
+                                <p className="card-text"><strong>주문 날짜:</strong> {new Date(order.createdAt).toLocaleDateString(`ko-KR`)}</p>
                             </div>
                         </div>
                         <div className="card-footer bg-light">
