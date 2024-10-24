@@ -119,6 +119,20 @@ const MyPage = () => {
         }
     };
 
+    const handleDeleteAccount = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            await axios.delete('http://localhost:8080/api/user/delete', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            localStorage.removeItem('token'); // 로그아웃 처리
+            navigate('/'); // 메인 페이지로 이동
+        } catch (error) {
+            setError('회원 탈퇴에 실패했습니다.');
+        }
+    };
+
     return (
         <div className="container mt-5">
             <h2 className="text-center mb-4">내 정보</h2>
@@ -257,6 +271,16 @@ const MyPage = () => {
                         </button>
                     </div>
 
+                    {/* 탈퇴 버튼 */}
+                    <div className="mb-3" style={{display: 'flex', justifyContent: 'center'}}>
+                        <button
+                            className="btn btn-danger"
+                            style={{borderRadius: '4px'}}
+                            onClick={handleDeleteAccount}
+                        >
+                            회원 탈퇴
+                        </button>
+                    </div>
                 </div>
             ) : (
                 <p className="text-center">로딩 중...</p>
