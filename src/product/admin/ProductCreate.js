@@ -112,7 +112,7 @@ const ProductCreate = () => {
         // 파일 형식 검증
         const validFiles = selectedFiles.filter(file => validImageTypes.includes(file.type));
         if (validFiles.length !== selectedFiles.length) {
-            alert('허용되지 않은 이미지 형식이 포함되어 있습니다. jpg, png, gif, webp 형식의 파일만 업로드할 수 있습니다.');
+            alert('허용되지 않은 이미지 형식이 포함되어 있습니다. jpg, png 형식의 파일만 업로드할 수 있습니다.');
             return; // 잘못된 파일 형식이 있는 경우 업로드 중단
         }
 
@@ -131,7 +131,7 @@ const ProductCreate = () => {
         // 파일 형식 검증
         const validDescFiles = selectedDescFiles.filter(file => validImageTypes.includes(file.type));
         if (validDescFiles.length !== selectedDescFiles.length) {
-            alert('허용되지 않은 이미지 형식이 포함되어 있습니다. jpg, png, gif, webp 형식의 파일만 업로드할 수 있습니다.');
+            alert('허용되지 않은 이미지 형식이 포함되어 있습니다. jpg, png 형식의 파일만 업로드할 수 있습니다.');
             return; // 잘못된 파일 형식이 있는 경우 업로드 중단
         }
 
@@ -277,7 +277,6 @@ const ProductCreate = () => {
                             onChange={handleChange}
                             rows="2"
                             className={`form-control ${infoError ? "is-invalid" : ""}`}
-                            required
                         />
                         {infoError && <div className="invalid-feedback">{infoError}</div>}
                     </div>
