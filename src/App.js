@@ -1,5 +1,5 @@
-import React from "react";
-import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import React, {useEffect} from "react";
+import {BrowserRouter as Router, Route, Routes, useLocation} from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
@@ -13,17 +13,27 @@ import { OrderCreate, OrderDetail, OrderList, OrderAdminList } from "./order";
 import { CouponAdmin, CouponList, WelcomeCouponList } from "./coupon";
 import AdminPage from "./AdminPage";
 import { CategoryAdminMain, CategoryCreate, CategoryUpdate } from "./category";
-import { ProductAdmin, ProductCreate, ProductUpdate, ProductDelete } from './product/admin';
+import { ProductAdmin, ProductCreate, ProductUpdate } from './product/admin';
 import { AddressList } from "./address";
 import { BannerAdminMain, BannerCreate, BannerUpdate } from "./banner";
 import ProtectedRoute from "./ProtectedRoute";
 import ProtectedAdminRoute from "./ProtectedAdminRoute";
 import AccessDeniedPage from "./AccessDeniedPage";
 
+// 스크롤을 최상단으로 옮김
+const ScrollToTop = () => {
+    const { pathname } = useLocation();
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [pathname]);
+
+    return null;
+};
 
 const App = () => {
     return (
         <Router>
+            <ScrollToTop />
             <div id="root">
                 <Header />
                 <main className="flex-grow-1">
@@ -64,7 +74,6 @@ const App = () => {
                         <Route path="/admin/products" element={<ProtectedAdminRoute><ProductAdmin /></ProtectedAdminRoute>} /> {/* 관리자 상품 관리 화면 */}
                         <Route path="/admin/products/create" element={<ProtectedAdminRoute><ProductCreate /></ProtectedAdminRoute>} />
                         <Route path="/admin/products/update/:id" element={<ProtectedAdminRoute><ProductUpdate /></ProtectedAdminRoute>} />
-                        <Route path="/admin/products/delete" element={<ProtectedAdminRoute><ProductDelete /></ProtectedAdminRoute>} />
 
                         <Route path="/addresses" element={<ProtectedRoute><AddressList /></ProtectedRoute>} /> {/*배송지 목록 화면*/}
                     </Routes>

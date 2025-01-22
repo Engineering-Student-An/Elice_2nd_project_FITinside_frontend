@@ -28,7 +28,18 @@ const MyPage = () => {
             } catch (err) {
                 try {
                     await sendRefreshTokenAndStoreAccessToken();
-                    window.location.reload(); // 새로고침
+
+                    const token = localStorage.getItem('token'); // 로컬 스토리지에서 토큰 가져오기
+
+                    const response = await axios.get('http://localhost:8080/api/user/me', {
+                        headers: {
+                            Authorization: `Bearer ${token}`, // Authorization 헤더에 토큰 추가
+                        },
+                    });
+
+                    setUserInfo(response.data); // 사용자 정보를 상태에 저장
+                    setNewName(response.data.userName); // 기본 이름 설정
+                    setNewPhone(response.data.phone); // 기본 전화번호 설정
                 } catch (error) {
                     setError('사용자 정보를 가져오는 데 실패했습니다.');
                 }
@@ -95,13 +106,30 @@ const MyPage = () => {
             const token = localStorage.getItem('token');
             await axios.put(
                 'http://localhost:8080/api/user/phone', // 전화번호 수정 API 엔드포인트
-                { phone: newPhone },
+                {
+                    email: userInfo.email,
+                    phone: newPhone
+                },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             setUserInfo((prevInfo) => ({ ...prevInfo, phone: newPhone })); // 상태 업데이트
             setIsEditingPhone(false); // 수정 모드 종료
         } catch (error) {
             setError('전화번호 수정에 실패했습니다.');
+        }
+    };
+
+    const handleDeleteAccount = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            await axios.delete('http://localhost:8080/api/user/delete', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            localStorage.removeItem('token'); // 로그아웃 처리
+            navigate('/'); // 메인 페이지로 이동
+        } catch (error) {
+            setError('회원 탈퇴에 실패했습니다.');
         }
     };
 
@@ -243,6 +271,16 @@ const MyPage = () => {
                         </button>
                     </div>
 
+                    {/* 탈퇴 버튼 */}
+                    <div className="mb-3" style={{display: 'flex', justifyContent: 'center'}}>
+                        <button
+                            className="btn btn-danger"
+                            style={{borderRadius: '4px'}}
+                            onClick={handleDeleteAccount}
+                        >
+                            회원 탈퇴
+                        </button>
+                    </div>
                 </div>
             ) : (
                 <p className="text-center">로딩 중...</p>

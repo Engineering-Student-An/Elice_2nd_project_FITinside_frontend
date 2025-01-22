@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import {Link, useParams} from 'react-router-dom';
 import axios from 'axios';
 import DeliveryForm from './DeliveryForm';
 import AddressModal from '../address/AddressModal';
 import './orderDetail.css';
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
 
 const statusOptions = [
     { value: 'ORDERED', label: '주문 완료' },
@@ -25,7 +26,15 @@ const OrderDetail = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [deliveryData, setDeliveryData] = useState({});
     const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 추가
-    const formRef = useRef(null); // DeliveryForm을 참조할 수 있도록 설정
+    const deliveryFormRef = useRef(null); // DeliveryForm을 참조할 수 있도록 설정
+
+    useEffect(() => {
+        console.log('isEditing: ', isEditing);
+        console.log('deliveryFormRef: ', deliveryFormRef);
+        if (isEditing && deliveryFormRef.current) {
+            deliveryFormRef.current.setIsReadOnly(false);
+        }
+    }, [isEditing]);
 
     useEffect(() => {
         // 주문 상세 정보를 가져오는 API 호출
@@ -47,33 +56,69 @@ const OrderDetail = () => {
                     deliveryReceiver: response.data.deliveryReceiver,
                     deliveryPhone: response.data.deliveryPhone,
                 });
-            } catch (err) {
-                console.error('주문 상세 정보 불러오기 실패:', err.response ? err.response.data : err.message);
-                setError('주문 정보를 불러오는 중 오류가 발생했습니다.');
+            } catch (error) {
+                try {
+                    await sendRefreshTokenAndStoreAccessToken();
+
+                    const token = localStorage.getItem('token');
+                    const response = await axios.get(`http://localhost:8080/api/orders/${orderId}`, {
+                        headers: {
+                            Authorization: `Bearer ${token}` // 토큰을 인증 헤더에 추가
+                        }
+                    });
+
+                    setOrderDetail(response.data);
+                    setDeliveryData({
+                        postalCode: response.data.postalCode,
+                        deliveryAddress: response.data.deliveryAddress,
+                        detailedAddress: response.data.detailedAddress,
+                        deliveryMemo: response.data.deliveryMemo,
+                        deliveryReceiver: response.data.deliveryReceiver,
+                        deliveryPhone: response.data.deliveryPhone,
+                    });
+                } catch (err) {
+                    console.error('주문 상세 정보 불러오기 실패:', err.response ? err.response.data : err.message);
+                    setError('주문 정보를 불러오는 중 오류가 발생했습니다.');
+                }
             }
         };
 
         fetchOrderDetail();
-        localStorage.removeItem('deliveryFormData');
+        // localStorage.removeItem('deliveryFormData');
     }, [orderId]);
 
     const handleEditClick = () => {
+        console.log('수정버튼클릭시 formRef: ', deliveryFormRef.current);
         // isEditing 상태가 변경될 때 deliveryData를 최신 orderDetail 정보로 설정
-        setDeliveryData({
+        setDeliveryData({ // deliveryForm에 전달
             postalCode: orderDetail.postalCode,
             deliveryAddress: orderDetail.deliveryAddress,
             detailedAddress: orderDetail.detailedAddress,
             deliveryMemo: orderDetail.deliveryMemo,
             deliveryReceiver: orderDetail.deliveryReceiver,
             deliveryPhone: orderDetail.deliveryPhone,
+            saveAsDefault: orderDetail.defaultAddress === 'Y' ? true : false
         });
         setIsEditing(true);
+
+        setTimeout(() => {
+            if (deliveryFormRef.current) {
+                console.log('시간 지연 후 deliveryFormRef 확인: ', deliveryFormRef);
+                deliveryFormRef.current.setIsReadOnly(false);
+            }
+        }, 0); // 0ms라도 렌더링 후에 실행되도록 지연
     };
 
     const handleSaveClick = async () => {
         // DeliveryForm의 최신 폼 데이터를 가져옴
-        const updatedData = formRef.current.getFormData();
+        const updatedData = deliveryFormRef.current.getFormData();
         console.log('저장할 데이터:', updatedData); // 최신 데이터 확인을 위한 로그
+
+        // 유효성 검사
+        if (!updatedData) {
+            alert('배송 정보를 입력해주세요.');
+            return;
+        }
 
         try {
             const token = localStorage.getItem('token');
@@ -94,9 +139,32 @@ const OrderDetail = () => {
             }); // 업데이트된 데이터를 deliveryData에 반영
             alert('배송지 변경이 완료되었습니다.');
             setIsEditing(false); // 수정 완료 후 편집 모드 종료
-        } catch (err) {
-            console.error('주문 수정 실패:', err.response ? err.response.data : err.message);
-            alert('주문 수정에 실패했습니다. 다시 시도해주세요.');
+        } catch (error) {
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+
+                const token = localStorage.getItem('token');
+                const response = await axios.patch(`http://localhost:8080/api/orders/${orderId}`, updatedData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                setOrderDetail(response.data);
+                setDeliveryData({
+                    postalCode: response.data.postalCode,
+                    deliveryAddress: response.data.deliveryAddress,
+                    detailedAddress: response.data.detailedAddress,
+                    deliveryMemo : response.data.deliveryMemo,
+                    deliveryReceiver: response.data.deliveryReceiver,
+                    deliveryPhone: response.data.deliveryPhone,
+                }); // 업데이트된 데이터를 deliveryData에 반영
+                alert('배송지 변경이 완료되었습니다.');
+                setIsEditing(false); // 수정 완료 후 편집 모드 종료
+            } catch (err) {
+                console.error('주문 수정 실패:', err.response ? err.response.data : err.message);
+                alert('배송 정보를 입력해주세요.');
+            }
         }
     };
 
@@ -107,8 +175,8 @@ const OrderDetail = () => {
     // 모달에서 선택한 주소를 폼에 반영
     const handleAddressSelect = (address) => {
         setIsModalOpen(false); // 모달 닫기
-        if (formRef.current) {
-            formRef.current.setFormData(address); // 선택한 주소를 폼에 반영
+        if (deliveryFormRef.current) {
+            deliveryFormRef.current.setFormData(address); // 선택한 주소를 폼에 반영
         }
     };
 
@@ -133,9 +201,30 @@ const OrderDetail = () => {
 
             setOrderDetail(response.data);
             alert('주문이 취소되었습니다.');
-        } catch (err) {
-            console.error('주문 취소 실패:', err.response ? err.response.data : err.message);
-            alert('주문 취소에 실패했습니다. 다시 시도해주세요.');
+        } catch (error) {
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+
+                const token = localStorage.getItem('token');
+                await axios.delete(`http://localhost:8080/api/orders/${orderId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                // 주문 취소 후 다시 주문 상세 정보를 가져와서 갱신
+                const response = await axios.get(`http://localhost:8080/api/orders/${orderId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                setOrderDetail(response.data);
+                alert('주문이 취소되었습니다.');
+            } catch (err) {
+                console.error('주문 취소 실패:', err.response ? err.response.data : err.message);
+                alert('주문 취소에 실패했습니다. 다시 시도해주세요.');
+            }
         }
     };
 
@@ -169,50 +258,63 @@ const OrderDetail = () => {
                 </tr>
                 </thead>
                 <tbody>
-                    {orderDetail.orderProducts && orderDetail.orderProducts.map((product, index) => (
-                        <tr key={product.productId}>
-                            <td>
-                                {/* 상품 이미지 및 정보 */}
-                                <div style={{ display: 'flex', alignItems: 'center' }}>
-                                    {product.productImgUrl && (
-                                        <img
-                                            style={{ width: '100px', height: '100px', marginRight: '10px' }}
-                                            src={product.productImgUrl}
-                                            alt={product.orderProductName}
-                                        />
-                                    )}
-                                    <div>
-                                        <p>{product.orderProductName}</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>{product.count}</td>
-                            <td>{(product.orderProductPrice * product.count).toLocaleString()}원</td>
-                            <td>{product.discountedPrice !== product.orderProductPrice * product.count ? `${(product.orderProductPrice * product.count - product.discountedPrice).toLocaleString()}원` : '-'}</td>
-                            {index === 0 && ( /* 첫 번째 상품에서만 셀 병합하여 총금액 및 배송비 표시 */
-                                <>
-                                    <td rowSpan={orderDetail.orderProducts.length}>
-                                        {orderDetail.deliveryFee.toLocaleString()}원
-                                    </td>
-                                    <td rowSpan={orderDetail.orderProducts.length}>
-                                        {(orderDetail.discountedTotalPrice + orderDetail.deliveryFee).toLocaleString()}원
-                                    </td>
-                                    <td rowSpan={orderDetail.orderProducts.length}>
-                                        {getStatusLabel(orderDetail.orderStatus)}
-                                    </td>
-                                    <td rowSpan={orderDetail.orderProducts.length}>
-                                        <button
-                                            className="btn-custom"
-                                            onClick={handleCancelClick}
-                                            disabled={getStatusLabel(orderDetail.orderStatus) !== '주문 완료'}
+                {orderDetail.orderProducts && orderDetail.orderProducts.map((product, index) => (
+                    <tr key={product.productId}>
+                        <td>
+                            {/* 상품 이미지 및 정보 */}
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                {/*{product.productImgUrl && (*/}
+                                    <img
+                                        style={{ width: '100px', height: '100px', marginRight: '10px' }}
+                                        src={
+                                        product.productImgUrl ? product.productImgUrl : "/img/logo100x100.png"
+                                    }
+                                        alt={product.orderProductName}
+                                    />
+                                {/*)}*/}
+                                <div>
+                                    {/*<p>{product.orderProductName}</p>*/}
+                                    {/* 상품명 클릭 시 상품 상세 페이지로 이동 */}
+                                    <p>
+                                        <Link
+                                            to={`/product/${product.productId}`}
+                                            style={{ textDecoration: 'none', color: 'black' }}
+                                            onMouseEnter={(e) => (e.target.style.color = 'blue')}
+                                            onMouseLeave={(e) => (e.target.style.color = 'black')}
                                         >
-                                            주문취소
-                                        </button>
-                                    </td>
-                                </>
-                            )}
-                        </tr>
-                    ))}
+                                            {product.orderProductName}
+                                        </Link>
+                                    </p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{product.count}</td>
+                        <td>{(product.orderProductPrice * product.count).toLocaleString()}원</td>
+                        <td>{product.discountedPrice !== product.orderProductPrice * product.count ? `${(product.orderProductPrice * product.count - product.discountedPrice).toLocaleString()}원` : '-'}</td>
+                        {index === 0 && ( /* 첫 번째 상품에서만 셀 병합하여 총금액 및 배송비 표시 */
+                            <>
+                                <td rowSpan={orderDetail.orderProducts.length}>
+                                    {orderDetail.deliveryFee.toLocaleString()}원
+                                </td>
+                                <td rowSpan={orderDetail.orderProducts.length}>
+                                    {(orderDetail.discountedTotalPrice + orderDetail.deliveryFee).toLocaleString()}원
+                                </td>
+                                <td rowSpan={orderDetail.orderProducts.length}>
+                                    {getStatusLabel(orderDetail.orderStatus)}
+                                </td>
+                                <td rowSpan={orderDetail.orderProducts.length}>
+                                    <button
+                                        className="btn-custom"
+                                        onClick={handleCancelClick}
+                                        disabled={getStatusLabel(orderDetail.orderStatus) !== '주문 완료'}
+                                    >
+                                        주문취소
+                                    </button>
+                                </td>
+                            </>
+                        )}
+                    </tr>
+                ))}
                 </tbody>
             </table>
 
@@ -248,10 +350,11 @@ const OrderDetail = () => {
             {isEditing ? (
                 <div className="edit-delivery-section">
                     <DeliveryForm
-                        ref={formRef}
+                        ref={deliveryFormRef}
                         initialValues={deliveryData} // 기존 배송 정보 전달
                         // onSubmit={(data) => setDeliveryData(data)}
                         onAddressSelect={() => setIsModalOpen(true)}
+                        hideButtons={true}
                     />
                     <div className="order-actions">
                         <button className="btn-custom" onClick={handleCancelEditClick}>취소</button>
@@ -264,16 +367,16 @@ const OrderDetail = () => {
             ) : (
                 <table className="delivery-info-table">
                     <tbody>
-                        <tr>
-                            <th>받으시는 분</th>
-                            <td className="receiver-info">
-                                {orderDetail.deliveryReceiver} / {orderDetail.deliveryPhone}
-                                <br />
-                                ({orderDetail.postalCode}) {orderDetail.deliveryAddress} {orderDetail.detailedAddress}
-                                <br />
-                                배송 메모 : {orderDetail.deliveryMemo}
-                            </td>
-                        </tr>
+                    <tr>
+                        <th>받으시는 분</th>
+                        <td className="receiver-info">
+                            {orderDetail.deliveryReceiver} / {orderDetail.deliveryPhone}
+                            <br />
+                            ({orderDetail.postalCode}) {orderDetail.deliveryAddress} {orderDetail.detailedAddress}
+                            <br />
+                            배송 메모 : {orderDetail.deliveryMemo}
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
             )}
@@ -281,41 +384,41 @@ const OrderDetail = () => {
             <h3 className="order-section-header">결제금액</h3>
             <table className="payment-info-table">
                 <tbody>
-                    <tr>
-                        <th>주문금액</th>
-                        <td>
+                <tr>
+                    <th>주문금액</th>
+                    <td>
                             <span>
                                 {(orderDetail.totalPrice + orderDetail.deliveryFee).toLocaleString()}원
                             </span>
-                            <div style={{ color: '#888', marginTop: '5px' }}>
-                                상품금액: {(orderDetail.totalPrice + orderDetail.deliveryFee).toLocaleString()}원,
-                                배송비: {orderDetail.deliveryFee.toLocaleString()}원
-                            </div>
-                        </td>
+                        <div style={{ color: '#888', marginTop: '5px' }}>
+                            상품금액: {(orderDetail.totalPrice + orderDetail.deliveryFee).toLocaleString()}원,
+                            배송비: {orderDetail.deliveryFee.toLocaleString()}원
+                        </div>
+                    </td>
 
-                    </tr>
-                    <tr>
-                        <th>할인금액</th>
-                        <td>
+                </tr>
+                <tr>
+                    <th>할인금액</th>
+                    <td>
                             <span>
                                 -{(orderDetail.totalPrice - orderDetail.discountedTotalPrice).toLocaleString()}원
                             </span>
-                            <div style={{ color: '#888', marginTop: '5px' }}>
-                                {/* 사용한 쿠폰 리스트 */}
-                                {orderDetail.orderProducts.map(product => (
-                                    product.discountedPrice !== product.orderProductPrice * product.count && product.couponName ? (
-                                        <div key={product.productId}>
-                                            {product.couponName}: {(product.orderProductPrice * product.count - product.discountedPrice).toLocaleString()}원
-                                        </div>
-                                    ) : null
-                                ))}
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>총 결제금액</th>
-                        <td style={{ color: '#B22222' }}>{(orderDetail.discountedTotalPrice + orderDetail.deliveryFee).toLocaleString()}원</td>
-                    </tr>
+                        <div style={{ color: '#888', marginTop: '5px' }}>
+                            {/* 사용한 쿠폰 리스트 */}
+                            {orderDetail.orderProducts.map(product => (
+                                product.discountedPrice !== product.orderProductPrice * product.count && product.couponName ? (
+                                    <div key={product.productId}>
+                                        {product.couponName}: {(product.orderProductPrice * product.count - product.discountedPrice).toLocaleString()}원
+                                    </div>
+                                ) : null
+                            ))}
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>총 결제금액</th>
+                    <td style={{ color: '#B22222' }}>{(orderDetail.discountedTotalPrice + orderDetail.deliveryFee).toLocaleString()}원</td>
+                </tr>
                 </tbody>
             </table>
         </div>
