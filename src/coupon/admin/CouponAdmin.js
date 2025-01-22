@@ -152,6 +152,22 @@ const CouponAdmin = () => {
         }
     };
 
+    const handleFirstPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(1);
+        }
+    };
+
+    const handleLastPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(totalPages);
+        }
+    };
+
+    const handlePageClick = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
     const handleEmailButtonClick = (coupon) => {
         setSelectedCoupon(coupon);
         setIsEmailModalOpen(true); // 이메일 모달 열기
@@ -170,9 +186,9 @@ const CouponAdmin = () => {
         <div className="container" style={{marginTop: '86px'}}>
             <div style={{width: '100%', position: 'fixed', backgroundColor: 'white', zIndex: '99', paddingTop: '20px', top:'86px'}}>
                 <h2>쿠폰 관리</h2>
-                <div className="d-flex flex-row justify-content-between mt-3" style={{width: '90%'}}>
+                <div className="d-flex flex-row justify-content-start mt-3" style={{width: '90%'}}>
                     <div>
-                        <button className="btn btn-light text-dark mb-4"
+                        <button className="btn btn-light text-dark mb-4 me-3"
                                 style={{border: '1px solid #ced4da'}}
                                 onClick={handleCreateCoupon}>
                             쿠폰 추가
@@ -287,14 +303,48 @@ const CouponAdmin = () => {
                 marginTop: '20px',
                 marginBottom: '50px'
             }}>
-                <button className="btn btn-secondary me-2" onClick={handlePreviousPage} disabled={currentPage === 1}>
-                    이전
-                </button>
-                <span>{currentPage} / {totalPages}</span>
-                <button className="btn btn-secondary ms-2" onClick={handleNextPage}
-                        disabled={currentPage === totalPages}>
-                    다음
-                </button>
+                <nav aria-label="Page navigation example">
+                    <ul className="pagination justify-content-center">
+                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                            <button className="page-link" onClick={handleFirstPage} aria-label="First">
+                                <span aria-hidden="true">&laquo;</span>
+                            </button>
+                        </li>
+
+                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                            <button className="page-link" onClick={handlePreviousPage}>
+                                <span aria-hidden="true">&#8249;</span>
+                            </button>
+                        </li>
+
+                        {/* 페이지 번호 버튼 생성 */}
+                        {Array.from({length: 5}, (_, index) => {
+                            const pageNum = currentPage - 2 + index; // 현재 페이지를 기준으로 5개 생성
+                            if (pageNum < 1 || pageNum > totalPages) return null; // 페이지 번호가 유효하지 않으면 null 반환
+                            return (
+                                <li key={pageNum} className={`page-item ${currentPage === pageNum ? 'active' : ''}`}>
+                                    <button className="page-link" onClick={() => handlePageClick(pageNum)}>
+                                        {pageNum}
+                                    </button>
+                                </li>
+                            );
+                        })}
+
+                        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                            <button className="page-link" onClick={handleNextPage}>
+                                <span aria-hidden="true">&#8250;</span>
+                            </button>
+                        </li>
+
+                        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                            <button className="page-link" onClick={handleLastPage}
+                                    disabled={currentPage === totalPages}>
+                                <span aria-hidden="true">&raquo;</span>
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+
             </div>
 
             <CouponCreateModal

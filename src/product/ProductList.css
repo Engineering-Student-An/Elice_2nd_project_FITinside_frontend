@@ -1,20 +1,22 @@
-/* Ensuring the card body and image have consistent size */
+/* 기존 카드 및 이미지 스타일 */
 .card-body {
-    min-height: 150px; /* Adjust the height to fit the content */
+    min-height: 150px; /* 카드 본문 높이 */
 }
 
 .product-image {
-    object-fit: cover; /* Ensure images cover the container */
-    height: 300px; /* Fixed height for all images */
-    width: 100%; /* Make sure images take full width */
+    object-fit: cover; /* 이미지를 컨테이너에 맞게 조정 */
+    height: 300px; /* 모든 이미지 고정 높이 */
+    width: 100%; /* 전체 너비 사용 */
 }
 
 .card {
-    height: 100%; /* Ensure cards are of equal height */
+    height: 100%; /* 모든 카드 동일한 높이 */
     display: flex;
     flex-direction: column;
 }
 
 .card-footer {
-    margin-top: auto; /* Push the footer to the bottom */
+    margin-top: auto; /* 푸터를 아래로 밀어냄 */
 }
+
+

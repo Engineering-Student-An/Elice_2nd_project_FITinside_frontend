@@ -87,7 +87,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap CSS 추가
+import 'bootstrap/dist/css/bootstrap.min.css';
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken"; // Bootstrap CSS 추가
 
 const BannerCreate = () => {
     const [title, setTitle] = useState('');
@@ -113,6 +114,12 @@ const BannerCreate = () => {
         formData.append('displayOrder', displayOrder);
         formData.append('image', image);
 
+        // displayOrder와 mainDisplayOrder가 1 이상의 값인지 확인
+        if (displayOrder < 1) {
+            alert('정렬 순서는 1 이상의 값이어야 합니다.');
+            return;
+        }
+
         // targetUrl이 입력되었을 때만 추가
         if (targetUrl) {
             formData.append('targetUrl', targetUrl);
@@ -127,13 +134,24 @@ const BannerCreate = () => {
             });
             navigate('/admin/banners');
         } catch (error) {
-            console.error('Error creating banner:', error);
+            try{
+                await sendRefreshTokenAndStoreAccessToken();
+                await axios.post('http://localhost:8080/api/admin/banners', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                navigate('/admin/banners');
+            } catch(error) {
+                console.error('Error creating banner:', error);
+            }
         }
     };
 
     return (
         <div className="container mt-5">
-            <h1 className="mb-4">새 광고 생성</h1>
+            <h1 className="mb-4">새 배너 생성</h1>
             <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                     <label className="form-label">제목</label>
@@ -146,7 +164,7 @@ const BannerCreate = () => {
                     />
                 </div>
                 <div className="mb-3">
-                    <label className="form-label">표시 순서</label>
+                    <label className="form-label">정렬 순서</label>
                     <input
                         type="number"
                         className="form-control"

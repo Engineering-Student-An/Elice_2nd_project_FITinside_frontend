@@ -140,7 +140,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap CSS 추가
+import 'bootstrap/dist/css/bootstrap.min.css';
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken"; // Bootstrap CSS 추가
 
 const BannerUpdate = () => {
     const [title, setTitle] = useState(''); // 배너 제목
@@ -170,13 +171,31 @@ const BannerUpdate = () => {
                 setTargetUrl(banner.targetUrl || ''); // URL 값도 함께 설정
                 setLoading(false);
             })
-            .catch(error => {
-                console.error('Error fetching banner data:', error);
-                setError('배너 정보를 불러오는 중 오류가 발생했습니다.');
-                if (error.response && error.response.status === 401) {
-                    alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+            .catch(async error => {
+                try {
+                    await sendRefreshTokenAndStoreAccessToken();
+                    axios.get(`http://localhost:8080/api/banners/${id}`, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    })
+                        .then(response => {
+                            const banner = response.data;
+                            setTitle(banner.title);
+                            setDisplayOrder(banner.displayOrder);
+                            setImage(banner.imageUrl || null);
+                            setPreviewImage(banner.imageUrl || null); // 기존 이미지 미리보기 설정
+                            setTargetUrl(banner.targetUrl || ''); // URL 값도 함께 설정
+                            setLoading(false);
+                        })
+                } catch(error) {
+                    console.error('Error fetching banner data:', error);
+                    setError('배너 정보를 불러오는 중 오류가 발생했습니다.');
+                    if (error.response && error.response.status === 401) {
+                        alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+                    }
+                    setLoading(false);
                 }
-                setLoading(false);
             });
     }, [id]);
 
@@ -186,8 +205,14 @@ const BannerUpdate = () => {
         setPreviewImage(URL.createObjectURL(file)); // 파일이 선택되면 미리보기 이미지 업데이트
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // displayOrder와 mainDisplayOrder가 1 이상의 값인지 확인
+        if (displayOrder < 1) {
+            alert('정렬 순서는 1 이상의 값이어야 합니다.');
+            return;
+        }
 
         const formData = new FormData();
         formData.append('title', title);
@@ -202,33 +227,41 @@ const BannerUpdate = () => {
 
         formData.append('targetUrl', targetUrl); // URL 필드 추가
 
-        axios.put(`http://localhost:8080/api/admin/banners/${id}`, formData, {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Content-Type': 'multipart/form-data'
-            }
-        })
-            .then(response => {
-                console.log('Banner updated:', response.data);
-                alert('배너가 성공적으로 수정되었습니다.');
-                navigate('/admin/banners');
+        try {
+            axios.put(`http://localhost:8080/api/admin/banners/${id}`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'multipart/form-data'
+                }
             })
-            .catch(error => {
+                .then(response => {
+                    console.log('Banner updated:', response.data);
+                    alert('배너가 성공적으로 수정되었습니다.');
+                    navigate('/admin/banners');
+                })
+        } catch (error) {
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+                axios.put(`http://localhost:8080/api/admin/banners/${id}`, formData, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'multipart/form-data'
+                    }
+                })
+                    .then(response => {
+                        console.log('Banner updated:', response.data);
+                        alert('배너가 성공적으로 수정되었습니다.');
+                        navigate('/admin/banners');
+                    })
+            } catch (error) {
                 console.error('Error updating banner:', error);
                 alert('배너 수정 중 오류가 발생했습니다.');
                 if (error.response && error.response.status === 401) {
                     alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
                 }
-            });
+            }
+        }
     };
-
-    if (loading) {
-        return <p>로딩 중...</p>;
-    }
-
-    if (error) {
-        return <p>{error}</p>;
-    }
 
     return (
         <div className="container mt-5">
@@ -245,7 +278,7 @@ const BannerUpdate = () => {
                     />
                 </div>
                 <div className="mb-3">
-                    <label className="form-label">표시 순서:</label>
+                    <label className="form-label">정렬 순서:</label>
                     <input
                         type="number"
                         className="form-control"

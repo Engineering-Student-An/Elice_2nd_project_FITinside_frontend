@@ -139,7 +139,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap CSS 추가
+import 'bootstrap/dist/css/bootstrap.min.css';
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken"; // Bootstrap CSS 추가
 
 const CategoryCreate = () => {
     const [name, setName] = useState('');
@@ -152,22 +153,37 @@ const CategoryCreate = () => {
 
     const navigate = useNavigate();
 
-    useEffect(() => {
-        axios.get('http://localhost:8080/api/categories', {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
-        })
-            .then(response => {
+    const fetchCategories = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/api/categories', {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            const parentCategories = response.data.filter(category => category.parentId === null);
+            setParentCategories(parentCategories);
+        } catch (error) {
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+                const response = await axios.get('http://localhost:8080/api/categories', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
                 const parentCategories = response.data.filter(category => category.parentId === null);
                 setParentCategories(parentCategories);
-            })
-            .catch(error => {
+            } catch (e) {
                 console.error('Error fetching categories:', error);
                 if (error.response && error.response.status === 401) {
                     alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
                 }
-            });
+            }
+        }
+    };
+
+    // 컴포넌트가 마운트될 때 카테고리 목록을 불러옵니다.
+    useEffect(() => {
+        fetchCategories();
     }, []);
 
     const handleImageChange = (e) => {
@@ -176,38 +192,90 @@ const CategoryCreate = () => {
         setPreviewImageUrl(URL.createObjectURL(file));
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    const handleSubmit = async (e) => {
+        try {
+            e.preventDefault();
 
-        const formData = new FormData();
-        formData.append('name', name);
-        formData.append('displayOrder', displayOrder ? Number(displayOrder) : null);
-
-        // mainDisplayOrder가 빈칸이 아닐 때만 추가
-        if (mainDisplayOrder !== '') {
-            formData.append('mainDisplayOrder', Number(mainDisplayOrder));
-        }
-
-        if (parentId) formData.append('parentId', parentId);
-        if (imageFile) formData.append('imageFile', imageFile);
-
-        axios.post('http://localhost:8080/api/admin/categories', formData, {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Content-Type': 'multipart/form-data'
+            // displayOrder와 mainDisplayOrder가 1 이상의 값인지 확인
+            if (displayOrder < 1) {
+                alert('표시 순서는 1 이상의 값이어야 합니다.');
+                return;
             }
-        })
-            .then(() => {
+
+            if (mainDisplayOrder !== '' && mainDisplayOrder < 1) {
+                alert('메인 카테고리 정렬 순서는 1 이상의 값이어야 합니다.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('displayOrder', displayOrder ? Number(displayOrder) : null);
+
+            // mainDisplayOrder가 빈칸이 아닐 때만 추가
+            if (mainDisplayOrder !== '') {
+                formData.append('mainDisplayOrder', Number(mainDisplayOrder));
+            }
+
+            if (parentId) formData.append('parentId', parentId);
+            if (imageFile) formData.append('imageFile', imageFile);
+
+            await axios.post('http://localhost:8080/api/admin/categories', formData, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            navigate('/admin/categories');
+            window.location.reload()
+        } catch (error) {
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+                // 요청을 다시 시도할 수 있습니다.
+                e.preventDefault();
+
+                // displayOrder와 mainDisplayOrder가 1 이상의 값인지 확인
+                if (displayOrder < 1) {
+                    alert('표시 순서는 1 이상의 값이어야 합니다.');
+                    return;
+                }
+
+                if (mainDisplayOrder !== '' && mainDisplayOrder < 1) {
+                    alert('메인 카테고리 정렬 순서는 1 이상의 값이어야 합니다.');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('name', name);
+                formData.append('displayOrder', displayOrder ? Number(displayOrder) : null);
+
+                // mainDisplayOrder가 빈칸이 아닐 때만 추가
+                if (mainDisplayOrder !== '') {
+                    formData.append('mainDisplayOrder', Number(mainDisplayOrder));
+                }
+
+                if (parentId) formData.append('parentId', parentId);
+                if (imageFile) formData.append('imageFile', imageFile);
+
+                await axios.post('http://localhost:8080/api/admin/categories', formData, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
                 navigate('/admin/categories');
-                window.location.reload();
-            })
-            .catch(error => {
+                window.location.reload()
+            } catch (e) {
                 console.error('Error creating category:', error);
                 if (error.response && error.response.status === 401) {
                     alert("인증이 필요합니다. 로그인 상태를 확인하세요.");
+                } else {
+                    alert("카테고리 생성 중 오류가 발생했습니다. 다시 시도해 주세요.");
                 }
-            });
+            }
+        }
     };
+
+
 
     return (
         <div className="container mt-5">
@@ -224,7 +292,7 @@ const CategoryCreate = () => {
                     />
                 </div>
                 <div className="mb-3">
-                    <label className="form-label">표시 순서:</label>
+                    <label className="form-label">정렬 순서(displayOrder):</label>
                     <input
                         type="number"
                         className="form-control"
@@ -233,7 +301,7 @@ const CategoryCreate = () => {
                     />
                 </div>
                 <div className="mb-3">
-                    <label className="form-label">메인 카테고리 정렬 순서:</label>
+                    <label className="form-label">메인 카테고리 정렬 순서(mainDisplayOrder):</label>
                     <input
                         type="number"
                         className="form-control"

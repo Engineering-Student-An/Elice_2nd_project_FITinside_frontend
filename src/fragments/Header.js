@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react';
 import './header.css';
 import {useNavigate} from "react-router-dom";
 import axios from 'axios';
+import {jwtDecode} from "jwt-decode";
 
 const Header = () => {
     const [cartCount, setCartCount] = useState(0);
@@ -10,6 +11,8 @@ const Header = () => {
     const [categories, setCategories] = useState([]);
     const [dropdownOpen, setDropdownOpen] = useState(null); // 드롭다운 상태
     const navigate = useNavigate(); // useNavigate 훅 사용
+
+    const [userRole, setUserRole] = useState(null);
 
     // 카테고리 데이터 가져오기
     useEffect(() => {
@@ -54,6 +57,14 @@ const Header = () => {
     // 로그인 상태 확인
     useEffect(() => {
         const token = localStorage.getItem('token');
+
+        try { // 권한 확인 후 저장
+            const decodedToken = jwtDecode(token);
+            setUserRole(decodedToken.auth); // 권한을 설정
+        } catch (error) {
+            console.error('Invalid token', error);
+        }
+
         setIsLoggedIn(!!token);
         updateCartCount(); // 초기 카운트 업데이트
         window.addEventListener('storage', updateCartCount); // storage 이벤트 리스너 추가
@@ -74,15 +85,16 @@ const Header = () => {
     };
 
     return (
-        <nav className="navbar navbar-expand-lg navbar-light bg-light" style={{position: 'fixed', width: '100%', zIndex:'100'}}>
-            <div className="container px-4 px-lg-5">
+        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+            <div className="container-fluid px-4 px-lg-4 bg-light">
                 <a className="navbar-brand" href="/"><img src="/img/fitinside_logo_transparent.png" alt="로고"/> </a>
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span className="navbar-toggler-icon"></span>
                 </button>
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                        <li className="nav-item"><a className="nav-link active" aria-current="page" href="/">Home</a>
+                        <li className="nav-item">
+                            <a className="nav-link active" aria-current="page" href="/">Home</a>
                         </li>
 
                         {parentCategories.map(parent => (
@@ -92,9 +104,9 @@ const Header = () => {
                                 onMouseEnter={() => handleMouseEnter(parent.id)}
                                 onMouseLeave={handleMouseLeave}
                             >
-                                <a className="nav-link dropdown-toggle" href="/" role="button" aria-expanded="false">
+                                <span className="nav-link dropdown-toggle" href="/" role="button" aria-expanded="false">
                                     {parent.name}
-                                </a>
+                                </span>
                                 <ul className={`dropdown-menu ${dropdownOpen === parent.id ? 'show' : ''}`}>
                                     {getChildCategories(parent.id).map(child => (
                                         <li key={child.id}>
@@ -107,38 +119,15 @@ const Header = () => {
                             </li>
                         ))}
 
-
-                        {/*<li className="nav-item"><a className="nav-link" href="#!">About</a></li>*/}
-
-                        {/*<li className="nav-item dropdown">*/}
-                        {/*    <a className="nav-link dropdown-toggle" id="navbarDropdown" href="/" role="button"*/}
-                        {/*       data-bs-toggle="dropdown" aria-expanded="false">여성</a>*/}
-                        {/*    <ul className="dropdown-menu" aria-labelledby="navbarDropdown">*/}
-                        {/*        <li><a className="dropdown-item" href="/">카테고리1</a></li>*/}
-                        {/*        <li><a className="dropdown-item" href="/">카테고리2</a></li>*/}
-                        {/*        <li><a className="dropdown-item" href="/">카테고리3</a></li>*/}
-                        {/*        /!*<li>*!/*/}
-                        {/*        /!*    <hr className="dropdown-divider"/>*!/*/}
-                        {/*        /!*</li>*!/*/}
-                        {/*    </ul>*/}
-                        {/*</li>*/}
-
-                        {/*<li className="nav-item dropdown">*/}
-                        {/*    <a className="nav-link dropdown-toggle" id="navbarDropdown" href="/" role="button"*/}
-                        {/*       data-bs-toggle="dropdown" aria-expanded="false">남성</a>*/}
-                        {/*    <ul className="dropdown-menu" aria-labelledby="navbarDropdown">*/}
-                        {/*        <li><a className="dropdown-item" href="/">카테고리1</a></li>*/}
-                        {/*        <li><a className="dropdown-item" href="/">카테고리2</a></li>*/}
-                        {/*        <li><a className="dropdown-item" href="/">카테고리3</a></li>*/}
-                        {/*    </ul>*/}
-                        {/*</li>*/}
-
-
                     </ul>
                     <div className="d-flex m-3">
-                        {isLoggedIn && (
+                        {userRole === 'ROLE_ADMIN' && isLoggedIn && (
                             <div>
                                 <a className="btn btn-outline-dark me-3" href="/admin">ADMIN</a>
+                            </div>
+                        )}
+                        {isLoggedIn && (
+                            <div>
                                 <a className="btn btn-outline-dark" href="/me">
                                     MY
                                 </a>
