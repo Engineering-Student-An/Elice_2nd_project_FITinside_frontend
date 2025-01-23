@@ -33,9 +33,10 @@ const Header = () => {
     }, []);
 
     // 부모 카테고리 필터링 및 정렬
-    const parentCategories = categories
+    const parentCategories = (Array.isArray(categories) ? categories : [])
         .filter(category => !category.parentId)
-        .sort((a, b) => a.displayOrder - b.displayOrder); // 부모 카테고리 정렬 추가
+        .sort((a, b) => a.displayOrder - b.displayOrder);
+
 
     // 특정 부모의 자식 카테고리 가져오기
     const getChildCategories = (parentId) => {
