@@ -19,7 +19,7 @@ const CategoryList = ({ userRole }) => {
                 const allCategories = response.data;
 
                 // mainDisplayOrder가 null이 아닌 카테고리 필터링 및 정렬
-                const mainDisplayCategories = allCategories
+                const mainDisplayCategories = (Array.isArray(categories) ? allCategories : [])
                     .filter(category => category.mainDisplayOrder !== null)
                     .sort((a, b) => a.mainDisplayOrder - b.mainDisplayOrder);
 
