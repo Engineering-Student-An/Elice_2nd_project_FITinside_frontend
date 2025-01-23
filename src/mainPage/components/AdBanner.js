@@ -11,7 +11,7 @@ const AdBanner = ({ userRole }) => {
 
     // 광고를 서버에서 가져오기
     useEffect(() => {
-        axios.get('/fr/api/banners', {
+        axios.get('/api/banners', {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}` // Bearer 토큰 포함
             }

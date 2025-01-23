@@ -3,7 +3,7 @@ import {BrowserRouter as Router, Route, Routes, useLocation} from "react-router-
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
-import { Header, Footer } from "./fragments";
+import { Header, Footer } from ".agments";
 import Home from "./Home";
 import { Cart } from "./cart";
 import { ProductSection, ProductList } from "./product";

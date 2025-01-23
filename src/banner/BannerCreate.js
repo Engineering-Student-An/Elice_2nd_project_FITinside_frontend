@@ -40,7 +40,7 @@ const BannerCreate = () => {
         }
 
         try {
-            await axios.post('/fr/api/admin/banners', formData, {
+            await axios.post('/api/admin/banners', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -50,7 +50,7 @@ const BannerCreate = () => {
         } catch (error) {
             try{
                 await sendRefreshTokenAndStoreAccessToken();
-                await axios.post('/fr/api/admin/banners', formData, {
+                await axios.post('/api/admin/banners', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         'Authorization': `Bearer ${localStorage.getItem('token')}`

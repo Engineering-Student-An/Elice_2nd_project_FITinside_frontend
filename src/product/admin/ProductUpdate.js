@@ -38,7 +38,7 @@ const ProductUpdate = () => {
         const fetchProduct = async () => {
             try {
                 const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-                const response = await axios.get(`/fr/api/products/${id}`, {
+                const response = await axios.get(`/api/products/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`  // Authorization 헤더 추가
                     }
@@ -49,7 +49,7 @@ const ProductUpdate = () => {
                     await sendRefreshTokenAndStoreAccessToken();
 
                     const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-                    const response = await axios.get(`/fr/api/products/${id}`, {
+                    const response = await axios.get(`/api/products/${id}`, {
                         headers: {
                             'Authorization': `Bearer ${token}`  // Authorization 헤더 추가
                         }
@@ -69,7 +69,7 @@ const ProductUpdate = () => {
         const fetchCategories = async () => {
             try {
                 const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-                const response = await axios.get('/fr/api/categories', {
+                const response = await axios.get('/api/categories', {
                     headers: {
                         'Authorization': `Bearer ${token}`  // Authorization 헤더 추가
                     }
@@ -83,7 +83,7 @@ const ProductUpdate = () => {
                     await sendRefreshTokenAndStoreAccessToken();
 
                     const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-                    const response = await axios.get('/fr/api/categories', {
+                    const response = await axios.get('/api/categories', {
                         headers: {
                             'Authorization': `Bearer ${token}`  // Authorization 헤더 추가
                         }
@@ -207,7 +207,7 @@ const ProductUpdate = () => {
 
             if (imageUrlsToDelete.length > 0) {
                 await axios.delete(
-                    `/fr/api/admin/products/${id}/images`,
+                    `/api/admin/products/${id}/images`,
                     {
                         params: { imageUrlsToDelete },
                         headers: {
@@ -222,7 +222,7 @@ const ProductUpdate = () => {
 
             if (descImageUrlsToDelete.length > 0) {
                 await axios.delete(
-                    `/fr/api/admin/products/${id}/description-images`,
+                    `/api/admin/products/${id}/description-images`,
                     {
                         params: { descImageUrlsToDelete },
                         headers: {
@@ -242,7 +242,7 @@ const ProductUpdate = () => {
 
                 if (imageUrlsToDelete.length > 0) {
                     await axios.delete(
-                        `/fr/api/admin/products/${id}/images`,
+                        `/api/admin/products/${id}/images`,
                         {
                             params: { imageUrlsToDelete },
                             headers: {
@@ -257,7 +257,7 @@ const ProductUpdate = () => {
 
                 if (descImageUrlsToDelete.length > 0) {
                     await axios.delete(
-                        `/fr/api/admin/products/${id}/description-images`,
+                        `/api/admin/products/${id}/description-images`,
                         {
                             params: { descImageUrlsToDelete },
                             headers: {
@@ -316,7 +316,7 @@ const ProductUpdate = () => {
             const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
 
             // 상품 업데이트 요청
-            await axios.put(`/fr/api/admin/products/${id}`, formData, {
+            await axios.put(`/api/admin/products/${id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가
@@ -334,7 +334,7 @@ const ProductUpdate = () => {
                 const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
 
                 // 상품 업데이트 요청
-                await axios.put(`/fr/api/admin/products/${id}`, formData, {
+                await axios.put(`/api/admin/products/${id}`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가

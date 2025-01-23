@@ -121,7 +121,7 @@ export const clearCart = async () => {
 // 상품 데이터를 가져오는 함수
 export const fetchProduct = async (id) => {
     try {
-        const response = await axios.get(`/fr/api/products/${id}`, {
+        const response = await axios.get(`/api/products/${id}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -133,7 +133,7 @@ export const fetchProduct = async (id) => {
             await sendRefreshTokenAndStoreAccessToken();
 
             // 토큰 갱신 후 다시 요청
-            const newResponse = await axios.get(`/fr/api/products/${id}`, {
+            const newResponse = await axios.get(`/api/products/${id}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
@@ -148,7 +148,7 @@ export const fetchProduct = async (id) => {
 
 export const fetchAndMergeCartData = async (token) => {
     try {
-        const response = await axios.get('/fr/api/carts', {
+        const response = await axios.get('/api/carts', {
             headers: {
                 'Authorization': `Bearer ${token}`, // JWT를 Authorization 헤더에 포함
             },
@@ -175,7 +175,7 @@ export const fetchAndMergeCartData = async (token) => {
             await sendRefreshTokenAndStoreAccessToken();
 
             // 토큰 갱신 후 다시 요청
-            const newResponse = await axios.get('/fr/api/carts', {
+            const newResponse = await axios.get('/api/carts', {
                 headers: {
                     'Authorization': `Bearer ${token}`, // 갱신된 토큰 사용
                 },
@@ -245,7 +245,7 @@ const updateDBWithDifferences = async (localCart) => {
             };
 
             try {
-                await axios.post('/fr/api/carts', requestData, {
+                await axios.post('/api/carts', requestData, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'application/json',
@@ -256,7 +256,7 @@ const updateDBWithDifferences = async (localCart) => {
                     await sendRefreshTokenAndStoreAccessToken();
 
                     // 토큰 갱신 후 다시 요청
-                    await axios.post('/fr/api/carts', requestData, {
+                    await axios.post('/api/carts', requestData, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`, // 갱신된 토큰 사용
                             'Content-Type': 'application/json',
@@ -293,7 +293,7 @@ const updateCartItem = async (item) => {
         quantity: item.quantity,
     };
     try {
-        await axios.put('/fr/api/carts', requestData, {
+        await axios.put('/api/carts', requestData, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 'Content-Type': 'application/json',
@@ -304,7 +304,7 @@ const updateCartItem = async (item) => {
             await sendRefreshTokenAndStoreAccessToken();
 
             // 토큰 갱신 후 다시 요청
-            await axios.put('/fr/api/carts', requestData, {
+            await axios.put('/api/carts', requestData, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`, // 갱신된 토큰 사용
                     'Content-Type': 'application/json',
@@ -321,7 +321,7 @@ const deleteCartItem = async (item) => {
 
     if(localStorage.getItem('token') === null) return;
     try {
-        await axios.delete(`/fr/api/carts/${item.id}`, {
+        await axios.delete(`/api/carts/${item.id}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 'Content-Type': 'application/json',
@@ -333,7 +333,7 @@ const deleteCartItem = async (item) => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 // 토큰 갱신 후 다시 요청
-                await axios.delete(`/fr/api/carts/${item.id}`, {
+                await axios.delete(`/api/carts/${item.id}`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`, // 갱신된 토큰 사용
                         'Content-Type': 'application/json',
