@@ -20,7 +20,7 @@ const CategoryUpdate = () => {
 
     useEffect(() => {
         // 부모 카테고리 목록 가져오기
-        axios.get('/api/categories', {
+        axios.get('/fr/api/categories', {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -32,7 +32,7 @@ const CategoryUpdate = () => {
             .catch(async error => {
                 try {
                     await sendRefreshTokenAndStoreAccessToken();
-                    axios.get('/api/categories', {
+                    axios.get('/fr/api/categories', {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
@@ -51,7 +51,7 @@ const CategoryUpdate = () => {
             });
 
         // 선택된 카테고리 정보 가져오기
-        axios.get(`/api/categories/${id}`, {
+        axios.get(`/fr/api/categories/${id}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -68,7 +68,7 @@ const CategoryUpdate = () => {
             .catch(async error => {
                 try {
                     await sendRefreshTokenAndStoreAccessToken();
-                    axios.get(`/api/categories/${id}`, {
+                    axios.get(`/fr/api/categories/${id}`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
@@ -123,7 +123,7 @@ const CategoryUpdate = () => {
         if (parentId) formData.append('parentId', parentId);
         if (image) formData.append('imageFile', image);
 
-        axios.put(`/api/admin/categories/${id}`, formData, {
+        axios.put(`/fr/api/admin/categories/${id}`, formData, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 'Content-Type': 'multipart/form-data'
@@ -160,7 +160,7 @@ const CategoryUpdate = () => {
                     if (parentId) formData.append('parentId', parentId);
                     if (image) formData.append('imageFile', image);
 
-                    axios.put(`/api/admin/categories/${id}`, formData, {
+                    axios.put(`/fr/api/admin/categories/${id}`, formData, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`,
                             'Content-Type': 'multipart/form-data'

@@ -60,7 +60,7 @@ const Signup = () => {
         }
 
         try {
-            const response = await axios.post('/api/auth', {
+            const response = await axios.post('/fr/api/auth', {
                 email,
                 password,
                 userName,

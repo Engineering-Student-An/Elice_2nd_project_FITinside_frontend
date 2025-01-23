@@ -4,9 +4,9 @@ import axios from "axios";
 
 const sendRefreshTokenAndStoreAccessToken = async () => {
     try {
-        // refreshToken을 /api/auth/token으로 JSON 형식으로 전송
+        // refreshToken을 /fr/api/auth/token으로 JSON 형식으로 전송
         const response = await axios.post(
-            '/api/auth/token',
+            '/fr/api/auth/token',
             { }, // refreshToken을 요청 바디에 포함
             {
                 headers: {

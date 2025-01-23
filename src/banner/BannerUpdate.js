@@ -18,7 +18,7 @@ const BannerUpdate = () => {
 
     // 배너 정보 가져오기
     useEffect(() => {
-        axios.get(`/api/banners/${id}`, {
+        axios.get(`/fr/api/banners/${id}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -35,7 +35,7 @@ const BannerUpdate = () => {
             .catch(async error => {
                 try {
                     await sendRefreshTokenAndStoreAccessToken();
-                    axios.get(`/api/banners/${id}`, {
+                    axios.get(`/fr/api/banners/${id}`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
@@ -89,7 +89,7 @@ const BannerUpdate = () => {
         formData.append('targetUrl', targetUrl); // URL 필드 추가
 
         try {
-            axios.put(`/api/admin/banners/${id}`, formData, {
+            axios.put(`/fr/api/admin/banners/${id}`, formData, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'multipart/form-data'
@@ -103,7 +103,7 @@ const BannerUpdate = () => {
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
-                axios.put(`/api/admin/banners/${id}`, formData, {
+                axios.put(`/fr/api/admin/banners/${id}`, formData, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'multipart/form-data'

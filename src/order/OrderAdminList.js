@@ -32,7 +32,7 @@ const OrderAdminList = () => {
 
             console.log('Params sent to api: ', params);
 
-            const response = await axios.get('/api/admin/orders', {
+            const response = await axios.get('/fr/api/admin/orders', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 },
@@ -61,7 +61,7 @@ const OrderAdminList = () => {
 
                 console.log('Params sent to api: ', params);
 
-                const response = await axios.get('/api/admin/orders', {
+                const response = await axios.get('/fr/api/admin/orders', {
                     headers: {
                         Authorization: `Bearer ${token}`
                     },
@@ -115,7 +115,7 @@ const OrderAdminList = () => {
             const token = localStorage.getItem('token');
             const requestData = { status: newStatus };
 
-            const response = await axios.patch(`/api/admin/orders/${orderId}/status`, requestData, {
+            const response = await axios.patch(`/fr/api/admin/orders/${orderId}/status`, requestData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -143,7 +143,7 @@ const OrderAdminList = () => {
                 const token = localStorage.getItem('token');
                 const requestData = { status: newStatus };
 
-                const response = await axios.patch(`/api/admin/orders/${orderId}/status`, requestData, {
+                const response = await axios.patch(`/fr/api/admin/orders/${orderId}/status`, requestData, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -179,7 +179,7 @@ const OrderAdminList = () => {
 
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`/api/admin/orders/${orderId}`, {
+            await axios.delete(`/fr/api/admin/orders/${orderId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -192,7 +192,7 @@ const OrderAdminList = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                await axios.delete(`/api/admin/orders/${orderId}`, {
+                await axios.delete(`/fr/api/admin/orders/${orderId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }

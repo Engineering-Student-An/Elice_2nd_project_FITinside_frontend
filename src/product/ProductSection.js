@@ -14,7 +14,7 @@ const ProductSection = () => {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const response = await axios.get(`/api/products/${productId}`);
+                const response = await axios.get(`/fr/api/products/${productId}`);
                 setProduct(response.data);
                 setSelectedImage(response.data.productImgUrls ? response.data.productImgUrls[0] : dummyImage);
             } catch (error) {
