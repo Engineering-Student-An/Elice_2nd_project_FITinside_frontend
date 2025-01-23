@@ -68,7 +68,7 @@ export default Home;
 //         throw new Error('인증 토큰이 없습니다.');
 //     }
 //
-//     const response = await fetch('http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/user/role', {
+//     const response = await fetch('/api/user/role', {
 //         method: 'GET',
 //         headers: {
 //             'Authorization': `Bearer ${token}`, // Authorization 헤더에 토큰 추가
@@ -142,7 +142,7 @@ export default Home;
 //         throw new Error('인증 토큰이 없습니다.');
 //     }
 //
-//     const response = await fetch('http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/user/role', {
+//     const response = await fetch('/api/user/role', {
 //         method: 'GET',
 //         headers: {
 //             'Authorization': `Bearer ${token}`, // Authorization 헤더에 토큰 추가

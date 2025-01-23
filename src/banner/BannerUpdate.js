@@ -18,7 +18,7 @@ const BannerUpdate = () => {
 
     // 배너 정보 가져오기
     useEffect(() => {
-        axios.get(`http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/banners/${id}`, {
+        axios.get(`/api/banners/${id}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -35,7 +35,7 @@ const BannerUpdate = () => {
             .catch(async error => {
                 try {
                     await sendRefreshTokenAndStoreAccessToken();
-                    axios.get(`http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/banners/${id}`, {
+                    axios.get(`/api/banners/${id}`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
@@ -89,7 +89,7 @@ const BannerUpdate = () => {
         formData.append('targetUrl', targetUrl); // URL 필드 추가
 
         try {
-            axios.put(`http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/admin/banners/${id}`, formData, {
+            axios.put(`/api/admin/banners/${id}`, formData, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'multipart/form-data'
@@ -103,7 +103,7 @@ const BannerUpdate = () => {
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
-                axios.put(`http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/admin/banners/${id}`, formData, {
+                axios.put(`/api/admin/banners/${id}`, formData, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'multipart/form-data'

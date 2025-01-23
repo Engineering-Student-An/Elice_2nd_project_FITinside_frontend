@@ -11,7 +11,7 @@ const AdBanner = ({ userRole }) => {
 
     // 광고를 서버에서 가져오기
     useEffect(() => {
-        axios.get('http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/banners', {
+        axios.get('/api/banners', {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}` // Bearer 토큰 포함
             }
