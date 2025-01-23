@@ -15,7 +15,7 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post('http://localhost:8080/api/auth/login', {
+            const response = await axios.post('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/auth/login', {
                 email,
                 password
             },
@@ -41,7 +41,7 @@ const Login = () => {
 
     // 구글 로그인 버튼 클릭 시 리다이렉트
     const handleGoogleLogin = () => {
-        window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+        window.location.href = 'http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/oauth2/authorization/google';
     };
 
     return (

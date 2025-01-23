@@ -10,7 +10,7 @@ const AddressModal = ({ isOpen, onClose, onSelect, onEdit, selectedAddressId }) 
         const fetchAddresses = async () => {
             try {
                 if (isOpen) {
-                    const response = await axios.get('http://localhost:8080/api/addresses', {
+                    const response = await axios.get('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/addresses', {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
@@ -23,7 +23,7 @@ const AddressModal = ({ isOpen, onClose, onSelect, onEdit, selectedAddressId }) 
                     await sendRefreshTokenAndStoreAccessToken();
 
                     if (isOpen) {
-                        const response = await axios.get('http://localhost:8080/api/addresses', {
+                        const response = await axios.get('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/addresses', {
                             headers: {
                                 'Authorization': `Bearer ${localStorage.getItem('token')}`
                             }

@@ -32,7 +32,7 @@ const OrderAdminList = () => {
 
             console.log('Params sent to api: ', params);
 
-            const response = await axios.get('http://localhost:8080/api/admin/orders', {
+            const response = await axios.get('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/admin/orders', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 },
@@ -61,7 +61,7 @@ const OrderAdminList = () => {
 
                 console.log('Params sent to api: ', params);
 
-                const response = await axios.get('http://localhost:8080/api/admin/orders', {
+                const response = await axios.get('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/admin/orders', {
                     headers: {
                         Authorization: `Bearer ${token}`
                     },
@@ -115,7 +115,7 @@ const OrderAdminList = () => {
             const token = localStorage.getItem('token');
             const requestData = { status: newStatus };
 
-            const response = await axios.patch(`http://localhost:8080/api/admin/orders/${orderId}/status`, requestData, {
+            const response = await axios.patch(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/admin/orders/${orderId}/status`, requestData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -143,7 +143,7 @@ const OrderAdminList = () => {
                 const token = localStorage.getItem('token');
                 const requestData = { status: newStatus };
 
-                const response = await axios.patch(`http://localhost:8080/api/admin/orders/${orderId}/status`, requestData, {
+                const response = await axios.patch(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/admin/orders/${orderId}/status`, requestData, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -179,7 +179,7 @@ const OrderAdminList = () => {
 
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:8080/api/admin/orders/${orderId}`, {
+            await axios.delete(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/admin/orders/${orderId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -192,7 +192,7 @@ const OrderAdminList = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                await axios.delete(`http://localhost:8080/api/admin/orders/${orderId}`, {
+                await axios.delete(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/admin/orders/${orderId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }

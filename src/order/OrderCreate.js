@@ -41,7 +41,7 @@ const OrderCreate = () => {
             const details = {};
             for (const item of storedOrderData) {
                 try {
-                    const response = await axios.get(`http://localhost:8080/api/products/${item.productId}`, {
+                    const response = await axios.get(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/products/${item.productId}`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
@@ -51,7 +51,7 @@ const OrderCreate = () => {
                     try {
                         await sendRefreshTokenAndStoreAccessToken();
 
-                        const response = await axios.get(`http://localhost:8080/api/products/${item.productId}`, {
+                        const response = await axios.get(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/products/${item.productId}`, {
                             headers: {
                                 'Authorization': `Bearer ${localStorage.getItem('token')}`
                             }
@@ -68,7 +68,7 @@ const OrderCreate = () => {
         // 기본 배송지 조회
         const fetchDefaultAddress = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/addresses/default', {
+                const response = await axios.get('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/addresses/default', {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
@@ -94,7 +94,7 @@ const OrderCreate = () => {
                 try {
                     await sendRefreshTokenAndStoreAccessToken();
 
-                    const response = await axios.get('http://localhost:8080/api/addresses/default', {
+                    const response = await axios.get('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/addresses/default', {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
@@ -127,7 +127,7 @@ const OrderCreate = () => {
         // 배송지 목록 조회
         const fetchAddressList = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/addresses', {
+                const response = await axios.get('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/addresses', {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
@@ -137,7 +137,7 @@ const OrderCreate = () => {
                 try {
                     await sendRefreshTokenAndStoreAccessToken();
 
-                    const response = await axios.get('http://localhost:8080/api/addresses', {
+                    const response = await axios.get('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/addresses', {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
@@ -244,7 +244,7 @@ const OrderCreate = () => {
     const addAddress = async (deliveryData) => {
         try {
             const token = localStorage.getItem('token');
-            const addressResponse = await axios.post('http://localhost:8080/api/addresses', deliveryData, {
+            const addressResponse = await axios.post('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/addresses', deliveryData, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -256,7 +256,7 @@ const OrderCreate = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                const addressResponse = await axios.post('http://localhost:8080/api/addresses', deliveryData, {
+                const addressResponse = await axios.post('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/addresses', deliveryData, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -278,7 +278,7 @@ const OrderCreate = () => {
     const updateAddress = async (deliveryData) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.patch(`http://localhost:8080/api/addresses/${selectedAddressId}`, deliveryData, {
+            const response = await axios.patch(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/addresses/${selectedAddressId}`, deliveryData, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -290,7 +290,7 @@ const OrderCreate = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                const response = await axios.patch(`http://localhost:8080/api/addresses/${selectedAddressId}`, deliveryData, {
+                const response = await axios.patch(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/addresses/${selectedAddressId}`, deliveryData, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -309,7 +309,7 @@ const OrderCreate = () => {
     const createOrder = async (deliveryData) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post('http://localhost:8080/api/order', {
+            const response = await axios.post('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/order', {
                 ...deliveryData, // 배송지 데이터 추가
                 orderItems,
                 deliveryFee,
@@ -342,7 +342,7 @@ const OrderCreate = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                const response = await axios.post('http://localhost:8080/api/order', {
+                const response = await axios.post('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/order', {
                     ...deliveryData, // 배송지 데이터 추가
                     orderItems,
                     deliveryFee,

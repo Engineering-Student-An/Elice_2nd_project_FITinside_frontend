@@ -20,7 +20,7 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
         }
 
         try {
-            const response = await axios.get(`http://localhost:8080/api/coupons/code/${couponCode}`, {
+            const response = await axios.get(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/coupons/code/${couponCode}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'application/json'
@@ -38,7 +38,7 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
                     await sendRefreshTokenAndStoreAccessToken();
 
                     // 토큰 갱신 후 다시 요청
-                    const response = await axios.get(`http://localhost:8080/api/coupons/code/${couponCode}`, {
+                    const response = await axios.get(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/coupons/code/${couponCode}`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`, // 갱신된 토큰 사용
                             'Content-Type': 'application/json'
@@ -58,7 +58,7 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
         if (!coupon || !coupon.active) return; // 쿠폰이 없거나 비활성화 상태일 때는 아무것도 하지 않음
 
         try {
-            const response = await axios.post('http://localhost:8080/api/coupons', couponCode, {
+            const response = await axios.post('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/coupons', couponCode, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'text/plain' // 문자열로 전송하므로 Content-Type 변경
@@ -76,7 +76,7 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 // 토큰 갱신 후 다시 요청
-                const response = await axios.post('http://localhost:8080/api/coupons', couponCode, {
+                const response = await axios.post('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/coupons', couponCode, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'text/plain' // 문자열로 전송하므로 Content-Type 변경

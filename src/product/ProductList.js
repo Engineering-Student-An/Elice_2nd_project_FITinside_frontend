@@ -21,7 +21,7 @@ const ProductList = () => {
     // 카테고리 이름을 가져오는 함수
     const fetchCategoryName = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/categories/${categoryId}`); // 카테고리 정보를 가져오는 API 호출
+            const response = await axios.get(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/categories/${categoryId}`); // 카테고리 정보를 가져오는 API 호출
             setCategoryName(response.data.name); // 응답에서 카테고리 이름 설정
         } catch (err) {
             setError('카테고리 정보를 불러오는 데 실패했습니다.');
@@ -31,7 +31,7 @@ const ProductList = () => {
     // 상품 목록을 백엔드에서 가져오는 함수
     const fetchProducts = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/products/category/${categoryId}`, {
+            const response = await axios.get(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/products/category/${categoryId}`, {
                 params: {
                     page,
                     size,
