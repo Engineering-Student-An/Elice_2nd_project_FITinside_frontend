@@ -16,7 +16,7 @@ const MemberList = () => {
         const fetchMembers = async (page) => {
             try {
                 const token = localStorage.getItem('token'); // 토큰 가져오기
-                const response = await axios.get(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/admin/member?page=${page}`, {
+                const response = await axios.get(`http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/admin/member?page=${page}`, {
                     headers: {
                         Authorization: `Bearer ${token}`, // 토큰을 Authorization 헤더에 포함
                     },
@@ -28,7 +28,7 @@ const MemberList = () => {
                 try{
                     await sendRefreshTokenAndStoreAccessToken();
                     const token = localStorage.getItem('token'); // 토큰 가져오기
-                    const response = await axios.get(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/admin/member?page=${page}`, {
+                    const response = await axios.get(`http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/admin/member?page=${page}`, {
                         headers: {
                             Authorization: `Bearer ${token}`, // 토큰을 Authorization 헤더에 포함
                         },
@@ -65,7 +65,7 @@ const MemberList = () => {
             }
             
             const token = localStorage.getItem('token'); // 토큰 가져오기
-            await axios.delete(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/admin/member/${memberId}`, {
+            await axios.delete(`http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/admin/member/${memberId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`, // 토큰을 Authorization 헤더에 포함
                 },
@@ -77,7 +77,7 @@ const MemberList = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token'); // 토큰 가져오기
-                await axios.delete(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/admin/member/${memberId}`, {
+                await axios.delete(`http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/admin/member/${memberId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`, // 토큰을 Authorization 헤더에 포함
                     },

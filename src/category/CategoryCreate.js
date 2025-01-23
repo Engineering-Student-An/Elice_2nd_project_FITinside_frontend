@@ -17,7 +17,7 @@ const CategoryCreate = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await axios.get('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/categories', {
+            const response = await axios.get('http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/categories', {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
@@ -27,7 +27,7 @@ const CategoryCreate = () => {
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
-                const response = await axios.get('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/categories', {
+                const response = await axios.get('http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/categories', {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
@@ -81,7 +81,7 @@ const CategoryCreate = () => {
             if (parentId) formData.append('parentId', parentId);
             if (imageFile) formData.append('imageFile', imageFile);
 
-            await axios.post('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/admin/categories', formData, {
+            await axios.post('http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/admin/categories', formData, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'multipart/form-data'
@@ -118,7 +118,7 @@ const CategoryCreate = () => {
                 if (parentId) formData.append('parentId', parentId);
                 if (imageFile) formData.append('imageFile', imageFile);
 
-                await axios.post('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/admin/categories', formData, {
+                await axios.post('http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/admin/categories', formData, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'multipart/form-data'

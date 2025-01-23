@@ -17,7 +17,7 @@ const BannerAdminMain = () => {
 
     const fetchBanners = () => {
         // 배너 목록 가져오기 (Authorization 헤더 추가)
-        axios.get('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/banners', {
+        axios.get('http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/banners', {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -29,7 +29,7 @@ const BannerAdminMain = () => {
             .catch(async error => {
                 try {
                     await sendRefreshTokenAndStoreAccessToken();
-                    axios.get('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/banners', {
+                    axios.get('http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/banners', {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
@@ -57,7 +57,7 @@ const BannerAdminMain = () => {
         if (!window.confirm('정말로 이 배너를 삭제하시겠습니까?')) return;
 
         // 배너 삭제 요청 (Authorization 헤더 추가)
-        axios.delete(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/admin/banners/${id}`, {
+        axios.delete(`http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/admin/banners/${id}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -72,7 +72,7 @@ const BannerAdminMain = () => {
                     if (!window.confirm('정말로 이 배너를 삭제하시겠습니까?')) return;
 
                     // 배너 삭제 요청 (Authorization 헤더 추가)
-                    axios.delete(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/admin/banners/${id}`, {
+                    axios.delete(`http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/admin/banners/${id}`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }

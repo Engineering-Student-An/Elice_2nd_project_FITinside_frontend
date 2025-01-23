@@ -20,7 +20,7 @@ const CategoryUpdate = () => {
 
     useEffect(() => {
         // 부모 카테고리 목록 가져오기
-        axios.get('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/categories', {
+        axios.get('http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/categories', {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -32,7 +32,7 @@ const CategoryUpdate = () => {
             .catch(async error => {
                 try {
                     await sendRefreshTokenAndStoreAccessToken();
-                    axios.get('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/categories', {
+                    axios.get('http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/categories', {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
@@ -51,7 +51,7 @@ const CategoryUpdate = () => {
             });
 
         // 선택된 카테고리 정보 가져오기
-        axios.get(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/categories/${id}`, {
+        axios.get(`http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/categories/${id}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -68,7 +68,7 @@ const CategoryUpdate = () => {
             .catch(async error => {
                 try {
                     await sendRefreshTokenAndStoreAccessToken();
-                    axios.get(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/categories/${id}`, {
+                    axios.get(`http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/categories/${id}`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
@@ -123,7 +123,7 @@ const CategoryUpdate = () => {
         if (parentId) formData.append('parentId', parentId);
         if (image) formData.append('imageFile', image);
 
-        axios.put(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/admin/categories/${id}`, formData, {
+        axios.put(`http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/admin/categories/${id}`, formData, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 'Content-Type': 'multipart/form-data'
@@ -160,7 +160,7 @@ const CategoryUpdate = () => {
                     if (parentId) formData.append('parentId', parentId);
                     if (image) formData.append('imageFile', image);
 
-                    axios.put(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/admin/categories/${id}`, formData, {
+                    axios.put(`http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/admin/categories/${id}`, formData, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`,
                             'Content-Type': 'multipart/form-data'

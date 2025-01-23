@@ -17,7 +17,7 @@ const CategoryAdminMain = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await axios.get('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/categories', {
+            const response = await axios.get('http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/categories', {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
@@ -37,7 +37,7 @@ const CategoryAdminMain = () => {
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
-                const response = await axios.get('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/categories', {
+                const response = await axios.get('http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/categories', {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },
@@ -75,7 +75,7 @@ const CategoryAdminMain = () => {
         if (!confirmDelete) return;
 
         try {
-            await axios.delete(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/admin/categories/${categoryId}`, {
+            await axios.delete(`http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/admin/categories/${categoryId}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
@@ -94,7 +94,7 @@ const CategoryAdminMain = () => {
                 }
 
                 const confirmDelete = window.confirm("이 카테고리를 삭제하시겠습니까?");
-                await axios.delete(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/admin/categories/${categoryId}`, {
+                await axios.delete(`http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/admin/categories/${categoryId}`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }

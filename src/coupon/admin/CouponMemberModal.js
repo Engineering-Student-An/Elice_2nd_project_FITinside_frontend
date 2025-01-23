@@ -10,7 +10,7 @@ const CouponMemberModal = ({ isMemberModalOpen, handleCloseMemberModal, couponId
 
     const fetchMembers = async (id, page) => {
         try {
-            const response = await axios.get(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/admin/coupons/${id}`, {
+            const response = await axios.get(`http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/admin/coupons/${id}`, {
                 params: {
                     page: page
                 },
@@ -26,7 +26,7 @@ const CouponMemberModal = ({ isMemberModalOpen, handleCloseMemberModal, couponId
                 await sendRefreshTokenAndStoreAccessToken();
 
                 // 토큰 갱신 후 다시 요청
-                const response = await axios.get(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/admin/coupons/${id}`, {
+                const response = await axios.get(`http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/admin/coupons/${id}`, {
                     params: {
                         page: page // 페이지 파라미터 재전송
                     },

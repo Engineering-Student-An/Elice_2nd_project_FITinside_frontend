@@ -60,7 +60,7 @@ const Signup = () => {
         }
 
         try {
-            const response = await axios.post('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/auth', {
+            const response = await axios.post('http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/auth', {
                 email,
                 password,
                 userName,

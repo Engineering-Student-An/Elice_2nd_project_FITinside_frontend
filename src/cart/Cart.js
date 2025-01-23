@@ -140,7 +140,7 @@ const Cart = () => {
     const fetchAvailableCoupons = async (productId) => {
 
         try {
-            const response = await axios.get(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/coupons/${productId}`, {
+            const response = await axios.get(`http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/coupons/${productId}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
@@ -152,7 +152,7 @@ const Cart = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 // 새로 요청
-                const newResponse = await axios.get(`http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/coupons/${productId}`, {
+                const newResponse = await axios.get(`http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/coupons/${productId}`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },

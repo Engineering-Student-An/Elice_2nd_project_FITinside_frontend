@@ -13,7 +13,7 @@ const DeletedMembersList = () => {
         const fetchDeletedMembers = async () => {
             try {
                 const token = localStorage.getItem('token'); // 로컬 스토리지에서 토큰 가져오기
-                const response = await axios.get('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/admin/member/delete', {
+                const response = await axios.get('http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/admin/member/delete', {
                     headers: {
                         Authorization: `Bearer ${token}`, // Authorization 헤더에 토큰 추가
                     },
@@ -26,7 +26,7 @@ const DeletedMembersList = () => {
                     await sendRefreshTokenAndStoreAccessToken();
 
                     const token = localStorage.getItem('token'); // 로컬 스토리지에서 토큰 가져오기
-                    const response = await axios.get('http://ec2-3-34-36-20.ap-northeast-2.compute.amazonaws.com:8081/api/admin/member/delete', {
+                    const response = await axios.get('http://ec2-3-34-78-114.ap-northeast-2.compute.amazonaws.com:8080/api/admin/member/delete', {
                         headers: {
                             Authorization: `Bearer ${token}`, // Authorization 헤더에 토큰 추가
                         },
