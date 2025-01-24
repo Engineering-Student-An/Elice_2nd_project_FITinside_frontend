@@ -33,7 +33,7 @@ const OrderAdminList = () => {
 
             console.log('Params sent to api: ', params);
 
-            const response = await ent.get(`/admin/orders`, {
+            const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/orders`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 },
