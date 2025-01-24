@@ -90,7 +90,7 @@ const CouponList = () => {
 
     const handleCouponSubmit = async (code) => {
         try {
-            const response = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/coupons`, code, {
+            const response = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/coupon`, code, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'text/plain'
@@ -112,7 +112,7 @@ const CouponList = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 // 토큰 갱신 후 다시 요청
-                const response = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/coupons`, code, {
+                const response = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/coupon`, code, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'text/plain'
