@@ -58,7 +58,7 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
         if (!coupon || !coupon.active) return; // 쿠폰이 없거나 비활성화 상태일 때는 아무것도 하지 않음
 
         try {
-            const response = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/coupons`, couponCode, {
+            const response = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/coupon`, couponCode, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'text/plain' // 문자열로 전송하므로 Content-Type 변경
@@ -76,7 +76,7 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 // 토큰 갱신 후 다시 요청
-                const response = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/coupons`, couponCode, {
+                const response = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/coupon`, couponCode, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'text/plain' // 문자열로 전송하므로 Content-Type 변경
