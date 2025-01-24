@@ -308,75 +308,67 @@ const OrderCreate = () => {
 
     // 주문 생성
     const createOrder = async (deliveryData) => {
-        try {
-            const token = localStorage.getItem('token');
-            const response = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/api/order`, {
+        const placeOrder = async (token) => {
+            return await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/api/order`, {
                 ...deliveryData, // 배송지 데이터 추가
                 orderItems,
                 deliveryFee,
             }, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            alert('주문이 완료되었습니다.');
+        };
 
-            localStorage.removeItem('orderData');
-            localStorage.removeItem('shippingCost');
+        try {
+            const token = localStorage.getItem('token');
+            const response = await placeOrder(token);
 
-            // localCart에서 주문된 상품 삭제
-            const storedLocalCart = JSON.parse(localStorage.getItem('localCart')) || [];
-            const updatedLocalCart = storedLocalCart.filter(item =>
-                !orderItems.some(orderItem => orderItem.productId === item.id)
-            );
-            localStorage.setItem('localCart', JSON.stringify(updatedLocalCart)); // 주문되지 않은 상품은 유지
-
-            // dbCart에서 주문된 상품 삭제
-            const storedDbCart = JSON.parse(localStorage.getItem('dbCart')) || [];
-            const updatedDbCart = storedDbCart.filter(item =>
-                !orderItems.some(orderItem => orderItem.productId === item.id)
-            );
-            localStorage.setItem('dbCart', JSON.stringify(updatedDbCart)); // 주문되지 않은 상품은 유지
-
-            // localStorage.removeItem('deliveryFormData');
-            window.location.href = `/orders/${response.data.orderId}`;
-        } catch (err) {
-            try {
-                await sendRefreshTokenAndStoreAccessToken();
-
-                const token = localStorage.getItem('token');
-                const response = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/api/order`, {
-                    ...deliveryData, // 배송지 데이터 추가
-                    orderItems,
-                    deliveryFee,
-                }, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+            if (response.status === 201) { // 성공적으로 주문이 생성된 경우
                 alert('주문이 완료되었습니다.');
-
                 localStorage.removeItem('orderData');
                 localStorage.removeItem('shippingCost');
-
-                // localCart에서 주문된 상품 삭제
-                const storedLocalCart = JSON.parse(localStorage.getItem('localCart')) || [];
-                const updatedLocalCart = storedLocalCart.filter(item =>
-                    !orderItems.some(orderItem => orderItem.productId === item.id)
-                );
-                localStorage.setItem('localCart', JSON.stringify(updatedLocalCart)); // 주문되지 않은 상품은 유지
-
-                // dbCart에서 주문된 상품 삭제
-                const storedDbCart = JSON.parse(localStorage.getItem('dbCart')) || [];
-                const updatedDbCart = storedDbCart.filter(item =>
-                    !orderItems.some(orderItem => orderItem.productId === item.id)
-                );
-                localStorage.setItem('dbCart', JSON.stringify(updatedDbCart)); // 주문되지 않은 상품은 유지
-
-                // localStorage.removeItem('deliveryFormData');
+                updateCart(orderItems);
                 window.location.href = `/orders/${response.data.orderId}`;
+            } else {
+                throw new Error('주문 생성 실패');
+            }
+        } catch (err) {
+            console.error('주문 생성 오류:', err);
+            try {
+                await sendRefreshTokenAndStoreAccessToken();
+                const token = localStorage.getItem('token');
+                const response = await placeOrder(token);
+
+                if (response.status === 201) { // 성공적으로 주문이 생성된 경우
+                    alert('주문이 완료되었습니다.');
+                    localStorage.removeItem('orderData');
+                    localStorage.removeItem('shippingCost');
+                    updateCart(orderItems);
+                    window.location.href = `/orders/${response.data.orderId}`;
+                } else {
+                    throw new Error('주문 생성 실패');
+                }
             } catch (error) {
                 console.error('주문 생성 실패 ', error);
                 alert('주문을 처리하는 중 오류가 발생했습니다.');
             }
         }
     };
+
+// 장바구니 업데이트 함수
+    const updateCart = (orderItems) => {
+        const storedLocalCart = JSON.parse(localStorage.getItem('localCart')) || [];
+        const updatedLocalCart = storedLocalCart.filter(item =>
+            !orderItems.some(orderItem => orderItem.productId === item.id)
+        );
+        localStorage.setItem('localCart', JSON.stringify(updatedLocalCart));
+
+        const storedDbCart = JSON.parse(localStorage.getItem('dbCart')) || [];
+        const updatedDbCart = storedDbCart.filter(item =>
+            !orderItems.some(orderItem => orderItem.productId === item.id)
+        );
+        localStorage.setItem('dbCart', JSON.stringify(updatedDbCart));
+    };
+
 
     const discountAmount = totalOriginalPrice - totalDiscountedPrice; // 할인 금액 계산
     const totalPayment = totalDiscountedPrice + deliveryFee; // 최종 결제 금액 계산
