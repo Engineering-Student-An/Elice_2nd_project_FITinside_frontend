@@ -293,7 +293,7 @@ const updateCartItem = async (item) => {
         quantity: item.quantity,
     };
     try {
-        await axios.put(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/carts`, requestData, {
+        await axios.put(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/cart`, requestData, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 'Content-Type': 'application/json',
@@ -304,7 +304,7 @@ const updateCartItem = async (item) => {
             await sendRefreshTokenAndStoreAccessToken();
 
             // 토큰 갱신 후 다시 요청
-            await axios.put(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/carts`, requestData, {
+            await axios.put(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/cart`, requestData, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`, // 갱신된 토큰 사용
                     'Content-Type': 'application/json',
@@ -321,7 +321,7 @@ const deleteCartItem = async (item) => {
 
     if(localStorage.getItem('token') === null) return;
     try {
-        await axios.delete(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/carts/${item.id}`, {
+        await axios.delete(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/cart/${item.id}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 'Content-Type': 'application/json',
@@ -333,7 +333,7 @@ const deleteCartItem = async (item) => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 // 토큰 갱신 후 다시 요청
-                await axios.delete(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/api/carts/${item.id}`, {
+                await axios.delete(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/api/cart/${item.id}`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`, // 갱신된 토큰 사용
                         'Content-Type': 'application/json',
