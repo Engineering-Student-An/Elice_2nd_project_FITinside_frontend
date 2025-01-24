@@ -320,6 +320,7 @@ const OrderCreate = () => {
 
         try {
             const token = localStorage.getItem('token');
+            console.log('토큰: ' + token);
             const response = await placeOrder(token);
 
             if (response.status === 201) { // 성공적으로 주문이 생성된 경우
