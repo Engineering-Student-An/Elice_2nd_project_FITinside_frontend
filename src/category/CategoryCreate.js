@@ -17,7 +17,7 @@ const CategoryCreate = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/categories`, {
+            const response = await axios.get(`/api/categories`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
@@ -27,7 +27,7 @@ const CategoryCreate = () => {
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/categories`, {
+                const response = await axios.get(`/api/categories`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
@@ -81,7 +81,7 @@ const CategoryCreate = () => {
             if (parentId) formData.append('parentId', parentId);
             if (imageFile) formData.append('imageFile', imageFile);
 
-            await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/admin/categories`, formData, {
+            await axios.post(`/api/admin/categories`, formData, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'multipart/form-data'
@@ -118,7 +118,7 @@ const CategoryCreate = () => {
                 if (parentId) formData.append('parentId', parentId);
                 if (imageFile) formData.append('imageFile', imageFile);
 
-                await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/admin/categories`, formData, {
+                await axios.post(`/api/admin/categories`, formData, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'multipart/form-data'

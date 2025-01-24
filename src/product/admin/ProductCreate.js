@@ -31,7 +31,7 @@ const ProductCreate = () => {
         const fetchCategories = async () => {
             try {
                 const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/categories`, {
+                const response = await fetch(`/api/categories`, {
                     headers: {
                         'Authorization': `Bearer ${token}`  // Authorization 헤더 추가
                     }
@@ -47,7 +47,7 @@ const ProductCreate = () => {
                     await sendRefreshTokenAndStoreAccessToken();
 
                     const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-                    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/categories`, {
+                    const response = await fetch(`/api/categories`, {
                         headers: {
                             'Authorization': `Bearer ${token}`  // Authorization 헤더 추가
                         }
@@ -179,7 +179,7 @@ const ProductCreate = () => {
 
         try {
             const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/admin/products`, {
+            const response = await fetch(`/api/admin/products`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가
@@ -197,7 +197,7 @@ const ProductCreate = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/admin/products`, {
+                const response = await fetch(`/api/admin/products`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가

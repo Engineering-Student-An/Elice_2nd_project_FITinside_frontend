@@ -140,7 +140,7 @@ const Cart = () => {
     const fetchAvailableCoupons = async (productId) => {
 
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/coupons/${productId}`, {
+            const response = await axios.get(`/api/coupons/${productId}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
@@ -152,7 +152,7 @@ const Cart = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 // 새로 요청
-                const newResponse = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/coupons/${productId}`, {
+                const newResponse = await axios.get(`/api/coupons/${productId}`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },

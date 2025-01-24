@@ -17,7 +17,7 @@ const CategoryAdminMain = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/categories`, {
+            const response = await axios.get(`/api/categories`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
@@ -37,7 +37,7 @@ const CategoryAdminMain = () => {
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/categories`, {
+                const response = await axios.get(`/api/categories`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },
@@ -75,7 +75,7 @@ const CategoryAdminMain = () => {
         if (!confirmDelete) return;
 
         try {
-            await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/admin/categories/${categoryId}`, {
+            await axios.delete(`/api/admin/categories/${categoryId}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
@@ -94,7 +94,7 @@ const CategoryAdminMain = () => {
                 }
 
                 const confirmDelete = window.confirm("이 카테고리를 삭제하시겠습니까?");
-                await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/admin/categories/${categoryId}`, {
+                await axios.delete(`/api/admin/categories/${categoryId}`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }

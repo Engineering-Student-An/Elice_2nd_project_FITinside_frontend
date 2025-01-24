@@ -18,7 +18,7 @@ const Header = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/categories`, {
+                const response = await axios.get(`/api/categories`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },

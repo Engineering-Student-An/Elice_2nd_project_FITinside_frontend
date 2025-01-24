@@ -28,7 +28,7 @@ const ProductAdmin = () => {
     }, [page, sortField, sortDir]); // page, sortField, sortDir가 변경될 때마다 새 데이터를 가져옴
 
     const fetchProducts = async (pageNumber) => {
-        const endpoint = searchType === 'productName' ? `${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/products` : `${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/products/byCategory`; // 검색 타입에 따라 다른 엔드포인트 호출
+        const endpoint = searchType === 'productName' ? `/api/products` : `/api/products/byCategory`; // 검색 타입에 따라 다른 엔드포인트 호출
 
         try {
             const token = localStorage.getItem('token');
@@ -125,7 +125,7 @@ const ProductAdmin = () => {
 
         try {
             const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-            const response = await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/admin/products/${productId}`, {
+            const response = await axios.delete(`/api/admin/products/${productId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가
                 },
@@ -145,7 +145,7 @@ const ProductAdmin = () => {
                     await sendRefreshTokenAndStoreAccessToken();
 
                     // 토큰 갱신 후 다시 삭제 요청
-                    const newResponse = await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/admin/products/${productId}`, {
+                    const newResponse = await axios.delete(`/api/admin/products/${productId}`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`,  // 새로 발급된 토큰 사용
                         },

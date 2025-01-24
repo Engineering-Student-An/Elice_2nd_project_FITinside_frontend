@@ -20,7 +20,7 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
         }
 
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/coupons/code/${couponCode}`, {
+            const response = await axios.get(`/api/coupons/code/${couponCode}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'application/json'
@@ -38,7 +38,7 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
                     await sendRefreshTokenAndStoreAccessToken();
 
                     // 토큰 갱신 후 다시 요청
-                    const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/coupons/code/${couponCode}`, {
+                    const response = await axios.get(`/api/coupons/code/${couponCode}`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`, // 갱신된 토큰 사용
                             'Content-Type': 'application/json'
@@ -58,7 +58,7 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
         if (!coupon || !coupon.active) return; // 쿠폰이 없거나 비활성화 상태일 때는 아무것도 하지 않음
 
         try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/coupons`, couponCode, {
+            const response = await axios.post(`/api/coupons`, couponCode, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'text/plain' // 문자열로 전송하므로 Content-Type 변경
@@ -76,7 +76,7 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 // 토큰 갱신 후 다시 요청
-                const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/coupons`, couponCode, {
+                const response = await axios.post(`/api/coupons`, couponCode, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'text/plain' // 문자열로 전송하므로 Content-Type 변경

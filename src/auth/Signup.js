@@ -60,7 +60,7 @@ const Signup = () => {
         }
 
         try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/auth`, {
+            const response = await axios.post(`/api/auth`, {
                 email,
                 password,
                 userName,

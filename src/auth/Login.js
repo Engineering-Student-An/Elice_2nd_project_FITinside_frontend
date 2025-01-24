@@ -15,7 +15,7 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/auth/login`, {
+            const response = await axios.post(`/api/auth/login`, {
                 email,
                 password
             },
