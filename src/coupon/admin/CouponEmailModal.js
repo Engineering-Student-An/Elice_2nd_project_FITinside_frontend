@@ -68,7 +68,7 @@ const CouponEmailModal = ({ isOpen, onRequestClose, coupon }) => {
                 const emailTemplate = CouponEmailTemplate({ coupon: coupon }); // 이메일 템플릿 HTML 가져오기
 
                 // 실제 이메일 전송 요청
-                const response = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/coupons/email`, {
+                const response = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/coupon/email`, {
                     couponId: coupon.id,
                     address: email,
                     template: emailTemplate // 결합된 템플릿 사용

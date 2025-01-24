@@ -106,7 +106,7 @@ const CouponAdmin = () => {
 
     const deactivateCoupon = async (id) => {
         try {
-            const response = await axios.delete(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/coupons/${id}`, {
+            const response = await axios.delete(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/coupon/${id}`, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -124,7 +124,7 @@ const CouponAdmin = () => {
                     await sendRefreshTokenAndStoreAccessToken();
 
                     // 토큰 갱신 후 다시 요청
-                    const response = await axios.delete(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/coupons/${id}`, {
+                    const response = await axios.delete(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/coupon/${id}`, {
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${localStorage.getItem('token')}` // 갱신된 토큰 사용
