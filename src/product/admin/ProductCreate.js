@@ -29,38 +29,18 @@ const ProductCreate = () => {
     // 카테고리 목록을 서버에서 가져오는 useEffect
     useEffect(() => {
         const fetchCategories = async () => {
+
             try {
-                // const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
                 const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/categories`, {
-                    // headers: {
-                    //     'Authorization': `Bearer ${token}`  // Authorization 헤더 추가
-                    // }
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
                 });
-                if (!response.ok) {
-                    throw new Error('카테고리 목록을 가져오는 데 실패했습니다.');
-                }
                 const data = await response.json();
                 const filteredCategories = data.filter(category => category.parentId !== null);
                 setCategories(filteredCategories);
             } catch (error) {
-                // try {
-                //     await sendRefreshTokenAndStoreAccessToken();
-                //
-                //     const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-                //     const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/categories`, {
-                //         headers: {
-                //             'Authorization': `Bearer ${token}`  // Authorization 헤더 추가
-                //         }
-                //     });
-                //     if (!response.ok) {
-                //         throw new Error('카테고리 목록을 가져오는 데 실패했습니다.');
-                //     }
-                //     const data = await response.json();
-                //     const filteredCategories = data.filter(category => category.parentId !== null);
-                //     setCategories(filteredCategories);
-                // } catch (error) {
-                    console.error('카테고리 목록을 가져오는 데 실패했습니다.', error);
-                // }
+                console.error('Error fetching categories:', error);
             }
         };
 
