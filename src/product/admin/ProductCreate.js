@@ -36,7 +36,7 @@ const ProductCreate = () => {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },
                 });
-                const data = await response.json();
+                const data = response.data;
                 const filteredCategories = data.filter(category => category.parentId !== null);
                 setCategories(filteredCategories);
             } catch (error) {
