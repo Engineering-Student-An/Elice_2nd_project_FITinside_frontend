@@ -4,7 +4,8 @@ import DeliveryForm from './DeliveryForm';
 import AddressModal from '../address/AddressModal';
 import './orderDetail.css';
 import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
-import {apiClient} from "../apiClient";
+import axios from "axios";
+
 
 const statusOptions = [
     { value: 'ORDERED', label: '주문 완료' },
@@ -41,7 +42,7 @@ const OrderDetail = () => {
         const fetchOrderDetail = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await apiClient.get(`/orders/${orderId}`, {
+                const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/orders/${orderId}`, {
                     headers: {
                         Authorization: `Bearer ${token}` // 토큰을 인증 헤더에 추가
                     }
@@ -61,7 +62,7 @@ const OrderDetail = () => {
                     await sendRefreshTokenAndStoreAccessToken();
 
                     const token = localStorage.getItem('token');
-                    const response = await apiClient.get(`/orders/${orderId}`, {
+                    const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/orders/${orderId}`, {
                         headers: {
                             Authorization: `Bearer ${token}` // 토큰을 인증 헤더에 추가
                         }
@@ -122,7 +123,7 @@ const OrderDetail = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await apiClient.patch(`/orders/${orderId}`, updatedData, {
+            const response = await axios.patch(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/orders/${orderId}`, updatedData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -144,7 +145,7 @@ const OrderDetail = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                const response = await apiClient.patch(`/orders/${orderId}`, updatedData, {
+                const response = await axios.patch(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/orders/${orderId}`, updatedData, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -186,14 +187,14 @@ const OrderDetail = () => {
 
         try {
             const token = localStorage.getItem('token');
-            await apiClient.delete(`/orders/${orderId}`, {
+            await axios.delete(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/orders/${orderId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
 
             // 주문 취소 후 다시 주문 상세 정보를 가져와서 갱신
-            const response = await apiClient.get(`/orders/${orderId}`, {
+            const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/orders/${orderId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -206,14 +207,14 @@ const OrderDetail = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                await apiClient.delete(`/orders/${orderId}`, {
+                await axios.delete(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/orders/${orderId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
 
                 // 주문 취소 후 다시 주문 상세 정보를 가져와서 갱신
-                const response = await apiClient.get(`/orders/${orderId}`, {
+                const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/orders/${orderId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }

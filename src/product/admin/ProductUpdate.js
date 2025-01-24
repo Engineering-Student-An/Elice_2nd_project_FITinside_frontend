@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import qs from "qs";
 import sendRefreshTokenAndStoreAccessToken from "../../auth/RefreshAccessToken";
-import {apiClient} from "../../apiClient";
+import axios from "axios";
 
 const ProductUpdate = () => {
     const { id } = useParams(); // URL에서 상품 ID를 가져옴
@@ -38,7 +38,7 @@ const ProductUpdate = () => {
         const fetchProduct = async () => {
             try {
                 const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-                const response = await apiClient.get(`/api/products/${id}`, {
+                const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/products/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`  // Authorization 헤더 추가
                     }
@@ -49,7 +49,7 @@ const ProductUpdate = () => {
                     await sendRefreshTokenAndStoreAccessToken();
 
                     const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-                    const response = await apiClient.get(`/api/products/${id}`, {
+                    const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/products/${id}`, {
                         headers: {
                             'Authorization': `Bearer ${token}`  // Authorization 헤더 추가
                         }
@@ -69,7 +69,7 @@ const ProductUpdate = () => {
         const fetchCategories = async () => {
             try {
                 const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-                const response = await apiClient.get(`/api/categories`, {
+                const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/categories`, {
                     headers: {
                         'Authorization': `Bearer ${token}`  // Authorization 헤더 추가
                     }
@@ -83,7 +83,7 @@ const ProductUpdate = () => {
                     await sendRefreshTokenAndStoreAccessToken();
 
                     const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-                    const response = await apiClient.get(`/api/categories`, {
+                    const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/categories`, {
                         headers: {
                             'Authorization': `Bearer ${token}`  // Authorization 헤더 추가
                         }
@@ -206,8 +206,8 @@ const ProductUpdate = () => {
             const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
 
             if (imageUrlsToDelete.length > 0) {
-                await apiClient.delete(
-                    `/api/admin/products/${id}/images`,
+                await axios.delete(
+                    `https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/products/${id}/images`,
                     {
                         params: { imageUrlsToDelete },
                         headers: {
@@ -221,8 +221,8 @@ const ProductUpdate = () => {
             }
 
             if (descImageUrlsToDelete.length > 0) {
-                await apiClient.delete(
-                    `/api/admin/products/${id}/description-images`,
+                await axios.delete(
+                    `https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/products/${id}/description-images`,
                     {
                         params: { descImageUrlsToDelete },
                         headers: {
@@ -241,8 +241,8 @@ const ProductUpdate = () => {
                 const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
 
                 if (imageUrlsToDelete.length > 0) {
-                    await apiClient.delete(
-                        `/api/admin/products/${id}/images`,
+                    await axios.delete(
+                        `https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/products/${id}/images`,
                         {
                             params: { imageUrlsToDelete },
                             headers: {
@@ -256,8 +256,8 @@ const ProductUpdate = () => {
                 }
 
                 if (descImageUrlsToDelete.length > 0) {
-                    await apiClient.delete(
-                        `/api/admin/products/${id}/description-images`,
+                    await axios.delete(
+                        `https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/products/${id}/description-images`,
                         {
                             params: { descImageUrlsToDelete },
                             headers: {
@@ -316,7 +316,7 @@ const ProductUpdate = () => {
             const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
 
             // 상품 업데이트 요청
-            await apiClient.put(`/api/admin/products/${id}`, formData, {
+            await axios.put(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/products/${id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가
@@ -334,7 +334,7 @@ const ProductUpdate = () => {
                 const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
 
                 // 상품 업데이트 요청
-                await apiClient.put(`/api/admin/products/${id}`, formData, {
+                await axios.put(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/products/${id}`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가

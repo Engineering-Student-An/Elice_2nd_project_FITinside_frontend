@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { addToCart } from '../cart/cartStorage';
-import {apiClient} from "../apiClient";
+import axios from "axios";
+
 
 const ProductSection = () => {
     const { id: productId } = useParams();
@@ -14,7 +15,7 @@ const ProductSection = () => {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const response = await apiClient.get(`/products/${productId}`);
+                const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/products/${productId}`);
                 setProduct(response.data);
                 setSelectedImage(response.data.productImgUrls ? response.data.productImgUrls[0] : dummyImage);
             } catch (error) {

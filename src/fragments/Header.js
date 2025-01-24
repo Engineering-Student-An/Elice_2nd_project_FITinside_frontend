@@ -3,7 +3,8 @@ import React, {useEffect, useState} from 'react';
 import './header.css';
 import {useNavigate} from "react-router-dom";
 import {jwtDecode} from "jwt-decode";
-import {apiClient} from "../apiClient";
+import axios from "axios";
+
 
 const Header = () => {
     const [cartCount, setCartCount] = useState(0);
@@ -18,7 +19,7 @@ const Header = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await apiClient.get(`/categories`, {
+                const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/categories`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },

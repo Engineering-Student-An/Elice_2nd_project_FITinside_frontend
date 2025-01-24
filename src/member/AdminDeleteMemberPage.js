@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Pagination } from 'react-bootstrap';
 import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
-import {apiClient} from "../apiClient";
+import axios from "axios";
+
 
 const DeletedMembersList = () => {
     const [deletedMembers, setDeletedMembers] = useState([]); // 탈퇴회원 목록 상태
@@ -13,7 +14,7 @@ const DeletedMembersList = () => {
         const fetchDeletedMembers = async () => {
             try {
                 const token = localStorage.getItem('token'); // 로컬 스토리지에서 토큰 가져오기
-                const response = await apiClient.get(`/api/admin/member/delete`, {
+                const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/member/delete`, {
                     headers: {
                         Authorization: `Bearer ${token}`, // Authorization 헤더에 토큰 추가
                     },
@@ -26,7 +27,7 @@ const DeletedMembersList = () => {
                     await sendRefreshTokenAndStoreAccessToken();
 
                     const token = localStorage.getItem('token'); // 로컬 스토리지에서 토큰 가져오기
-                    const response = await apiClient.get(`/api/admin/member/delete`, {
+                    const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/member/delete`, {
                         headers: {
                             Authorization: `Bearer ${token}`, // Authorization 헤더에 토큰 추가
                         },

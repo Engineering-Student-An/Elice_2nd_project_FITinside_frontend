@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
 import DeliveryForm from '../order/DeliveryForm';
-import {apiClient} from "../apiClient";
+import axios from "axios";
+
 
 const AddressList = () => {
     const [addresses, setAddresses] = useState([]);
@@ -15,7 +16,7 @@ const AddressList = () => {
     const fetchAddresses = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await apiClient.get(`/api/addresses`, {
+            const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/addresses`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -26,7 +27,7 @@ const AddressList = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                const response = await apiClient.get(`/api/addresses`, {
+                const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/addresses`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -81,7 +82,7 @@ const AddressList = () => {
         if (isAdding) {
             // 배송지 추가 로직
             try {
-                const response = await apiClient.post(`/api/addresses`, dataToSend, {
+                const response = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/addresses`, dataToSend, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -97,7 +98,7 @@ const AddressList = () => {
         } else if (isEditing) {
             // 배송지 수정 로직
             try {
-                const response = await apiClient.patch(`/api/addresses/${selectedAddress.addressId}`, dataToSend, {
+                const response = await axios.patch(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/addresses/${selectedAddress.addressId}`, dataToSend, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -133,7 +134,7 @@ const AddressList = () => {
 
         try {
             const token = localStorage.getItem('token');
-            await apiClient.delete(`/api/addresses/${addressId}`, {
+            await axios.delete(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/addresses/${addressId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -145,7 +146,7 @@ const AddressList = () => {
               await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                await apiClient.delete(`/api/addresses/${addressId}`, {
+                await axios.delete(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/addresses/${addressId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -178,7 +179,7 @@ const AddressList = () => {
     const handleDefaultChange = async (addressId, isChecked) => {
         try {
             const token = localStorage.getItem('token');
-            await apiClient.patch(`/api/addresses/${addressId}/default`, null, {
+            await axios.patch(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/addresses/${addressId}/default`, null, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 },
@@ -193,7 +194,7 @@ const AddressList = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                await apiClient.patch(`/api/addresses/${addressId}/default`, null, {
+                await axios.patch(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/addresses/${addressId}/default`, null, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     },

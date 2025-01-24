@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './AdBanner.css';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {apiClient} from "../../apiClient"; // Bootstrap 추가
+import axios from "axios";
 
 const AdBanner = ({ userRole }) => {
     const [ads, setAds] = useState([]); // 광고 목록
@@ -11,7 +11,7 @@ const AdBanner = ({ userRole }) => {
 
     // 광고를 서버에서 가져오기
     useEffect(() => {
-        apiClient.get(`/banners`, {
+        axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/banners`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}` // Bearer 토큰 포함
             }

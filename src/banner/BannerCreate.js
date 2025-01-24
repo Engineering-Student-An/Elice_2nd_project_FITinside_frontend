@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
-import {apiClient} from "../apiClient"; // Bootstrap CSS 추가
+import axios from "axios";
+ // Bootstrap CSS 추가
 
 const BannerCreate = () => {
     const [title, setTitle] = useState('');
@@ -40,7 +41,7 @@ const BannerCreate = () => {
         }
 
         try {
-            await apiClient.post(`/api/admin/banners`, formData, {
+            await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/banners`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -50,7 +51,7 @@ const BannerCreate = () => {
         } catch (error) {
             try{
                 await sendRefreshTokenAndStoreAccessToken();
-                await apiClient.post(`/api/admin/banners`, formData, {
+                await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/api/admin/banners`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         'Authorization': `Bearer ${localStorage.getItem('token')}`

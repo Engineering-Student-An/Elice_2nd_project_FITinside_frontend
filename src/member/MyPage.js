@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
-import {apiClient} from "../apiClient";
+import axios from "axios";
+
 
 const MyPage = () => {
     const [userInfo, setUserInfo] = useState(null); // 사용자 정보를 저장할 상태
@@ -16,7 +17,7 @@ const MyPage = () => {
             try {
                 const token = localStorage.getItem('token'); // 로컬 스토리지에서 토큰 가져오기
 
-                const response = await apiClient.get(`/user/me`, {
+                const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/user/me`, {
                     headers: {
                         Authorization: `Bearer ${token}`, // Authorization 헤더에 토큰 추가
                     },
@@ -31,7 +32,7 @@ const MyPage = () => {
 
                     const token = localStorage.getItem('token'); // 로컬 스토리지에서 토큰 가져오기
 
-                    const response = await apiClient.get(`/user/me`, {
+                    const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/user/me`, {
                         headers: {
                             Authorization: `Bearer ${token}`, // Authorization 헤더에 토큰 추가
                         },
@@ -73,8 +74,8 @@ const MyPage = () => {
             }
 
             const token = localStorage.getItem('token');
-            await apiClient.put(
-                `/user/username`, // 이름 수정 API 엔드포인트
+            await axios.put(
+                `https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/user/username`, // 이름 수정 API 엔드포인트
                 { userName: newName },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -104,8 +105,8 @@ const MyPage = () => {
             }
 
             const token = localStorage.getItem('token');
-            await apiClient.put(
-                `/user/phone`, // 전화번호 수정 API 엔드포인트
+            await axios.put(
+                `https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/user/phone`, // 전화번호 수정 API 엔드포인트
                 {
                     email: userInfo.email,
                     phone: newPhone
@@ -122,7 +123,7 @@ const MyPage = () => {
     const handleDeleteAccount = async () => {
         try {
             const token = localStorage.getItem('token');
-            await apiClient.delete(`/user/delete`, {
+            await axios.delete(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/user/delete`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 

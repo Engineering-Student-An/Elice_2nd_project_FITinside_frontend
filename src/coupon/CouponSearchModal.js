@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
-import {apiClient} from "../apiClient";
+import axios from "axios";
 
 const CouponSearchModal = ({ isOpen, onRequestClose }) => {
     const [couponCode, setCouponCode] = useState('');
@@ -20,7 +20,7 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
         }
 
         try {
-            const response = await apiClient.get(`/coupons/code/${couponCode}`, {
+            const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/coupons/code/${couponCode}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'application/json'
@@ -38,7 +38,7 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
                     await sendRefreshTokenAndStoreAccessToken();
 
                     // 토큰 갱신 후 다시 요청
-                    const response = await apiClient.get(`/coupons/code/${couponCode}`, {
+                    const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/coupons/code/${couponCode}`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`, // 갱신된 토큰 사용
                             'Content-Type': 'application/json'
@@ -58,7 +58,7 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
         if (!coupon || !coupon.active) return; // 쿠폰이 없거나 비활성화 상태일 때는 아무것도 하지 않음
 
         try {
-            const response = await apiClient.post(`/coupons`, couponCode, {
+            const response = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/coupons`, couponCode, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'text/plain' // 문자열로 전송하므로 Content-Type 변경
@@ -76,7 +76,7 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 // 토큰 갱신 후 다시 요청
-                const response = await apiClient.post(`/coupons`, couponCode, {
+                const response = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/coupons`, couponCode, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'text/plain' // 문자열로 전송하므로 Content-Type 변경

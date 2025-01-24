@@ -4,7 +4,8 @@ import AddressModal from '../address/AddressModal';
 import '../cart/cart.css';
 import './orderCreate.css';
 import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
-import {apiClient} from "../apiClient";
+import axios from "axios";
+
 
 const OrderCreate = () => {
     const [orderItems, setOrderItems] = useState([]); // 장바구니와 상품 정보
@@ -41,7 +42,7 @@ const OrderCreate = () => {
             const details = {};
             for (const item of storedOrderData) {
                 try {
-                    const response = await apiClient.get(`/products/${item.productId}`, {
+                    const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/products/${item.productId}`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
@@ -51,7 +52,7 @@ const OrderCreate = () => {
                     try {
                         await sendRefreshTokenAndStoreAccessToken();
 
-                        const response = await apiClient.get(`/products/${item.productId}`, {
+                        const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/products/${item.productId}`, {
                             headers: {
                                 'Authorization': `Bearer ${localStorage.getItem('token')}`
                             }
@@ -68,7 +69,7 @@ const OrderCreate = () => {
         // 기본 배송지 조회
         const fetchDefaultAddress = async () => {
             try {
-                const response = await apiClient.get(`/addresses/default`, {
+                const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/addresses/default`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
@@ -94,7 +95,7 @@ const OrderCreate = () => {
                 try {
                     await sendRefreshTokenAndStoreAccessToken();
 
-                    const response = await apiClient.get(`/addresses/default`, {
+                    const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/addresses/default`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
@@ -127,7 +128,7 @@ const OrderCreate = () => {
         // 배송지 목록 조회
         const fetchAddressList = async () => {
             try {
-                const response = await apiClient.get(`/addresses`, {
+                const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/addresses`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
@@ -137,7 +138,7 @@ const OrderCreate = () => {
                 try {
                     await sendRefreshTokenAndStoreAccessToken();
 
-                    const response = await apiClient.get(`/addresses`, {
+                    const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/addresses`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
@@ -244,7 +245,7 @@ const OrderCreate = () => {
     const addAddress = async (deliveryData) => {
         try {
             const token = localStorage.getItem('token');
-            const addressResponse = await apiClient.post(`/addresses`, deliveryData, {
+            const addressResponse = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/addresses`, deliveryData, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -256,7 +257,7 @@ const OrderCreate = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                const addressResponse = await apiClient.post(`/addresses`, deliveryData, {
+                const addressResponse = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/addresses`, deliveryData, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -278,7 +279,7 @@ const OrderCreate = () => {
     const updateAddress = async (deliveryData) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await apiClient.patch(`/api/addresses/${selectedAddressId}`, deliveryData, {
+            const response = await axios.patch(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/api/addresses/${selectedAddressId}`, deliveryData, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -290,7 +291,7 @@ const OrderCreate = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                const response = await apiClient.patch(`/api/addresses/${selectedAddressId}`, deliveryData, {
+                const response = await axios.patch(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/api/addresses/${selectedAddressId}`, deliveryData, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -309,7 +310,7 @@ const OrderCreate = () => {
     const createOrder = async (deliveryData) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await apiClient.post(`/api/order`, {
+            const response = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/api/order`, {
                 ...deliveryData, // 배송지 데이터 추가
                 orderItems,
                 deliveryFee,
@@ -342,7 +343,7 @@ const OrderCreate = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                const response = await apiClient.post(`/api/order`, {
+                const response = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/api/order`, {
                     ...deliveryData, // 배송지 데이터 추가
                     orderItems,
                     deliveryFee,

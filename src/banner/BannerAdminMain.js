@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
-import {apiClient} from "../apiClient";
+import axios from "axios";
+
 
 const BannerAdminMain = () => {
     const [banners, setBanners] = useState([]);
@@ -17,7 +18,7 @@ const BannerAdminMain = () => {
 
     const fetchBanners = () => {
         // 배너 목록 가져오기 (Authorization 헤더 추가)
-        apiClient.get(`/api/banners`, {
+        axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/banners`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -29,7 +30,7 @@ const BannerAdminMain = () => {
             .catch(async error => {
                 try {
                     await sendRefreshTokenAndStoreAccessToken();
-                    apiClient.get(`/api/banners`, {
+                    axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/banners`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
@@ -57,7 +58,7 @@ const BannerAdminMain = () => {
         if (!window.confirm('정말로 이 배너를 삭제하시겠습니까?')) return;
 
         // 배너 삭제 요청 (Authorization 헤더 추가)
-        apiClient.delete(`/api/admin/banners/${id}`, {
+        axios.delete(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/banners/${id}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -72,7 +73,7 @@ const BannerAdminMain = () => {
                     if (!window.confirm('정말로 이 배너를 삭제하시겠습니까?')) return;
 
                     // 배너 삭제 요청 (Authorization 헤더 추가)
-                    apiClient.delete(`/api/admin/banners/${id}`, {
+                    axios.delete(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/banners/${id}`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }

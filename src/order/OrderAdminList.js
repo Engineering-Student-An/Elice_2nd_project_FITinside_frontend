@@ -4,7 +4,8 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './orderAdminList.css';
 import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
-import {apiClient} from "../apiClient";
+import axios from "axios";
+
 
 const OrderAdminList = () => {
     const [orders, setOrders] = useState([]);
@@ -32,7 +33,7 @@ const OrderAdminList = () => {
 
             console.log('Params sent to api: ', params);
 
-            const response = await apiClient.get(`/admin/orders`, {
+            const response = await ent.get(`/admin/orders`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 },
@@ -61,7 +62,7 @@ const OrderAdminList = () => {
 
                 console.log('Params sent to api: ', params);
 
-                const response = await apiClient.get(`/admin/orders`, {
+                const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/orders`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     },
@@ -115,7 +116,7 @@ const OrderAdminList = () => {
             const token = localStorage.getItem('token');
             const requestData = { status: newStatus };
 
-            const response = await apiClient.patch(`/admin/orders/${orderId}/status`, requestData, {
+            const response = await axios.patch(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/orders/${orderId}/status`, requestData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -143,7 +144,7 @@ const OrderAdminList = () => {
                 const token = localStorage.getItem('token');
                 const requestData = { status: newStatus };
 
-                const response = await apiClient.patch(`/admin/orders/${orderId}/status`, requestData, {
+                const response = await axios.patch(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/orders/${orderId}/status`, requestData, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -179,7 +180,7 @@ const OrderAdminList = () => {
 
         try {
             const token = localStorage.getItem('token');
-            await apiClient.delete(`/admin/orders/${orderId}`, {
+            await axios.delete(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/orders/${orderId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -192,7 +193,7 @@ const OrderAdminList = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                await apiClient.delete(`/admin/orders/${orderId}`, {
+                await axios.delete(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/orders/${orderId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }

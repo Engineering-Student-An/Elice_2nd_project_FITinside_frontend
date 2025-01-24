@@ -4,7 +4,7 @@ import {getCart, removeFromCart, clearCart, fetchProduct, useCartCount, updateCa
 import AvailableCouponModal from '../coupon/AvailableCouponModal';
 import './cart.css';
 import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
-import {apiClient} from "../apiClient";
+import axios from "axios";
 
 
 const Cart = () => {
@@ -140,7 +140,7 @@ const Cart = () => {
     const fetchAvailableCoupons = async (productId) => {
 
         try {
-            const response = await apiClient.get(`/coupons/${productId}`, {
+            const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/coupons/${productId}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
@@ -152,7 +152,7 @@ const Cart = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 // 새로 요청
-                const newResponse = await apiClient.get(`/coupons/${productId}`, {
+                const newResponse = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/coupons/${productId}`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },

@@ -1,7 +1,8 @@
 // src/Signup.js
 import React, { useState } from 'react';
 import {useNavigate} from "react-router-dom";
-import {apiClient} from "../apiClient";
+import axios from "axios";
+
 
 const Signup = () => {
     const [email, setEmail] = useState('');
@@ -60,7 +61,7 @@ const Signup = () => {
         }
 
         try {
-            const response = await apiClient.post(`/auth`, {
+            const response = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/auth`, {
                 email,
                 password,
                 userName,

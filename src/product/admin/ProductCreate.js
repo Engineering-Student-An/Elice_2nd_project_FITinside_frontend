@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ProductCreate.css';
 import sendRefreshTokenAndStoreAccessToken from "../../auth/RefreshAccessToken";
-import {apiClient} from "../../apiClient";
+import axios from "axios";
 
 const ProductCreate = () => {
     const [formData, setFormData] = useState({
@@ -31,7 +31,7 @@ const ProductCreate = () => {
         const fetchCategories = async () => {
             try {
                 const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-                const response = await apiClient.get(`/categories`, {
+                const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/categories`, {
                     headers: {
                         'Authorization': `Bearer ${token}`  // Authorization 헤더 추가
                     }
@@ -47,7 +47,7 @@ const ProductCreate = () => {
                     await sendRefreshTokenAndStoreAccessToken();
 
                     const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-                    const response = await apiClient.get(`/categories`, {
+                    const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/categories`, {
                         headers: {
                             'Authorization': `Bearer ${token}`  // Authorization 헤더 추가
                         }
@@ -179,7 +179,7 @@ const ProductCreate = () => {
 
         try {
             const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-            const response = await apiClient.post(`/api/admin/products`, {
+            const response = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/products`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가
                 },
@@ -196,7 +196,7 @@ const ProductCreate = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-                const response = await apiClient.post(`/api/admin/products`, {
+                const response = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/products`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가

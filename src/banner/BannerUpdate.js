@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
-import {apiClient} from "../apiClient"; // Bootstrap CSS 추가
+import axios from "axios";
+ // Bootstrap CSS 추가
 
 const BannerUpdate = () => {
     const [title, setTitle] = useState(''); // 배너 제목
@@ -18,7 +19,7 @@ const BannerUpdate = () => {
 
     // 배너 정보 가져오기
     useEffect(() => {
-        apiClient.get(`/api/banners/${id}`, {
+        axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/banners/${id}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -35,7 +36,7 @@ const BannerUpdate = () => {
             .catch(async error => {
                 try {
                     await sendRefreshTokenAndStoreAccessToken();
-                    apiClient.get(`/api/banners/${id}`, {
+                    axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/banners/${id}`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
@@ -89,7 +90,7 @@ const BannerUpdate = () => {
         formData.append('targetUrl', targetUrl); // URL 필드 추가
 
         try {
-            apiClient.put(`/api/admin/banners/${id}`, formData, {
+            axios.put(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/banners/${id}`, formData, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'multipart/form-data'
@@ -103,7 +104,7 @@ const BannerUpdate = () => {
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
-                apiClient.put(`/api/admin/banners/${id}`, formData, {
+                axios.put(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/banners/${id}`, formData, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'multipart/form-data'

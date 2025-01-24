@@ -3,7 +3,8 @@ import './coupon.css';
 import CouponSearchModal from './CouponSearchModal';
 import { useNavigate } from 'react-router-dom';
 import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
-import {apiClient} from "../apiClient";
+import axios from "axios";
+
 
 const CouponList = () => {
     const [coupons, setCoupons] = useState([]);
@@ -31,7 +32,7 @@ const CouponList = () => {
 
     const fetchCoupons = async (page, includeInActiveCoupons) => {
         try {
-            const response = await apiClient.get(`/coupons`, {
+            const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/coupons`, {
                 params: {
                     page: page,
                     includeInActiveCoupons: includeInActiveCoupons
@@ -49,7 +50,7 @@ const CouponList = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 // 토큰 갱신 후 다시 요청
-                const response = await apiClient.get(`/coupons`, {
+                const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/coupons`, {
                     params: {
                         page: page,
                         includeInActiveCoupons: includeInActiveCoupons // 재전송할 파라미터
@@ -70,7 +71,7 @@ const CouponList = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await apiClient.get(`/categories`, {
+            const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/categories`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
@@ -82,7 +83,7 @@ const CouponList = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 // 토큰 갱신 후 다시 요청
-                const response = await apiClient.get(`/categories`, {
+                const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/categories`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}` // 갱신된 토큰 사용
                     },
@@ -130,7 +131,7 @@ const CouponList = () => {
 
     const handleOrderHistoryClick = async (couponId) => {
         try {
-            const response = await apiClient.get(`/coupons/${couponId}/order`, {
+            const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/coupons/${couponId}/order`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
