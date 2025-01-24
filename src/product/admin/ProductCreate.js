@@ -166,7 +166,7 @@ const ProductCreate = () => {
             });
 
             // 응답 상태 확인
-            if (response.status !== 200) {
+            if (response.status !== 201) {
                 throw new Error('상품 등록에 실패했습니다.');
             }
             console.log('상품이 성공적으로 등록되었습니다.');
@@ -185,7 +185,7 @@ const ProductCreate = () => {
                 });
 
                 // 응답 상태 확인
-                if (response.status !== 200) {
+                if (response.status !== 201) {
                     throw new Error('상품 등록에 실패했습니다.');
                 }
                 console.log('상품이 성공적으로 등록되었습니다.');
