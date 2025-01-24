@@ -279,7 +279,7 @@ const OrderCreate = () => {
     const updateAddress = async (deliveryData) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.patch(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/api/addresses/${selectedAddressId}`, deliveryData, {
+            const response = await axios.patch(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/addresses/${selectedAddressId}`, deliveryData, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -291,7 +291,7 @@ const OrderCreate = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                const response = await axios.patch(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/api/addresses/${selectedAddressId}`, deliveryData, {
+                const response = await axios.patch(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/addresses/${selectedAddressId}`, deliveryData, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }

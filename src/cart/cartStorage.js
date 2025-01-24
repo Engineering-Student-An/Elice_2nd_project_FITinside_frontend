@@ -333,7 +333,7 @@ const deleteCartItem = async (item) => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 // 토큰 갱신 후 다시 요청
-                await axios.delete(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/api/cart/${item.id}`, {
+                await axios.delete(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/cart/${item.id}`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`, // 갱신된 토큰 사용
                         'Content-Type': 'application/json',

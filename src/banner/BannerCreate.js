@@ -51,7 +51,7 @@ const BannerCreate = () => {
         } catch (error) {
             try{
                 await sendRefreshTokenAndStoreAccessToken();
-                await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/api/admin/banners`, formData, {
+                await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/banners`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
