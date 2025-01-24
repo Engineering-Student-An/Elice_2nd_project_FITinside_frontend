@@ -245,7 +245,7 @@ const updateDBWithDifferences = async (localCart) => {
             };
 
             try {
-                await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/carts`, requestData, {
+                await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/cart`, requestData, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'application/json',
@@ -256,7 +256,7 @@ const updateDBWithDifferences = async (localCart) => {
                     await sendRefreshTokenAndStoreAccessToken();
 
                     // 토큰 갱신 후 다시 요청
-                    await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/carts`, requestData, {
+                    await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/cart`, requestData, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`, // 갱신된 토큰 사용
                             'Content-Type': 'application/json',
