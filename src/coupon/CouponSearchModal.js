@@ -20,7 +20,7 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
         }
 
         try {
-            const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/coupons/code/${couponCode}`, {
+            const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/coupon/code/${couponCode}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'application/json'
@@ -38,7 +38,7 @@ const CouponSearchModal = ({ isOpen, onRequestClose }) => {
                     await sendRefreshTokenAndStoreAccessToken();
 
                     // 토큰 갱신 후 다시 요청
-                    const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/coupons/code/${couponCode}`, {
+                    const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/coupon/code/${couponCode}`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`, // 갱신된 토큰 사용
                             'Content-Type': 'application/json'
