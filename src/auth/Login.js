@@ -16,7 +16,7 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await apiClient.post(`https://ec2-13-209-198-107.ap-northeast-2.compute.amazonaws.com:8080/api/auth/login`, {
+            const response = await apiClient.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/auth/login`, {
             // const response = await apiClient.post(`/api/auth/login`, {
                 email,
                 password
