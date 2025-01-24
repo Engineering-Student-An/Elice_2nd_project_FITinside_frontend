@@ -309,7 +309,7 @@ const OrderCreate = () => {
     // 주문 생성
     const createOrder = async (deliveryData) => {
         const placeOrder = async (token) => {
-            return await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/api/order`, {
+            return await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/order`, {
                 ...deliveryData, // 배송지 데이터 추가
                 orderItems,
                 deliveryFee,
