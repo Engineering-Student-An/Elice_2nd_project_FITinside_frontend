@@ -17,7 +17,7 @@ const CouponList = () => {
     const fetchWelcomeCoupons = async () => {
         try {
             // 첫 번째 요청: 웰컴 쿠폰 가져오기
-            const response = await axios.get('/api/coupons/welcome', {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/coupons/welcome`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
@@ -26,7 +26,7 @@ const CouponList = () => {
             setWelcomeCoupons(response.data.coupons); // 웰컴 쿠폰 설정
 
             // 두 번째 요청: 내 웰컴 쿠폰 IDs 가져오기
-            const myWelcomeResponse = await axios.get('/api/coupons/my-welcome', {
+            const myWelcomeResponse = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/coupons/my-welcome`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
@@ -38,7 +38,7 @@ const CouponList = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 // 토큰 갱신 후 첫 번째 요청 다시 시도
-                const response = await axios.get('/api/coupons/welcome', {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/coupons/welcome`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}` // 갱신된 토큰 사용
                     },
@@ -47,7 +47,7 @@ const CouponList = () => {
                 setWelcomeCoupons(response.data.coupons); // 웰컴 쿠폰 설정
 
                 // 두 번째 요청: 내 웰컴 쿠폰 IDs 가져오기
-                const myWelcomeResponse = await axios.get('/api/coupons/my-welcome', {
+                const myWelcomeResponse = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/coupons/my-welcome`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}` // 갱신된 토큰 사용
                     },
@@ -62,7 +62,7 @@ const CouponList = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await axios.get('/api/categories', {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/categories`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
@@ -74,7 +74,7 @@ const CouponList = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 // 토큰 갱신 후 다시 요청
-                const response = await axios.get('/api/categories', {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/categories`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}` // 갱신된 토큰 사용
                     },
@@ -89,7 +89,7 @@ const CouponList = () => {
 
     const handleCouponSubmit = async (code) => {
         try {
-            const response = await axios.post('/api/coupons', code, {
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/coupons`, code, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'text/plain'
@@ -111,7 +111,7 @@ const CouponList = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 // 토큰 갱신 후 다시 요청
-                const response = await axios.post('/api/coupons', code, {
+                const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/coupons`, code, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'text/plain'

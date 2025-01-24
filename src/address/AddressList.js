@@ -15,7 +15,7 @@ const AddressList = () => {
     const fetchAddresses = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('/api/addresses', {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/addresses`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -26,7 +26,7 @@ const AddressList = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                const response = await axios.get('/api/addresses', {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/addresses`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -81,7 +81,7 @@ const AddressList = () => {
         if (isAdding) {
             // 배송지 추가 로직
             try {
-                const response = await axios.post('/api/addresses', dataToSend, {
+                const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/addresses`, dataToSend, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -97,7 +97,7 @@ const AddressList = () => {
         } else if (isEditing) {
             // 배송지 수정 로직
             try {
-                const response = await axios.patch(`/api/addresses/${selectedAddress.addressId}`, dataToSend, {
+                const response = await axios.patch(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/addresses/${selectedAddress.addressId}`, dataToSend, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -133,7 +133,7 @@ const AddressList = () => {
 
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`/api/addresses/${addressId}`, {
+            await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/addresses/${addressId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -145,7 +145,7 @@ const AddressList = () => {
               await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                await axios.delete(`/api/addresses/${addressId}`, {
+                await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/addresses/${addressId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -178,7 +178,7 @@ const AddressList = () => {
     const handleDefaultChange = async (addressId, isChecked) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.patch(`/api/addresses/${addressId}/default`, null, {
+            await axios.patch(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/addresses/${addressId}/default`, null, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 },
@@ -193,7 +193,7 @@ const AddressList = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                await axios.patch(`/api/addresses/${addressId}/default`, null, {
+                await axios.patch(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/addresses/${addressId}/default`, null, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     },

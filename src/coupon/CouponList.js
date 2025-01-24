@@ -31,7 +31,7 @@ const CouponList = () => {
 
     const fetchCoupons = async (page, includeInActiveCoupons) => {
         try {
-            const response = await axios.get(`/api/coupons`, {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/coupons`, {
                 params: {
                     page: page,
                     includeInActiveCoupons: includeInActiveCoupons
@@ -49,7 +49,7 @@ const CouponList = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 // 토큰 갱신 후 다시 요청
-                const response = await axios.get(`/api/coupons`, {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/coupons`, {
                     params: {
                         page: page,
                         includeInActiveCoupons: includeInActiveCoupons // 재전송할 파라미터
@@ -70,7 +70,7 @@ const CouponList = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await axios.get('/api/categories', {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/categories`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
@@ -82,7 +82,7 @@ const CouponList = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 // 토큰 갱신 후 다시 요청
-                const response = await axios.get('/api/categories', {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/categories`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}` // 갱신된 토큰 사용
                     },
@@ -130,7 +130,7 @@ const CouponList = () => {
 
     const handleOrderHistoryClick = async (couponId) => {
         try {
-            const response = await axios.get(`/api/coupons/${couponId}/order`, {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/coupons/${couponId}/order`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }

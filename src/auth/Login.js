@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import {fetchAndMergeCartData} from "../cart/cartStorage";
 import {useNavigate} from "react-router-dom";
-import { apiClient } from '../apiClient'; // API 클라이언트 불러오기
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -16,8 +15,7 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await apiClient.post('/auth/login', {
-            // const response = await axios.post('/api/auth/login', {
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/auth/login`, {
                 email,
                 password
             },

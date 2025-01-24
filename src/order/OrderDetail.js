@@ -41,7 +41,7 @@ const OrderDetail = () => {
         const fetchOrderDetail = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get(`/api/orders/${orderId}`, {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/orders/${orderId}`, {
                     headers: {
                         Authorization: `Bearer ${token}` // 토큰을 인증 헤더에 추가
                     }
@@ -61,7 +61,7 @@ const OrderDetail = () => {
                     await sendRefreshTokenAndStoreAccessToken();
 
                     const token = localStorage.getItem('token');
-                    const response = await axios.get(`/api/orders/${orderId}`, {
+                    const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/orders/${orderId}`, {
                         headers: {
                             Authorization: `Bearer ${token}` // 토큰을 인증 헤더에 추가
                         }
@@ -122,7 +122,7 @@ const OrderDetail = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.patch(`/api/orders/${orderId}`, updatedData, {
+            const response = await axios.patch(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/orders/${orderId}`, updatedData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -144,7 +144,7 @@ const OrderDetail = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                const response = await axios.patch(`/api/orders/${orderId}`, updatedData, {
+                const response = await axios.patch(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/orders/${orderId}`, updatedData, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -186,14 +186,14 @@ const OrderDetail = () => {
 
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`/api/orders/${orderId}`, {
+            await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/orders/${orderId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
 
             // 주문 취소 후 다시 주문 상세 정보를 가져와서 갱신
-            const response = await axios.get(`/api/orders/${orderId}`, {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/orders/${orderId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -206,14 +206,14 @@ const OrderDetail = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                await axios.delete(`/api/orders/${orderId}`, {
+                await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/orders/${orderId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
 
                 // 주문 취소 후 다시 주문 상세 정보를 가져와서 갱신
-                const response = await axios.get(`/api/orders/${orderId}`, {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/orders/${orderId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }

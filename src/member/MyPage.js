@@ -16,7 +16,7 @@ const MyPage = () => {
             try {
                 const token = localStorage.getItem('token'); // 로컬 스토리지에서 토큰 가져오기
 
-                const response = await axios.get('/api/user/me', {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/user/me`, {
                     headers: {
                         Authorization: `Bearer ${token}`, // Authorization 헤더에 토큰 추가
                     },
@@ -31,7 +31,7 @@ const MyPage = () => {
 
                     const token = localStorage.getItem('token'); // 로컬 스토리지에서 토큰 가져오기
 
-                    const response = await axios.get('/api/user/me', {
+                    const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/user/me`, {
                         headers: {
                             Authorization: `Bearer ${token}`, // Authorization 헤더에 토큰 추가
                         },
@@ -74,7 +74,7 @@ const MyPage = () => {
 
             const token = localStorage.getItem('token');
             await axios.put(
-                '/api/user/username', // 이름 수정 API 엔드포인트
+                `${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/user/username`, // 이름 수정 API 엔드포인트
                 { userName: newName },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -105,7 +105,7 @@ const MyPage = () => {
 
             const token = localStorage.getItem('token');
             await axios.put(
-                '/api/user/phone', // 전화번호 수정 API 엔드포인트
+                `${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/user/phone`, // 전화번호 수정 API 엔드포인트
                 {
                     email: userInfo.email,
                     phone: newPhone
@@ -122,7 +122,7 @@ const MyPage = () => {
     const handleDeleteAccount = async () => {
         try {
             const token = localStorage.getItem('token');
-            await axios.delete('/api/user/delete', {
+            await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_PROXY}/api/user/delete`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
