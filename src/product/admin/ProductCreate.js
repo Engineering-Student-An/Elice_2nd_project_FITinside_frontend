@@ -159,40 +159,42 @@ const ProductCreate = () => {
 
         try {
             const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-            const response = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/products`, {
+            const response = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/products`, data, {  // data를 본문으로 직접 전달
                 headers: {
                     'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가
                 },
-                body: data
             });
 
-            if (!response.ok) {
+            // 응답 상태 확인
+            if (response.status !== 200) {
                 throw new Error('상품 등록에 실패했습니다.');
             }
             console.log('상품이 성공적으로 등록되었습니다.');
             navigate('/admin/products');
         } catch (error) {
+            console.error('첫 번째 시도에서 에러 발생:', error);
+
             try {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-                const response = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/products`, {
-                    method: 'POST',
+                const response = await axios.post(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/products`, data, {  // data를 본문으로 직접 전달
                     headers: {
                         'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가
                     },
-                    body: data
                 });
 
-                if (!response.ok) {
+                // 응답 상태 확인
+                if (response.status !== 200) {
                     throw new Error('상품 등록에 실패했습니다.');
                 }
                 console.log('상품이 성공적으로 등록되었습니다.');
                 navigate('/admin/products');
             } catch (error) {
-                console.error('에러 발생:', error);
+                console.error('두 번째 시도에서 에러 발생:', error);
             }
         }
+
     };
 
 
