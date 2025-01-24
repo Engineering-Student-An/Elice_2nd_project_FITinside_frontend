@@ -1,11 +1,11 @@
 // refreshToken을 JSON으로 보내고 accessToken을 로컬 스토리지에 저장하는 함수
-import axios from "axios";
+import {apiClient} from "../apiClient";
 
 
 const sendRefreshTokenAndStoreAccessToken = async () => {
     try {
         // refreshToken을 /api/auth/token으로 JSON 형식으로 전송
-        const response = await axios.post(
+        const response = await apiClient.post(
             `/api/auth/token`,
             { }, // refreshToken을 요청 바디에 포함
             {

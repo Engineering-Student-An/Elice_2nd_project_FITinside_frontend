@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import sendRefreshTokenAndStoreAccessToken from '../../auth/RefreshAccessToken'; // 경로 수정
-import styles from './ProductAdmin.module.css';  // CSS Modules로 변경
+import styles from './ProductAdmin.module.css';
+import {apiClient} from "../../apiClient";  // CSS Modules로 변경
 
 const ProductAdmin = () => {
     const [products, setProducts] = useState([]);
@@ -28,12 +28,12 @@ const ProductAdmin = () => {
     }, [page, sortField, sortDir]); // page, sortField, sortDir가 변경될 때마다 새 데이터를 가져옴
 
     const fetchProducts = async (pageNumber) => {
-        const endpoint = searchType === 'productName' ? `/api/products` : `/api/products/byCategory`; // 검색 타입에 따라 다른 엔드포인트 호출
+        const endpoint = searchType === 'productName' ? `/products` : `/products/byCategory`; // 검색 타입에 따라 다른 엔드포인트 호출
 
         try {
             const token = localStorage.getItem('token');
 
-            const response = await axios.get(`${endpoint}`, {
+            const response = await apiClient.get(`${endpoint}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가
                 },
@@ -63,7 +63,7 @@ const ProductAdmin = () => {
                     await sendRefreshTokenAndStoreAccessToken();
 
                     // 토큰 갱신 후 다시 요청
-                    const newResponse = await axios.get(`${endpoint}`, {
+                    const newResponse = await apiClient.get(`${endpoint}`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`,  // 새로 발급된 토큰 사용
                         },
@@ -125,7 +125,7 @@ const ProductAdmin = () => {
 
         try {
             const token = localStorage.getItem('token');  // 로컬 스토리지에서 토큰 가져오기
-            const response = await axios.delete(`/api/admin/products/${productId}`, {
+            const response = await apiClient.delete(`/admin/products/${productId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,  // Authorization 헤더 추가
                 },
@@ -145,7 +145,7 @@ const ProductAdmin = () => {
                     await sendRefreshTokenAndStoreAccessToken();
 
                     // 토큰 갱신 후 다시 삭제 요청
-                    const newResponse = await axios.delete(`/api/admin/products/${productId}`, {
+                    const newResponse = await apiClient.delete(`/admin/products/${productId}`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`,  // 새로 발급된 토큰 사용
                         },

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
+import {apiClient} from "../apiClient";
 
 const MyPage = () => {
     const [userInfo, setUserInfo] = useState(null); // 사용자 정보를 저장할 상태
@@ -16,7 +16,7 @@ const MyPage = () => {
             try {
                 const token = localStorage.getItem('token'); // 로컬 스토리지에서 토큰 가져오기
 
-                const response = await axios.get(`/api/user/me`, {
+                const response = await apiClient.get(`/user/me`, {
                     headers: {
                         Authorization: `Bearer ${token}`, // Authorization 헤더에 토큰 추가
                     },
@@ -31,7 +31,7 @@ const MyPage = () => {
 
                     const token = localStorage.getItem('token'); // 로컬 스토리지에서 토큰 가져오기
 
-                    const response = await axios.get(`/api/user/me`, {
+                    const response = await apiClient.get(`/user/me`, {
                         headers: {
                             Authorization: `Bearer ${token}`, // Authorization 헤더에 토큰 추가
                         },
@@ -73,8 +73,8 @@ const MyPage = () => {
             }
 
             const token = localStorage.getItem('token');
-            await axios.put(
-                `/api/user/username`, // 이름 수정 API 엔드포인트
+            await apiClient.put(
+                `/user/username`, // 이름 수정 API 엔드포인트
                 { userName: newName },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -104,8 +104,8 @@ const MyPage = () => {
             }
 
             const token = localStorage.getItem('token');
-            await axios.put(
-                `/api/user/phone`, // 전화번호 수정 API 엔드포인트
+            await apiClient.put(
+                `/user/phone`, // 전화번호 수정 API 엔드포인트
                 {
                     email: userInfo.email,
                     phone: newPhone
@@ -122,7 +122,7 @@ const MyPage = () => {
     const handleDeleteAccount = async () => {
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`/api/user/delete`, {
+            await apiClient.delete(`/user/delete`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 

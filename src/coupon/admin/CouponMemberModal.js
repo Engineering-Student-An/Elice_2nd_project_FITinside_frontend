@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import sendRefreshTokenAndStoreAccessToken from "../../auth/RefreshAccessToken";
-import axios from "axios";
+import {apiClient} from "../../apiClient";
 
 const CouponMemberModal = ({ isMemberModalOpen, handleCloseMemberModal, couponId }) => {
     const [memberModalData, setMemberModalData] = useState(null);
@@ -10,7 +10,7 @@ const CouponMemberModal = ({ isMemberModalOpen, handleCloseMemberModal, couponId
 
     const fetchMembers = async (id, page) => {
         try {
-            const response = await axios.get(`/api/admin/coupons/${id}`, {
+            const response = await apiClient.get(`/admin/coupons/${id}`, {
                 params: {
                     page: page
                 },
@@ -26,7 +26,7 @@ const CouponMemberModal = ({ isMemberModalOpen, handleCloseMemberModal, couponId
                 await sendRefreshTokenAndStoreAccessToken();
 
                 // 토큰 갱신 후 다시 요청
-                const response = await axios.get(`/api/admin/coupons/${id}`, {
+                const response = await apiClient.get(`/admin/coupons/${id}`, {
                     params: {
                         page: page // 페이지 파라미터 재전송
                     },

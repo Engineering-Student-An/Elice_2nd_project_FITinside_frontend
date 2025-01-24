@@ -2,8 +2,8 @@
 import React, {useEffect, useState} from 'react';
 import './header.css';
 import {useNavigate} from "react-router-dom";
-import axios from 'axios';
 import {jwtDecode} from "jwt-decode";
+import {apiClient} from "../apiClient";
 
 const Header = () => {
     const [cartCount, setCartCount] = useState(0);
@@ -18,7 +18,7 @@ const Header = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axios.get(`/api/categories`, {
+                const response = await apiClient.get(`/categories`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },

@@ -1,7 +1,7 @@
 // src/Signup.js
 import React, { useState } from 'react';
-import axios from 'axios';
 import {useNavigate} from "react-router-dom";
+import {apiClient} from "../apiClient";
 
 const Signup = () => {
     const [email, setEmail] = useState('');
@@ -60,7 +60,7 @@ const Signup = () => {
         }
 
         try {
-            const response = await axios.post(`/api/auth`, {
+            const response = await apiClient.post(`/auth`, {
                 email,
                 password,
                 userName,

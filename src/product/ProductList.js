@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
-import './ProductList.css'; // Import CSS file for custom styles
+import './ProductList.css';
+import {apiClient} from "../apiClient"; // Import CSS file for custom styles
 
 const ProductList = () => {
     const { categoryId } = useParams(); // URL에서 categoryId를 가져옴
@@ -21,7 +21,7 @@ const ProductList = () => {
     // 카테고리 이름을 가져오는 함수
     const fetchCategoryName = async () => {
         try {
-            const response = await axios.get(`/api/categories/${categoryId}`); // 카테고리 정보를 가져오는 API 호출
+            const response = await apiClient.get(`/categories/${categoryId}`); // 카테고리 정보를 가져오는 API 호출
             setCategoryName(response.data.name); // 응답에서 카테고리 이름 설정
         } catch (err) {
             setError('카테고리 정보를 불러오는 데 실패했습니다.');
@@ -31,7 +31,7 @@ const ProductList = () => {
     // 상품 목록을 백엔드에서 가져오는 함수
     const fetchProducts = async () => {
         try {
-            const response = await axios.get(`/api/products/category/${categoryId}`, {
+            const response = await apiClient.get(`/products/category/${categoryId}`, {
                 params: {
                     page,
                     size,

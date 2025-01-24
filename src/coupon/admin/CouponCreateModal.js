@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import sendRefreshTokenAndStoreAccessToken from "../../auth/RefreshAccessToken";
-import axios from "axios";
+import {apiClient} from "../../apiClient";
 
 const CouponCreateModal = ({ isOpen, onRequestClose, onCreate, categories }) => {
     const [newCoupon, setNewCoupon] = useState({
@@ -32,7 +32,7 @@ const CouponCreateModal = ({ isOpen, onRequestClose, onCreate, categories }) => 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(`/api/admin/coupons`, newCoupon, {
+            const response = await apiClient.post(`/admin/coupons`, newCoupon, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'application/json'
@@ -60,7 +60,7 @@ const CouponCreateModal = ({ isOpen, onRequestClose, onCreate, categories }) => 
                 await sendRefreshTokenAndStoreAccessToken();
 
                 // 토큰 갱신 후 다시 요청
-                const response = await axios.post(`/api/admin/coupons`, newCoupon, {
+                const response = await apiClient.post(`/admin/coupons`, newCoupon, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`, // 갱신된 토큰 사용
                         'Content-Type': 'application/json'

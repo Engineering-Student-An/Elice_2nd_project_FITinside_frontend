@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './orderAdminList.css';
 import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
+import {apiClient} from "../apiClient";
 
 const OrderAdminList = () => {
     const [orders, setOrders] = useState([]);
@@ -32,7 +32,7 @@ const OrderAdminList = () => {
 
             console.log('Params sent to api: ', params);
 
-            const response = await axios.get(`/api/admin/orders`, {
+            const response = await apiClient.get(`/admin/orders`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 },
@@ -61,7 +61,7 @@ const OrderAdminList = () => {
 
                 console.log('Params sent to api: ', params);
 
-                const response = await axios.get(`/api/admin/orders`, {
+                const response = await apiClient.get(`/admin/orders`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     },
@@ -115,7 +115,7 @@ const OrderAdminList = () => {
             const token = localStorage.getItem('token');
             const requestData = { status: newStatus };
 
-            const response = await axios.patch(`/api/admin/orders/${orderId}/status`, requestData, {
+            const response = await apiClient.patch(`/admin/orders/${orderId}/status`, requestData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -143,7 +143,7 @@ const OrderAdminList = () => {
                 const token = localStorage.getItem('token');
                 const requestData = { status: newStatus };
 
-                const response = await axios.patch(`/api/admin/orders/${orderId}/status`, requestData, {
+                const response = await apiClient.patch(`/admin/orders/${orderId}/status`, requestData, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -179,7 +179,7 @@ const OrderAdminList = () => {
 
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`/api/admin/orders/${orderId}`, {
+            await apiClient.delete(`/admin/orders/${orderId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -192,7 +192,7 @@ const OrderAdminList = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                await axios.delete(`/api/admin/orders/${orderId}`, {
+                await apiClient.delete(`/admin/orders/${orderId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }

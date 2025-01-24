@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
 import './orderList.css';
 import { FaSearch } from 'react-icons/fa';
-import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken"; // 돋보기 아이콘
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
+import {apiClient} from "../apiClient"; // 돋보기 아이콘
 
 const statusOptions = [
     { value: 'ORDERED', label: '주문 완료' },
@@ -33,7 +33,7 @@ const OrderList = () => {
     const fetchOrders = async (page, searchTerm = '') => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get(`/api/orders?page=${page}&productName=${searchTerm}`, {
+            const response = await apiClient.get(`/api/orders?page=${page}&productName=${searchTerm}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -52,7 +52,7 @@ const OrderList = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token');
-                const response = await axios.get(`/api/orders?page=${page}&productName=${searchTerm}`, {
+                const response = await apiClient.get(`/api/orders?page=${page}&productName=${searchTerm}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }

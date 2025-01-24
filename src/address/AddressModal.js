@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import sendRefreshTokenAndStoreAccessToken from '../auth/RefreshAccessToken';
 import './addressModal.css';
+import {apiClient} from "../apiClient";
 
 const AddressModal = ({ isOpen, onClose, onSelect, onEdit, selectedAddressId }) => {
     const [addresses, setAddresses] = useState([]);
@@ -10,7 +10,7 @@ const AddressModal = ({ isOpen, onClose, onSelect, onEdit, selectedAddressId }) 
         const fetchAddresses = async () => {
             try {
                 if (isOpen) {
-                    const response = await axios.get(`/api/addresses`, {
+                    const response = await apiClient.get(`/api/addresses`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
@@ -23,7 +23,7 @@ const AddressModal = ({ isOpen, onClose, onSelect, onEdit, selectedAddressId }) 
                     await sendRefreshTokenAndStoreAccessToken();
 
                     if (isOpen) {
-                        const response = await axios.get(`/api/addresses`, {
+                        const response = await apiClient.get(`/api/addresses`, {
                             headers: {
                                 'Authorization': `Bearer ${localStorage.getItem('token')}`
                             }

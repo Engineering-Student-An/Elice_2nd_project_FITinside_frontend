@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import './AdBanner.css';
 import { useNavigate } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap 추가
+import 'bootstrap/dist/css/bootstrap.min.css';
+import {apiClient} from "../../apiClient"; // Bootstrap 추가
 
 const AdBanner = ({ userRole }) => {
     const [ads, setAds] = useState([]); // 광고 목록
@@ -11,7 +11,7 @@ const AdBanner = ({ userRole }) => {
 
     // 광고를 서버에서 가져오기
     useEffect(() => {
-        axios.get(`/api/banners`, {
+        apiClient.get(`/banners`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}` // Bearer 토큰 포함
             }

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken"; // Bootstrap CSS 추가
+import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
+import {apiClient} from "../apiClient"; // Bootstrap CSS 추가
 
 const BannerUpdate = () => {
     const [title, setTitle] = useState(''); // 배너 제목
@@ -18,7 +18,7 @@ const BannerUpdate = () => {
 
     // 배너 정보 가져오기
     useEffect(() => {
-        axios.get(`/api/banners/${id}`, {
+        apiClient.get(`/api/banners/${id}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -35,7 +35,7 @@ const BannerUpdate = () => {
             .catch(async error => {
                 try {
                     await sendRefreshTokenAndStoreAccessToken();
-                    axios.get(`/api/banners/${id}`, {
+                    apiClient.get(`/api/banners/${id}`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                         }
@@ -89,7 +89,7 @@ const BannerUpdate = () => {
         formData.append('targetUrl', targetUrl); // URL 필드 추가
 
         try {
-            axios.put(`/api/admin/banners/${id}`, formData, {
+            apiClient.put(`/api/admin/banners/${id}`, formData, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'multipart/form-data'
@@ -103,7 +103,7 @@ const BannerUpdate = () => {
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
-                axios.put(`/api/admin/banners/${id}`, formData, {
+                apiClient.put(`/api/admin/banners/${id}`, formData, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'multipart/form-data'

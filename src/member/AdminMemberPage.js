@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Table, Pagination, Button } from 'react-bootstrap';
 import sendRefreshTokenAndStoreAccessToken from "../auth/RefreshAccessToken";
-import {useNavigate} from "react-router-dom"; // React-Bootstrap 사용
+import {useNavigate} from "react-router-dom";
+import {apiClient} from "../apiClient"; // React-Bootstrap 사용
 
 const MemberList = () => {
     const navigate = useNavigate(); // useNavigate 훅 사용
@@ -16,7 +16,7 @@ const MemberList = () => {
         const fetchMembers = async (page) => {
             try {
                 const token = localStorage.getItem('token'); // 토큰 가져오기
-                const response = await axios.get(`/api/admin/member?page=${page}`, {
+                const response = await apiClient.get(`/admin/member?page=${page}`, {
                     headers: {
                         Authorization: `Bearer ${token}`, // 토큰을 Authorization 헤더에 포함
                     },
@@ -28,7 +28,7 @@ const MemberList = () => {
                 try{
                     await sendRefreshTokenAndStoreAccessToken();
                     const token = localStorage.getItem('token'); // 토큰 가져오기
-                    const response = await axios.get(`/api/admin/member?page=${page}`, {
+                    const response = await apiClient.get(`/admin/member?page=${page}`, {
                         headers: {
                             Authorization: `Bearer ${token}`, // 토큰을 Authorization 헤더에 포함
                         },
@@ -65,7 +65,7 @@ const MemberList = () => {
             }
             
             const token = localStorage.getItem('token'); // 토큰 가져오기
-            await axios.delete(`/api/admin/member/${memberId}`, {
+            await apiClient.delete(`/admin/member/${memberId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`, // 토큰을 Authorization 헤더에 포함
                 },
@@ -77,7 +77,7 @@ const MemberList = () => {
                 await sendRefreshTokenAndStoreAccessToken();
 
                 const token = localStorage.getItem('token'); // 토큰 가져오기
-                await axios.delete(`/api/admin/member/${memberId}`, {
+                await apiClient.delete(`/admin/member/${memberId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`, // 토큰을 Authorization 헤더에 포함
                     },

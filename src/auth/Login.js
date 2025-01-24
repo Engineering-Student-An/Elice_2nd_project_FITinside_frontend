@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import {fetchAndMergeCartData} from "../cart/cartStorage";
 import {useNavigate} from "react-router-dom";
+import {apiClient} from "../apiClient";
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -15,7 +16,8 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post(`/api/auth/login`, {
+            const response = await apiClient.post(`/auth/login`, {
+            // const response = await apiClient.post(`/api/auth/login`, {
                 email,
                 password
             },
