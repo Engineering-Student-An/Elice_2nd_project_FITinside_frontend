@@ -16,14 +16,24 @@ const CategoryAdminMain = () => {
     const navigate = useNavigate();
 
     const fetchCategories = async () => {
-        try {
+        const getCategories = async () => {
             const response = await axios.get(`/api/categories`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
             });
 
-            const sortedCategories = response.data;
+            return response.data;
+        };
+
+        try {
+            let sortedCategories = await getCategories();
+
+            if (!Array.isArray(sortedCategories)) {
+                console.error('응답 데이터가 배열이 아닙니다:', sortedCategories);
+                alert('카테고리 데이터를 가져오는 데 문제가 발생했습니다.');
+                return;
+            }
 
             const sortedParentCategories = sortedCategories
                 .filter(category => category.parentId === null)
@@ -37,13 +47,13 @@ const CategoryAdminMain = () => {
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
-                const response = await axios.get(`/api/categories`, {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    },
-                });
+                let sortedCategories = await getCategories();
 
-                const sortedCategories = response.data;
+                if (!Array.isArray(sortedCategories)) {
+                    console.error('응답 데이터가 배열이 아닙니다:', sortedCategories);
+                    alert('카테고리 데이터를 가져오는 데 문제가 발생했습니다.');
+                    return;
+                }
 
                 const sortedParentCategories = sortedCategories
                     .filter(category => category.parentId === null)
@@ -62,6 +72,7 @@ const CategoryAdminMain = () => {
             }
         }
     };
+
 
     const deleteCategory = async (categoryId) => {
         const hasChildCategories = categories.some(category => category.parentId === categoryId);
