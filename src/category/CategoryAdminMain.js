@@ -17,7 +17,7 @@ const CategoryAdminMain = () => {
 
     const fetchCategories = async () => {
         const getCategories = async () => {
-            const response = await axios.get(`/api/categories`, {
+            const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/categories`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
