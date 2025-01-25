@@ -131,7 +131,7 @@ const CouponList = () => {
 
     const handleOrderHistoryClick = async (couponId) => {
         try {
-            const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/coupons/${couponId}/order`, {
+            const response = await axios.get(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/coupon/${couponId}/order`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
