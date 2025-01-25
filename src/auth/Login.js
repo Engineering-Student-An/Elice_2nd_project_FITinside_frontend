@@ -44,7 +44,7 @@ const Login = () => {
 
     // 구글 로그인 버튼 클릭 시 리다이렉트
     const handleGoogleLogin = () => {
-        window.location.href = '`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/oauth2/authorization/google';
+        window.location.href = 'https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/oauth2/authorization/google';
     };
 
     return (
