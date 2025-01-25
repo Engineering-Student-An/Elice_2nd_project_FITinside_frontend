@@ -86,7 +86,7 @@ const CategoryAdminMain = () => {
         if (!confirmDelete) return;
 
         try {
-            await axios.delete(`/api/admin/categories/${categoryId}`, {
+            await axios.delete(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/categories/${categoryId}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
@@ -105,7 +105,7 @@ const CategoryAdminMain = () => {
                 }
 
                 const confirmDelete = window.confirm("이 카테고리를 삭제하시겠습니까?");
-                await axios.delete(`/api/admin/categories/${categoryId}`, {
+                await axios.delete(`https://obpedvusnf.execute-api.ap-northeast-2.amazonaws.com/api/admin/categories/${categoryId}`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
