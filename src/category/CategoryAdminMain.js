@@ -27,7 +27,7 @@ const CategoryAdminMain = () => {
         };
 
         try {
-            let sortedCategories = await getCategories();
+            let sortedCategories = await getCategories().response;
 
             if (!Array.isArray(sortedCategories)) {
                 console.error('응답 데이터가 배열이 아닙니다:', sortedCategories);
@@ -47,7 +47,7 @@ const CategoryAdminMain = () => {
         } catch (error) {
             try {
                 await sendRefreshTokenAndStoreAccessToken();
-                let sortedCategories = await getCategories();
+                let sortedCategories = await getCategories().response;
 
                 if (!Array.isArray(sortedCategories)) {
                     console.error('응답 데이터가 배열이 아닙니다:', sortedCategories);
