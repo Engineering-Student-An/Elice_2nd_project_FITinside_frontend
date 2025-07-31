@@ -10,7 +10,7 @@ const ProductList = () => {
     const [products, setProducts] = useState([]); // 초기 값을 빈 배열로 설정
     const [error, setError] = useState(null);
     const [page, setPage] = useState(0); // 현재 페이지 상태
-    const [size, setSize] = useState(12); // 페이지당 아이템 수
+    const [size, setSize] = useState(8); // 페이지당 아이템 수
     const [sortField, setSortField] = useState('createdAt'); // 정렬 필드
     const [sortDir, setSortDir] = useState('desc'); // 정렬 방향
     const [keyword, setKeyword] = useState(''); // 검색어
